@@ -19,6 +19,7 @@ type envValues struct {
 }
 
 func getEnvs() envValues {
+	tet()
 	if localEnvCache != nil {
 		return *localEnvCache
 	}
