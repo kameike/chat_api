@@ -58,6 +58,7 @@ func getEnv(target string) string {
 var localEnvCache *envValues
 
 func main() {
+	// check if all required env has set
 	_ = getEnvs()
 
 	e := echo.New()
@@ -66,7 +67,6 @@ func main() {
 	})
 	e.GET("/health", checkHealth)
 	e.Logger.Fatal(e.Start(":1323"))
-
 }
 
 func checkHealth(c echo.Context) error {
