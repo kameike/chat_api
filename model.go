@@ -32,24 +32,12 @@ type ChatRoom struct {
 	Name     string
 }
 
-type ChatRoomRedisModel struct {
-	RoomHash    string
-	LastReadAt  map[string]int64
-	UnreadChace map[string]int64
-	Message     Message
-}
-
 type Message struct {
-	Text     string
-	UserID   int
-	TimeStam int64
-}
-
-type MessageLog struct {
 	gorm.Model
-	Text   string
-	UserID int
-	RoomID int
+	Text      string
+	UserID    int `gorm:"index"`
+	RoomID    int `gorm:"index"`
+	TimeStamp int64
 }
 
 func tet() {
@@ -60,6 +48,18 @@ func tet() {
 	}
 
 	migrate(db)
+}
+
+type ChatRoomRedisModel struct {
+	RoomHash         string
+	LastReadAt       map[string]int64
+	UnreadCountCache map[string]int64
+	Message          MessageRedisModel
+}
+
+type MessageRedisModel struct {
+	UserID int
+	Text   string
 }
 
 type UserRepositable interface {
