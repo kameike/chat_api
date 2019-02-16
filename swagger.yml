@@ -14,9 +14,9 @@ paths:
   /auth:
     post:
       tags: 
-      - "pet"
-      summary: "Add a new pet to the store"
-      description: ""
+      - "auth"
+      summary: "ログイン"
+      description: "ログインとサインアップができるよ"
       consumes:
       - "application/json"
       produces:
@@ -37,6 +37,26 @@ paths:
           $ref: "#/definitions/AuthInfo"
         403:
           $ref: "#/definitions/Error"
+          
+  /chat:
+    get:
+      tags:
+        - "message"
+      summary: "メッセージの一覧が取ってこれるよ"
+      description: "一覧が頑張るよ"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          $ref: "#/definitions/AuthInfo"
+      security: 
+      - api_key: []
+          
+securityDefinitions:
+ api_key:
+  type: "apiKey"
+  name: "api_key"
+  in: "header"
           
 definitions:
   AuthInfo:
