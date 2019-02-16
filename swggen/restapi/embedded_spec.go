@@ -81,9 +81,6 @@ func init() {
           }
         ],
         "description": "一覧が頑張るよ",
-        "produces": [
-          "application/json"
-        ],
         "tags": [
           "chatRooms"
         ],
@@ -196,6 +193,29 @@ func init() {
           "required": true
         }
       ]
+    },
+    "/health": {
+      "get": {
+        "description": "一覧が頑張るよ",
+        "tags": [
+          "deploy"
+        ],
+        "summary": "メッセージの一覧が取ってこれるよ",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "503": {
+            "description": "notready",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -391,9 +411,6 @@ func init() {
           }
         ],
         "description": "一覧が頑張るよ",
-        "produces": [
-          "application/json"
-        ],
         "tags": [
           "chatRooms"
         ],
@@ -506,6 +523,29 @@ func init() {
           "required": true
         }
       ]
+    },
+    "/health": {
+      "get": {
+        "description": "一覧が頑張るよ",
+        "tags": [
+          "deploy"
+        ],
+        "summary": "メッセージの一覧が取ってこれるよ",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "503": {
+            "description": "notready",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {

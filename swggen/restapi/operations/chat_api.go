@@ -21,6 +21,7 @@ import (
 
 	"github.com/kameike/chat_api/swggen/restapi/operations/auth"
 	"github.com/kameike/chat_api/swggen/restapi/operations/chat_rooms"
+	"github.com/kameike/chat_api/swggen/restapi/operations/deploy"
 )
 
 // NewChatAPI creates a new Chat instance
@@ -45,6 +46,9 @@ func NewChatAPI(spec *loads.Document) *ChatAPI {
 		}),
 		ChatRoomsGetChatroomsIDMessagesHandler: chat_rooms.GetChatroomsIDMessagesHandlerFunc(func(params chat_rooms.GetChatroomsIDMessagesParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation ChatRoomsGetChatroomsIDMessages has not yet been implemented")
+		}),
+		DeployGetHealthHandler: deploy.GetHealthHandlerFunc(func(params deploy.GetHealthParams) middleware.Responder {
+			return middleware.NotImplemented("operation DeployGetHealth has not yet been implemented")
 		}),
 		AuthPostAuthHandler: auth.PostAuthHandlerFunc(func(params auth.PostAuthParams) middleware.Responder {
 			return middleware.NotImplemented("operation AuthPostAuth has not yet been implemented")
@@ -105,6 +109,8 @@ type ChatAPI struct {
 	ChatRoomsGetChatroomsIDHandler chat_rooms.GetChatroomsIDHandler
 	// ChatRoomsGetChatroomsIDMessagesHandler sets the operation handler for the get chatrooms ID messages operation
 	ChatRoomsGetChatroomsIDMessagesHandler chat_rooms.GetChatroomsIDMessagesHandler
+	// DeployGetHealthHandler sets the operation handler for the get health operation
+	DeployGetHealthHandler deploy.GetHealthHandler
 	// AuthPostAuthHandler sets the operation handler for the post auth operation
 	AuthPostAuthHandler auth.PostAuthHandler
 	// ChatRoomsPostChatroomsHandler sets the operation handler for the post chatrooms operation
@@ -184,6 +190,10 @@ func (o *ChatAPI) Validate() error {
 
 	if o.ChatRoomsGetChatroomsIDMessagesHandler == nil {
 		unregistered = append(unregistered, "chat_rooms.GetChatroomsIDMessagesHandler")
+	}
+
+	if o.DeployGetHealthHandler == nil {
+		unregistered = append(unregistered, "deploy.GetHealthHandler")
 	}
 
 	if o.AuthPostAuthHandler == nil {
@@ -321,6 +331,11 @@ func (o *ChatAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/chatrooms/{id}/messages"] = chat_rooms.NewGetChatroomsIDMessages(o.context, o.ChatRoomsGetChatroomsIDMessagesHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/health"] = deploy.NewGetHealth(o.context, o.DeployGetHealthHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
