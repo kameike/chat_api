@@ -7,7 +7,7 @@ info:
 produces:
 - application/io.goswagger.examples.todo-list.v1+json
 schemes:
-- https
+- http
 swagger: "2.0"
 
 paths:
@@ -98,8 +98,6 @@ paths:
         - "chatRooms"
       summary: "メッセージの一覧が取ってこれるよ"
       description: "一覧が頑張るよ"
-      produces:
-      - "application/json"
       parameters: 
         - in: body
           name: body
@@ -114,8 +112,22 @@ paths:
               $ref: '#/definitions/chatroom'
       security: 
       - api_key: []
-
       
+  /health:
+    get:
+      tags:
+        - "deploy"
+      summary: "メッセージの一覧が取ってこれるよ"
+      description: "一覧が頑張るよ"
+      responses:
+        200:
+          description: ok
+          schema:
+            type: string
+        503:
+          description: notready
+          schema:
+            type: string
 
 securityDefinitions:
  api_key:

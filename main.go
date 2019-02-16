@@ -1,43 +1,40 @@
 package main
 
 import (
-	"net/http"
+	"log"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-openapi/loads"
+	"github.com/go-openapi/runtime"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/kameike/chat_api/repository"
-	"github.com/labstack/echo"
+	"github.com/kameike/chat_api/swggen/restapi"
+	"github.com/kameike/chat_api/swggen/restapi/operations"
 )
 
 func main() {
 	repo := repository.CreateAppRepositoryProvider()
 	defer repo.Close()
 
-	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
+	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
+	if err != nil {
+		log.Fatalln(err)
+	}
 
-	e.GET("/health", func(c echo.Context) error {
-		msg, ok := repo.CheckHealth()
+	api := operations.NewChatAPI(swaggerSpec)
 
-		if ok {
-			return c.String(http.StatusOK, msg)
-		} else {
-			return c.String(http.StatusServiceUnavailable, msg)
-		}
-	})
+	server := restapi.NewServer(api)
+	defer server.Shutdown()
 
-	e.POST("/auth/createAccount", stub)
-	e.POST("/auth/login", stub)
+	server.Port = 1323
 
-	e.POST("/chatrooms", stub) //find or create chatrooms
-	e.GET("/chatrooms/{id}?id=hash", stub)
-	e.POST("/chatrooms/{id}/message", stub)
-
-	e.Logger.Fatal(e.Start(":1323"))
+	if err := server.Serve(); err != nil {
+		log.Fatalln(err)
+	}
 }
 
-func stub(c echo.Context) error {
-	return nil
-}
+var hello = runtime.OperationHandlerFunc(func(params interface{}) (interface{}, error) {
+	log.Println("received 'findTodos'")
+	log.Printf("%#v\n", params)
+
+	return "hello", nil
+})

@@ -6,7 +6,7 @@ From the todo list tutorial on goswagger.io
 
 
     Schemes:
-      https
+      http
     Host: localhost
     BasePath: /
     Version: 1.0.0
