@@ -17,21 +17,20 @@ paths:
       - "pet"
       summary: "Add a new pet to the store"
       description: ""
-      operationId: "addPet"
       consumes:
       - "application/json"
       produces:
       - "application/json"
       parameters:
-        - name: "authToken"
-          in: "path"
+        - in: "query"
           description: "The name that needs to be fetched. Use user1 for testing. "
           required: true
+          name: "authToken"
           type: "string"
-        - name: "userHash"
-          in: "path"
+        - in: "query"
           description: "The name that needs to be fetched. Use user1 for testing. "
           required: true
+          name: "userHash"
           type: "string"
       responses:
         200:
