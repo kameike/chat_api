@@ -1,0 +1,51 @@
+package repository
+
+import "github.com/kameike/chat_api/datasource"
+import "github.com/kameike/chat_api/model"
+import "github.com/kameike/chat_api/error"
+
+// import "github.com/jinzhu/gorm"
+
+type userRepotory struct {
+	datasource datasource.DataSourceDescriptor
+}
+
+func (r *userRepotory) createUser(user *model.User) error.ChatAPIError {
+	rdb := r.datasource.RDB()
+	err := rdb.Create(user).Error
+
+	if err != nil {
+		return error.ErrorLoginAuthFail(err)
+	}
+
+	updatedUser := &model.User{}
+
+	err = rdb.Where("auth_token = ?", user.AuthToken).First(updatedUser).Error
+
+	if err != nil {
+		return error.ErrorLoginAuthFail(err)
+	}
+
+	token := generateRandomToken()
+
+	accestToken := &model.AccessToken{
+		AccessToken: token,
+		UserID:      updatedUser.ID,
+	}
+
+	err = rdb.Create(accestToken).Error
+
+	if err != nil {
+		return error.ErrorLoginAuthFail(err)
+	}
+
+	return nil
+}
+
+func (r *userRepotory) updateToken(user *model.User) {
+
+}
+
+func generateRandomToken() string {
+	return "hoghogehogeo"
+}

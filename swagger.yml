@@ -1,0 +1,56 @@
+consumes:
+- application/io.goswagger.examples.todo-list.v1+json
+info:
+  description: From the todo list tutorial on goswagger.io
+  title: Taimme-Chat
+  version: 1.0.0
+produces:
+- application/io.goswagger.examples.todo-list.v1+json
+schemes:
+- https
+swagger: "2.0"
+
+paths:
+  /auth:
+    post:
+      tags: 
+      - "pet"
+      summary: "Add a new pet to the store"
+      description: ""
+      operationId: "addPet"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - name: "authToken"
+          in: "path"
+          description: "The name that needs to be fetched. Use user1 for testing. "
+          required: true
+          type: "string"
+        - name: "userHash"
+          in: "path"
+          description: "The name that needs to be fetched. Use user1 for testing. "
+          required: true
+          type: "string"
+      responses:
+        200:
+          $ref: "#/definitions/AuthInfo"
+        403:
+          $ref: "#/definitions/Error"
+          
+definitions:
+  AuthInfo:
+    type: "object"
+    description: "認証認可用のオブジェクト"
+    properties:
+      accessToken:
+        type: "string"
+        example: "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
+  Error: 
+    type: "object"
+    description: "エラーメッセージ、中身をユーザーに見せて差し支えないもの"
+    properties:
+      errorMessage:
+        type: "string"
+        example: "権限がありません(code: 3)"

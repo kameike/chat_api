@@ -1,4 +1,4 @@
-package main
+package model
 
 import (
 	"github.com/jinzhu/gorm"
@@ -14,15 +14,15 @@ type User struct {
 }
 
 type AccessToken struct {
-	UserID      int
+	UserID      uint   `gorm:"index"`
 	AccessToken string `gorm:"type:varchar(255);unique;index"`
 }
 
 type UserChatRoom struct {
 	gorm.Model
-	UserID     int
-	ChatRoomID int
-	LastReadAt int
+	UserID     uint `gorm:"index"`
+	ChatRoomID uint `gorm:"index"`
+	LastReadAt uint
 }
 
 type ChatRoom struct {
@@ -38,6 +38,14 @@ type Message struct {
 	UserID    int `gorm:"index"`
 	RoomID    int `gorm:"index"`
 	TimeStamp int64
+}
+
+func migrate(db *gorm.DB) {
+	db.CreateTable(&User{})
+	db.CreateTable(&AccessToken{})
+	db.CreateTable(&UserChatRoom{})
+	db.CreateTable(&ChatRoom{})
+	db.CreateTable(&Message{})
 }
 
 func tet() {
@@ -60,23 +68,4 @@ type ChatRoomRedisModel struct {
 type MessageRedisModel struct {
 	UserID int
 	Text   string
-}
-
-type UserRepositable interface {
-	createUser(user User)
-	updateToken(user User)
-	updateAccount(user User)
-}
-
-type ChatRepostitable interface {
-	createChatRoom()
-	getChatRoom()
-	postMessage()
-	getMessages()
-	getUnreads()
-}
-
-func migrate(db *gorm.DB) {
-	db.CreateTable(&User{})
-	db.CreateTable(&AccessToken{})
 }
