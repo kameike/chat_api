@@ -10,12 +10,12 @@ import (
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 
-	"github.com/kameike/chat_api/restapi/operations"
-	"github.com/kameike/chat_api/restapi/operations/auth"
-	"github.com/kameike/chat_api/restapi/operations/chat_rooms"
+	"github.com/kameike/chat_api/swggen/restapi/operations"
+	"github.com/kameike/chat_api/swggen/restapi/operations/auth"
+	"github.com/kameike/chat_api/swggen/restapi/operations/chat_rooms"
 )
 
-//go:generate swagger generate server --target .. --name Chat --spec ../swagger.yml
+//go:generate swagger generate server --target ../swggen --name Chat --spec ../swagger.yml --model-package apimodel --exclude-main
 
 func configureFlags(api *operations.ChatAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }

@@ -19,8 +19,8 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-	"github.com/kameike/chat_api/restapi/operations/auth"
-	"github.com/kameike/chat_api/restapi/operations/chat_rooms"
+	"github.com/kameike/chat_api/swggen/restapi/operations/auth"
+	"github.com/kameike/chat_api/swggen/restapi/operations/chat_rooms"
 )
 
 // NewChatAPI creates a new Chat instance

@@ -14,7 +14,7 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	apimodel "github.com/kameike/chat_api/apimodel"
+	apimodel "github.com/kameike/chat_api/swggen/apimodel"
 )
 
 // NewPostChatroomsIDMessagesParams creates a new PostChatroomsIDMessagesParams object
