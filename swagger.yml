@@ -42,6 +42,8 @@ paths:
     get:
       tags:
         - "chatRooms"
+      security: 
+        - api_key: []
       parameters: 
         - in: path
           name: id
