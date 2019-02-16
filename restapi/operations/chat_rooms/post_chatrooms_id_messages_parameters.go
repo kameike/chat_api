@@ -14,7 +14,7 @@ import (
 
 	strfmt "github.com/go-openapi/strfmt"
 
-	models "github.com/kameike/chat_api/models"
+	apimodel "github.com/kameike/chat_api/apimodel"
 )
 
 // NewPostChatroomsIDMessagesParams creates a new PostChatroomsIDMessagesParams object
@@ -36,7 +36,7 @@ type PostChatroomsIDMessagesParams struct {
 	/*
 	  In: body
 	*/
-	Body *models.ChatCreate
+	Body *apimodel.ChatCreate
 	/*長いハッシュ値
 	  Required: true
 	  In: path
@@ -55,7 +55,7 @@ func (o *PostChatroomsIDMessagesParams) BindRequest(r *http.Request, route *midd
 
 	if runtime.HasBody(r) {
 		defer r.Body.Close()
-		var body models.ChatCreate
+		var body apimodel.ChatCreate
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
 			res = append(res, errors.NewParseError("body", "body", "", err))
 		} else {

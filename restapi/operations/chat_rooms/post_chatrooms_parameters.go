@@ -12,7 +12,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	models "github.com/kameike/chat_api/models"
+	apimodel "github.com/kameike/chat_api/apimodel"
 )
 
 // NewPostChatroomsParams creates a new PostChatroomsParams object
@@ -34,7 +34,7 @@ type PostChatroomsParams struct {
 	/*
 	  In: body
 	*/
-	Body *models.ChatroomRequest
+	Body *apimodel.ChatroomRequest
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -48,7 +48,7 @@ func (o *PostChatroomsParams) BindRequest(r *http.Request, route *middleware.Mat
 
 	if runtime.HasBody(r) {
 		defer r.Body.Close()
-		var body models.ChatroomRequest
+		var body apimodel.ChatroomRequest
 		if err := route.Consumer.Consume(r.Body, &body); err != nil {
 			res = append(res, errors.NewParseError("body", "body", "", err))
 		} else {

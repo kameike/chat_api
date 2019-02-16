@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	models "github.com/kameike/chat_api/models"
+	apimodel "github.com/kameike/chat_api/apimodel"
 )
 
 // PostChatroomsOKCode is the HTTP code returned for type PostChatroomsOK
@@ -25,7 +25,7 @@ type PostChatroomsOK struct {
 	/*
 	  In: Body
 	*/
-	Payload []*models.Chatroom `json:"body,omitempty"`
+	Payload []*apimodel.Chatroom `json:"body,omitempty"`
 }
 
 // NewPostChatroomsOK creates PostChatroomsOK with default headers values
@@ -35,13 +35,13 @@ func NewPostChatroomsOK() *PostChatroomsOK {
 }
 
 // WithPayload adds the payload to the post chatrooms o k response
-func (o *PostChatroomsOK) WithPayload(payload []*models.Chatroom) *PostChatroomsOK {
+func (o *PostChatroomsOK) WithPayload(payload []*apimodel.Chatroom) *PostChatroomsOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the post chatrooms o k response
-func (o *PostChatroomsOK) SetPayload(payload []*models.Chatroom) {
+func (o *PostChatroomsOK) SetPayload(payload []*apimodel.Chatroom) {
 	o.Payload = payload
 }
 
@@ -51,7 +51,7 @@ func (o *PostChatroomsOK) WriteResponse(rw http.ResponseWriter, producer runtime
 	rw.WriteHeader(200)
 	payload := o.Payload
 	if payload == nil {
-		payload = make([]*models.Chatroom, 0, 50)
+		payload = make([]*apimodel.Chatroom, 0, 50)
 	}
 
 	if err := producer.Produce(rw, payload); err != nil {
