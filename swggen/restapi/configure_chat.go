@@ -13,6 +13,7 @@ import (
 	"github.com/kameike/chat_api/swggen/restapi/operations"
 	"github.com/kameike/chat_api/swggen/restapi/operations/auth"
 	"github.com/kameike/chat_api/swggen/restapi/operations/chat_rooms"
+	"github.com/kameike/chat_api/swggen/restapi/operations/deploy"
 )
 
 //go:generate swagger generate server --target ../swggen --name Chat --spec ../swagger.yml --model-package apimodel --exclude-main
@@ -59,6 +60,10 @@ func configureAPI(api *operations.ChatAPI) http.Handler {
 	})
 	api.ChatRoomsPostChatroomsIDMessagesHandler = chat_rooms.PostChatroomsIDMessagesHandlerFunc(func(params chat_rooms.PostChatroomsIDMessagesParams, principal interface{}) middleware.Responder {
 		return middleware.NotImplemented("operation chat_rooms.PostChatroomsIDMessages has not yet been implemented")
+	})
+
+	api.DeployGetHealthHandler = deploy.GetHealthHandlerFunc(func(params deploy.GetHealthParams) middleware.Responder {
+		return middleware.NotImplemented("hogehogehoge")
 	})
 
 	api.ServerShutdown = func() {}
