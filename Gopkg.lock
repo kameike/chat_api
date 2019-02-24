@@ -184,23 +184,18 @@
   version = "v1.3.0"
 
 [[projects]]
-  digest = "1:bf618941b014c2a86e4a6f39d4a26541c06fc63387fc50d4694d67eac2151f4a"
-  name = "github.com/labstack/echo"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "38772c686c76b501f94bd6cd5b77f5842e93b559"
-  version = "v3.3.10"
-
-[[projects]]
-  digest = "1:01eb0269028d3c2e21b5b6cd9b1ba81bc4170ab293fcffa84e3aa3a6138a92e8"
-  name = "github.com/labstack/gommon"
+  branch = "master"
+  digest = "1:7a5f838495c8c8250ea032ce54c1b714498f9e6696b1284f166251e21d139e92"
+  name = "github.com/kameike/chat_test"
   packages = [
-    "color",
-    "log",
+    "swggen/apimodel",
+    "swggen/restapi/operations",
+    "swggen/restapi/operations/auth",
+    "swggen/restapi/operations/chat_rooms",
+    "swggen/restapi/operations/deploy",
   ]
   pruneopts = "UT"
-  revision = "7fd9f68ece0bcb1a905fac8f1549f0083f71c51b"
-  version = "v0.2.8"
+  revision = "f999ed5ae07e33c2c8371f84a9f8c7ab876f98f2"
 
 [[projects]]
   branch = "master"
@@ -213,22 +208,6 @@
   ]
   pruneopts = "UT"
   revision = "60711f1a8329503b04e1c88535f419d0bb440bff"
-
-[[projects]]
-  digest = "1:c658e84ad3916da105a761660dcaeb01e63416c8ec7bc62256a9b411a05fcd67"
-  name = "github.com/mattn/go-colorable"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "167de6bfdfba052fa6b2d3664c8f5272e23c9072"
-  version = "v0.0.9"
-
-[[projects]]
-  digest = "1:0981502f9816113c9c8c4ac301583841855c8cf4da8c72f696b3ebedf6d0e4e5"
-  name = "github.com/mattn/go-isatty"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
-  version = "v0.0.4"
 
 [[projects]]
   digest = "1:4a49346ca45376a2bba679ca0e83bec949d780d4e927931317904bad482943ec"
@@ -247,33 +226,6 @@
   version = "v1.1.2"
 
 [[projects]]
-  digest = "1:c468422f334a6b46a19448ad59aaffdfc0a36b08fdcc1c749a0b29b6453d7e59"
-  name = "github.com/valyala/bytebufferpool"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7"
-  version = "v1.0.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:268b8bce0064e8c057d7b913605459f9a26dcab864c0886a56d196540fbf003f"
-  name = "github.com/valyala/fasttemplate"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "dcecefd839c4193db0d35b88ec65b4c12d360ab0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:520c8ed6c442eed074caf8c1d874d2b0241edbe59729199f6bdf1db99f2ccb9f"
-  name = "golang.org/x/crypto"
-  packages = [
-    "acme",
-    "acme/autocert",
-  ]
-  pruneopts = "UT"
-  revision = "b01c7a72566457eb1420261cdafef86638fc3861"
-
-[[projects]]
   branch = "master"
   digest = "1:bbd232f46e33dfb01068e0f4193a3da2d662a350873804bc964f697de5f39ac7"
   name = "golang.org/x/net"
@@ -283,14 +235,6 @@
   ]
   pruneopts = "UT"
   revision = "3a22650c66bd7f4fb6d1e8072ffd7b75c8a27898"
-
-[[projects]]
-  branch = "master"
-  digest = "1:aba2486bbebaadd1f62bde3c363ddbd984efade895833d86ed069f586fd9e899"
-  name = "golang.org/x/sys"
-  packages = ["unix"]
-  pruneopts = "UT"
-  revision = "aca44879d5644da7c5b8ec6a1115e9b6ea6c40d9"
 
 [[projects]]
   digest = "1:0c56024909189aee3364b7f21a95a27459f718aa7c199a5c111c36cfffd9eaef"
@@ -351,7 +295,11 @@
     "github.com/jinzhu/gorm/dialects/mysql",
     "github.com/jinzhu/gorm/dialects/sqlite",
     "github.com/joho/godotenv/autoload",
-    "github.com/labstack/echo",
+    "github.com/kameike/chat_test/swggen/apimodel",
+    "github.com/kameike/chat_test/swggen/restapi/operations",
+    "github.com/kameike/chat_test/swggen/restapi/operations/auth",
+    "github.com/kameike/chat_test/swggen/restapi/operations/chat_rooms",
+    "github.com/kameike/chat_test/swggen/restapi/operations/deploy",
     "golang.org/x/net/netutil",
   ]
   solver-name = "gps-cdcl"
