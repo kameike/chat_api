@@ -12,7 +12,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	apimodel "github.com/kameike/chat_api/swggen/apimodel"
+	apimodel "github.com/kameike/chat_test/swggen/apimodel"
 )
 
 // NewPostChatroomsParams creates a new PostChatroomsParams object

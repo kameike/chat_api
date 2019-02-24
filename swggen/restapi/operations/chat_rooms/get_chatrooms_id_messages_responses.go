@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	apimodel "github.com/kameike/chat_api/swggen/apimodel"
+	apimodel "github.com/kameike/chat_test/swggen/apimodel"
 )
 
 // GetChatroomsIDMessagesOKCode is the HTTP code returned for type GetChatroomsIDMessagesOK
