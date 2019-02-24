@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime"
@@ -13,8 +14,10 @@ import (
 	"github.com/kameike/chat_api/swggen/restapi/operations/deploy"
 )
 
+var repo repository.ReposotryProvidable
+
 func main() {
-	repo := repository.CreateAppRepositoryProvider()
+	repo = repository.CreateAppRepositoryProvider()
 	defer repo.Close()
 
 	swaggerSpec, err := loads.Analyzed(restapi.SwaggerJSON, "")
@@ -24,7 +27,7 @@ func main() {
 
 	api := operations.NewChatAPI(swaggerSpec)
 
-	api.DeployGetHealthHandler = test
+	api.DeployGetHealthHandler = healthHandler
 
 	server := restapi.NewServer(api)
 	defer server.Shutdown()
@@ -36,9 +39,21 @@ func main() {
 	}
 }
 
-var test = deploy.GetHealthHandlerFunc(func(params deploy.GetHealthParams) middleware.Responder {
-	return middleware.NotImplemented("fugafuga")
+var healthHandler = deploy.GetHealthHandlerFunc(func(params deploy.GetHealthParams) middleware.Responder {
+	message, isHealthy := repo.CheckHealth()
+	if isHealthy {
+		return deploy.NewGetHealthOK().WithPayload(message)
+	} else {
+		return notHealthy(message)
+	}
 })
+
+func notHealthy(message string) middleware.ResponderFunc {
+	return func(res http.ResponseWriter, pro runtime.Producer) {
+		res.WriteHeader(503)
+		res.Write([]byte(message))
+	}
+}
 
 var hello = runtime.OperationHandlerFunc(func(params interface{}) (interface{}, error) {
 	log.Println("received 'findTodos'")

@@ -1,6 +1,7 @@
 package datasource
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -38,9 +39,9 @@ func (d *appDatasourceDescriptor) CheckHealth() (string, bool) {
 	if err := d.pingRDB(); err != nil {
 		rdsHealth = false
 	}
-	// if err := pingRedis(); err != nil {
-	// 	redisHealth = false
-	// }
+	if err := pingRedis(); err != nil {
+		redisHealth = false
+	}
 
 	if (rdsHealth && redisHealth) == false {
 		code = http.StatusServiceUnavailable
@@ -48,11 +49,15 @@ func (d *appDatasourceDescriptor) CheckHealth() (string, bool) {
 
 	codeDesc := fmt.Sprintf("code: %d\n", code)
 	rdsMsg := fmt.Sprintf("Is RDS available \t=> %t\n", rdsHealth)
-	redisMsg := fmt.Sprintf("Is redis available\t=> %t\n", rdsHealth)
+	redisMsg := fmt.Sprintf("Is redis available\t=> %t\n", redisHealth)
 
 	msg := codeDesc + rdsMsg + redisMsg
 
-	return msg, (redisHealth || rdsHealth)
+	return msg, (redisHealth && rdsHealth)
+}
+
+func pingRedis() error {
+	return errors.New("errro")
 }
 
 func (d *appDatasourceDescriptor) MigrateIfNeed() ChatAPIError {
