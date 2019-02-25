@@ -1,10 +1,10 @@
 package datasource
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 
+	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -57,7 +57,15 @@ func (d *appDatasourceDescriptor) CheckHealth() (string, bool) {
 }
 
 func pingRedis() error {
-	return errors.New("errro")
+	env := GetEnvs()
+	client := redis.NewClient(&redis.Options{
+		Addr:     env.redisAddr,
+		Password: env.redisPass,
+		DB:       0,
+	})
+	_, err := client.Ping().Result()
+
+	return err
 }
 
 func (d *appDatasourceDescriptor) MigrateIfNeed() ChatAPIError {

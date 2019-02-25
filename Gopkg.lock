@@ -137,6 +137,22 @@
   version = "v0.18.0"
 
 [[projects]]
+  digest = "1:ad53d1f710522a38d1f0e5e0a55a194b1c6b2cd8e84313568e43523271f0cf62"
+  name = "github.com/go-redis/redis"
+  packages = [
+    ".",
+    "internal",
+    "internal/consistenthash",
+    "internal/hashtag",
+    "internal/pool",
+    "internal/proto",
+    "internal/util",
+  ]
+  pruneopts = "UT"
+  revision = "22be8a3eaf992c828cecb69dc07348313bf08d2e"
+  version = "v6.15.1"
+
+[[projects]]
   digest = "1:ec6f9bf5e274c833c911923c9193867f3f18788c461f76f05f62bb1510e0ae65"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
@@ -182,20 +198,6 @@
   pruneopts = "UT"
   revision = "23d116af351c84513e1946b527c88823e476be13"
   version = "v1.3.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:7a5f838495c8c8250ea032ce54c1b714498f9e6696b1284f166251e21d139e92"
-  name = "github.com/kameike/chat_test"
-  packages = [
-    "swggen/apimodel",
-    "swggen/restapi/operations",
-    "swggen/restapi/operations/auth",
-    "swggen/restapi/operations/chat_rooms",
-    "swggen/restapi/operations/deploy",
-  ]
-  pruneopts = "UT"
-  revision = "f999ed5ae07e33c2c8371f84a9f8c7ab876f98f2"
 
 [[projects]]
   branch = "master"
@@ -290,16 +292,12 @@
     "github.com/go-openapi/strfmt",
     "github.com/go-openapi/swag",
     "github.com/go-openapi/validate",
+    "github.com/go-redis/redis",
     "github.com/jessevdk/go-flags",
     "github.com/jinzhu/gorm",
     "github.com/jinzhu/gorm/dialects/mysql",
     "github.com/jinzhu/gorm/dialects/sqlite",
     "github.com/joho/godotenv/autoload",
-    "github.com/kameike/chat_test/swggen/apimodel",
-    "github.com/kameike/chat_test/swggen/restapi/operations",
-    "github.com/kameike/chat_test/swggen/restapi/operations/auth",
-    "github.com/kameike/chat_test/swggen/restapi/operations/chat_rooms",
-    "github.com/kameike/chat_test/swggen/restapi/operations/deploy",
     "golang.org/x/net/netutil",
   ]
   solver-name = "gps-cdcl"

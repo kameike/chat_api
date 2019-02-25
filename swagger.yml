@@ -14,7 +14,7 @@ paths:
   /auth:
     post:
       tags: 
-      - "auth"
+      - account
       summary: "ログイン"
       description: "サインアップもしくはアクセストークンの更新を行います"
       consumes:
@@ -37,7 +37,31 @@ paths:
           $ref: "#/definitions/authInfo"
         403:
           $ref: "#/definitions/error"
-
+  /profile:
+    post:
+      tags:
+      - account
+      summary: ユーザープロファイルのアップデート
+      description: nameをアップデートできます。
+      security: 
+        - api_key: []
+      parameters: 
+        - in: query
+          description: 名前
+          required: false
+          name: name
+          type: string
+        - in: query
+          description: 画像のURL
+          required: false
+          name: imageUrl
+          type: string
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: "#/definitions/user"
+          
   /chatrooms/{id}:
     get:
       tags:
@@ -90,14 +114,34 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/chat'
+              $ref: '#/definitions/message'
+              
+  /chatrooms/{id}/read:
+    parameters: 
+      - in: path
+        name: id
+        type: string
+        required: true
+        description: 長いハッシュ値
+    post:
+      security: 
+        - api_key: []
+      tags:
+        - "chatRooms"
+      responses:
+        200:
+          description: 更新されたメッセージ一覧
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/message'
               
   /chatrooms:
     post:
       tags:
         - "chatRooms"
-      summary: "メッセージの一覧が取ってこれるよ"
-      description: "一覧が頑張るよ"
+      summary: "チャットルームの一覧が取ってこれるよ"
+      description: "一覧が出るよ"
       parameters: 
         - in: body
           name: body
@@ -143,6 +187,8 @@ definitions:
       accessToken:
         type: "string"
         example: "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
+      user:
+        $ref: "#/definitions/user"
   user:
     type: "object"
     description: "汎用的に出てくるユーザーオブジェクト"
@@ -153,7 +199,13 @@ definitions:
       name:
         type: string
         example: "kameike"
-  chat: 
+      id:
+        type: string
+        example: "1"
+      imageUrl;:
+        type: string
+        example: "https://hogehoge.s3.amazon.com"
+  message: 
     type: object
     description: "チャットに使われるやつ"
     properties:
@@ -186,16 +238,18 @@ definitions:
     properties:
       chatroom:
         $ref: '#/definitions/chatroom'
-      chats:
+      messages:
         type: array
         items:
-          $ref: '#/definitions/chat'
-  
+          $ref: '#/definitions/message'
+          
   chatroom:
     type: object
     description: "チャットルームを取得するときに出てくるやつ"
     properties:
       id:
+        type: string
+      name: 
         type: string
       participants:
         type: array
@@ -214,7 +268,7 @@ definitions:
         description: "最大3件メッセージがあればpeekします。"
         type: array
         items:
-          $ref: '#/definitions/chat'
+          $ref: '#/definitions/message'
 
   error: 
     type: "object"

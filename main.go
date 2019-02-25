@@ -48,6 +48,13 @@ var healthHandler = deploy.GetHealthHandlerFunc(func(params deploy.GetHealthPara
 	}
 })
 
+func errorResponse(code int, message string) middleware.ResponderFunc {
+	return func(res http.ResponseWriter, pro runtime.Producer) {
+		res.WriteHeader(code)
+		res.Write([]byte(message))
+	}
+}
+
 func notHealthy(message string) middleware.ResponderFunc {
 	return func(res http.ResponseWriter, pro runtime.Producer) {
 		res.WriteHeader(503)
