@@ -25,7 +25,7 @@ type GetChatroomsIDMessagesOK struct {
 	/*
 	  In: Body
 	*/
-	Payload []*apimodel.Chat `json:"body,omitempty"`
+	Payload []*apimodel.Message `json:"body,omitempty"`
 }
 
 // NewGetChatroomsIDMessagesOK creates GetChatroomsIDMessagesOK with default headers values
@@ -35,13 +35,13 @@ func NewGetChatroomsIDMessagesOK() *GetChatroomsIDMessagesOK {
 }
 
 // WithPayload adds the payload to the get chatrooms Id messages o k response
-func (o *GetChatroomsIDMessagesOK) WithPayload(payload []*apimodel.Chat) *GetChatroomsIDMessagesOK {
+func (o *GetChatroomsIDMessagesOK) WithPayload(payload []*apimodel.Message) *GetChatroomsIDMessagesOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the get chatrooms Id messages o k response
-func (o *GetChatroomsIDMessagesOK) SetPayload(payload []*apimodel.Chat) {
+func (o *GetChatroomsIDMessagesOK) SetPayload(payload []*apimodel.Message) {
 	o.Payload = payload
 }
 
@@ -51,7 +51,7 @@ func (o *GetChatroomsIDMessagesOK) WriteResponse(rw http.ResponseWriter, produce
 	rw.WriteHeader(200)
 	payload := o.Payload
 	if payload == nil {
-		payload = make([]*apimodel.Chat, 0, 50)
+		payload = make([]*apimodel.Message, 0, 50)
 	}
 
 	if err := producer.Produce(rw, payload); err != nil {

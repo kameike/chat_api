@@ -31,9 +31,9 @@ func NewPostChatrooms(ctx *middleware.Context, handler PostChatroomsHandler) *Po
 
 /*PostChatrooms swagger:route POST /chatrooms chatRooms postChatrooms
 
-メッセージの一覧が取ってこれるよ
+チャットルームの一覧が取ってこれるよ
 
-一覧が頑張るよ
+一覧が出るよ
 
 */
 type PostChatrooms struct {

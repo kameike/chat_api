@@ -21,8 +21,8 @@ type ChatroomFull struct {
 	// chatroom
 	Chatroom *Chatroom `json:"chatroom,omitempty"`
 
-	// chats
-	Chats []*Chat `json:"chats"`
+	// messages
+	Messages []*Message `json:"messages"`
 }
 
 // Validate validates this chatroom full
@@ -33,7 +33,7 @@ func (m *ChatroomFull) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateChats(formats); err != nil {
+	if err := m.validateMessages(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -61,21 +61,21 @@ func (m *ChatroomFull) validateChatroom(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *ChatroomFull) validateChats(formats strfmt.Registry) error {
+func (m *ChatroomFull) validateMessages(formats strfmt.Registry) error {
 
-	if swag.IsZero(m.Chats) { // not required
+	if swag.IsZero(m.Messages) { // not required
 		return nil
 	}
 
-	for i := 0; i < len(m.Chats); i++ {
-		if swag.IsZero(m.Chats[i]) { // not required
+	for i := 0; i < len(m.Messages); i++ {
+		if swag.IsZero(m.Messages[i]) { // not required
 			continue
 		}
 
-		if m.Chats[i] != nil {
-			if err := m.Chats[i].Validate(formats); err != nil {
+		if m.Messages[i] != nil {
+			if err := m.Messages[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("chats" + "." + strconv.Itoa(i))
+					return ve.ValidateName("messages" + "." + strconv.Itoa(i))
 				}
 				return err
 			}

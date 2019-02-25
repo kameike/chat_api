@@ -19,7 +19,7 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-	"github.com/kameike/chat_api/swggen/restapi/operations/auth"
+	"github.com/kameike/chat_api/swggen/restapi/operations/account"
 	"github.com/kameike/chat_api/swggen/restapi/operations/chat_rooms"
 	"github.com/kameike/chat_api/swggen/restapi/operations/deploy"
 )
@@ -50,14 +50,20 @@ func NewChatAPI(spec *loads.Document) *ChatAPI {
 		DeployGetHealthHandler: deploy.GetHealthHandlerFunc(func(params deploy.GetHealthParams) middleware.Responder {
 			return middleware.NotImplemented("operation DeployGetHealth has not yet been implemented")
 		}),
-		AuthPostAuthHandler: auth.PostAuthHandlerFunc(func(params auth.PostAuthParams) middleware.Responder {
-			return middleware.NotImplemented("operation AuthPostAuth has not yet been implemented")
+		AccountPostAuthHandler: account.PostAuthHandlerFunc(func(params account.PostAuthParams) middleware.Responder {
+			return middleware.NotImplemented("operation AccountPostAuth has not yet been implemented")
 		}),
 		ChatRoomsPostChatroomsHandler: chat_rooms.PostChatroomsHandlerFunc(func(params chat_rooms.PostChatroomsParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation ChatRoomsPostChatrooms has not yet been implemented")
 		}),
 		ChatRoomsPostChatroomsIDMessagesHandler: chat_rooms.PostChatroomsIDMessagesHandlerFunc(func(params chat_rooms.PostChatroomsIDMessagesParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation ChatRoomsPostChatroomsIDMessages has not yet been implemented")
+		}),
+		ChatRoomsPostChatroomsIDReadHandler: chat_rooms.PostChatroomsIDReadHandlerFunc(func(params chat_rooms.PostChatroomsIDReadParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation ChatRoomsPostChatroomsIDRead has not yet been implemented")
+		}),
+		AccountPostProfileHandler: account.PostProfileHandlerFunc(func(params account.PostProfileParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation AccountPostProfile has not yet been implemented")
 		}),
 
 		// Applies when the "x_chat_access_token" header is set
@@ -111,12 +117,16 @@ type ChatAPI struct {
 	ChatRoomsGetChatroomsIDMessagesHandler chat_rooms.GetChatroomsIDMessagesHandler
 	// DeployGetHealthHandler sets the operation handler for the get health operation
 	DeployGetHealthHandler deploy.GetHealthHandler
-	// AuthPostAuthHandler sets the operation handler for the post auth operation
-	AuthPostAuthHandler auth.PostAuthHandler
+	// AccountPostAuthHandler sets the operation handler for the post auth operation
+	AccountPostAuthHandler account.PostAuthHandler
 	// ChatRoomsPostChatroomsHandler sets the operation handler for the post chatrooms operation
 	ChatRoomsPostChatroomsHandler chat_rooms.PostChatroomsHandler
 	// ChatRoomsPostChatroomsIDMessagesHandler sets the operation handler for the post chatrooms ID messages operation
 	ChatRoomsPostChatroomsIDMessagesHandler chat_rooms.PostChatroomsIDMessagesHandler
+	// ChatRoomsPostChatroomsIDReadHandler sets the operation handler for the post chatrooms ID read operation
+	ChatRoomsPostChatroomsIDReadHandler chat_rooms.PostChatroomsIDReadHandler
+	// AccountPostProfileHandler sets the operation handler for the post profile operation
+	AccountPostProfileHandler account.PostProfileHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -196,8 +206,8 @@ func (o *ChatAPI) Validate() error {
 		unregistered = append(unregistered, "deploy.GetHealthHandler")
 	}
 
-	if o.AuthPostAuthHandler == nil {
-		unregistered = append(unregistered, "auth.PostAuthHandler")
+	if o.AccountPostAuthHandler == nil {
+		unregistered = append(unregistered, "account.PostAuthHandler")
 	}
 
 	if o.ChatRoomsPostChatroomsHandler == nil {
@@ -206,6 +216,14 @@ func (o *ChatAPI) Validate() error {
 
 	if o.ChatRoomsPostChatroomsIDMessagesHandler == nil {
 		unregistered = append(unregistered, "chat_rooms.PostChatroomsIDMessagesHandler")
+	}
+
+	if o.ChatRoomsPostChatroomsIDReadHandler == nil {
+		unregistered = append(unregistered, "chat_rooms.PostChatroomsIDReadHandler")
+	}
+
+	if o.AccountPostProfileHandler == nil {
+		unregistered = append(unregistered, "account.PostProfileHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -340,7 +358,7 @@ func (o *ChatAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/auth"] = auth.NewPostAuth(o.context, o.AuthPostAuthHandler)
+	o.handlers["POST"]["/auth"] = account.NewPostAuth(o.context, o.AccountPostAuthHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
@@ -351,6 +369,16 @@ func (o *ChatAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/chatrooms/{id}/messages"] = chat_rooms.NewPostChatroomsIDMessages(o.context, o.ChatRoomsPostChatroomsIDMessagesHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/chatrooms/{id}/read"] = chat_rooms.NewPostChatroomsIDRead(o.context, o.ChatRoomsPostChatroomsIDReadHandler)
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/profile"] = account.NewPostProfile(o.context, o.AccountPostProfileHandler)
 
 }
 

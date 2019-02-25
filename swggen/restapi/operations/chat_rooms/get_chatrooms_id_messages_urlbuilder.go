@@ -38,7 +38,7 @@ func (o *GetChatroomsIDMessagesURL) SetBasePath(bp string) {
 
 // Build a url path and query string
 func (o *GetChatroomsIDMessagesURL) Build() (*url.URL, error) {
-	var _result url.URL
+	var result url.URL
 
 	var _path = "/chatrooms/{id}/messages"
 
@@ -50,9 +50,9 @@ func (o *GetChatroomsIDMessagesURL) Build() (*url.URL, error) {
 	}
 
 	_basePath := o._basePath
-	_result.Path = golangswaggerpaths.Join(_basePath, _path)
+	result.Path = golangswaggerpaths.Join(_basePath, _path)
 
-	return &_result, nil
+	return &result, nil
 }
 
 // Must is a helper function to panic when the url builder returns an error

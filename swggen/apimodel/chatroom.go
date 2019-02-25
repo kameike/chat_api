@@ -21,11 +21,14 @@ type Chatroom struct {
 	// id
 	ID string `json:"id,omitempty"`
 
+	// name
+	Name string `json:"name,omitempty"`
+
 	// participants
 	Participants []*User `json:"participants"`
 
 	// 最大3件メッセージがあればpeekします。
-	PeekedChat []*Chat `json:"peekedChat"`
+	PeekedChat []*Message `json:"peekedChat"`
 
 	// unreads
 	Unreads []*ChatroomUnreadsItems0 `json:"unreads"`

@@ -12,19 +12,25 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// AuthInfo 認証認可用のオブジェクト、x_chat_access_tokenのヘッダに入れて使用します。
-// swagger:model authInfo
-type AuthInfo struct {
+// Message チャットに使われるやつ
+// swagger:model message
+type Message struct {
 
-	// access token
-	AccessToken string `json:"accessToken,omitempty"`
+	// id
+	ID int64 `json:"id,omitempty"`
+
+	// text
+	Text string `json:"text,omitempty"`
+
+	// timestamp
+	Timestamp int64 `json:"timestamp,omitempty"`
 
 	// user
 	User *User `json:"user,omitempty"`
 }
 
-// Validate validates this auth info
-func (m *AuthInfo) Validate(formats strfmt.Registry) error {
+// Validate validates this message
+func (m *Message) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateUser(formats); err != nil {
@@ -37,7 +43,7 @@ func (m *AuthInfo) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *AuthInfo) validateUser(formats strfmt.Registry) error {
+func (m *Message) validateUser(formats strfmt.Registry) error {
 
 	if swag.IsZero(m.User) { // not required
 		return nil
@@ -56,7 +62,7 @@ func (m *AuthInfo) validateUser(formats strfmt.Registry) error {
 }
 
 // MarshalBinary interface implementation
-func (m *AuthInfo) MarshalBinary() ([]byte, error) {
+func (m *Message) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -64,8 +70,8 @@ func (m *AuthInfo) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *AuthInfo) UnmarshalBinary(b []byte) error {
-	var res AuthInfo
+func (m *Message) UnmarshalBinary(b []byte) error {
+	var res Message
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}
