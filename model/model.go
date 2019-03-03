@@ -17,6 +17,7 @@ type User struct {
 type AccessToken struct {
 	UserID      uint   `gorm:"index"`
 	AccessToken string `gorm:"type:varchar(255);unique;index"`
+	User        User   `gorm:"foreignkey:UserID"`
 }
 
 type UserChatRoom struct {
