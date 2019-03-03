@@ -10,15 +10,20 @@ import (
 var repo *userRepotory
 
 func prepareDB() {
-	ds := datasource.PrepareInmemoryDatasource()
+	ds := datasource.PrepareDatasource()
 	repo = &userRepotory{
 		datasource: ds,
 	}
-	ds.MigrateIfNeed()
+	ds.Begin()
+}
+
+func after() {
+	repo.datasource.Rollback()
 }
 
 func Testユーザーが作れる(t *testing.T) {
 	prepareDB()
+	defer after()
 
 	err := repo.createUser(&User{
 		AuthToken: "test",
@@ -41,6 +46,7 @@ func Testユーザーが作れる(t *testing.T) {
 
 func Testユーザーを作った際にアクセストークンも作られる(t *testing.T) {
 	prepareDB()
+	defer after()
 
 	err := repo.createUser(&User{
 		AuthToken: "test33",
@@ -63,6 +69,7 @@ func Testユーザーを作った際にアクセストークンも作られる(t
 
 func Test重複したHashを持ったユーザーは作れない(t *testing.T) {
 	prepareDB()
+	defer after()
 
 	repo.createUser(&User{
 		AuthToken: "test",
@@ -92,6 +99,7 @@ func Test重複したHashを持ったユーザーは作れない(t *testing.T) {
 
 func Test重複したAuthTokenを持ったユーザーは作れない(t *testing.T) {
 	prepareDB()
+	defer after()
 
 	repo.createUser(&User{
 		AuthToken: "test",

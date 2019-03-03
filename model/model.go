@@ -2,7 +2,7 @@ package model
 
 import (
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	// _ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 type User struct {
@@ -10,6 +10,7 @@ type User struct {
 	AuthToken string `gorm:"type:varchar(255);unique;index"`
 	UserHash  string `gorm:"type:varchar(255);unique;index"`
 	Name      string `gorm:"type:varchar(255)"`
+	Url       string `gorm:"type:varchar(255)"`
 	PushToken string `gorm:"type:varchar(255)"`
 }
 
@@ -41,21 +42,12 @@ type Message struct {
 }
 
 func migrate(db *gorm.DB) {
-	db.CreateTable(&User{})
-	db.CreateTable(&AccessToken{})
-	db.CreateTable(&UserChatRoom{})
-	db.CreateTable(&ChatRoom{})
-	db.CreateTable(&Message{})
-}
-
-func tet() {
-	db, err := gorm.Open("sqlite3", ":memory:")
-	if err != nil {
-		println(err)
-		panic("dame")
-	}
-
-	migrate(db)
+	// 	db.CreateTable(&User{})
+	// 	db.CreateTable(&AccessToken{})
+	// 	db.CreateTable(&UserChatRoom{})
+	// 	db.CreateTable(&ChatRoom{})
+	// 	db.CreateTable(&Message{})
+	db.Model(&User{}).ModifyColumn("test", "text")
 }
 
 type ChatRoomRedisModel struct {
