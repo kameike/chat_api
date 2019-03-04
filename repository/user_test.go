@@ -125,7 +125,7 @@ func Test重複したHashを持ったユーザーは作れない(t *testing.T) {
 		Name:      "ttt",
 		PushToken: "ooo",
 		UserHash:  "hash",
-	}, accessToken)
+	}, "newAccessToken")
 
 	if err == nil {
 		t.Fail()
@@ -155,7 +155,7 @@ func Test重複したAuthTokenを持ったユーザーは作れない(t *testing
 		Name:      "ttt",
 		PushToken: "ooo",
 		UserHash:  "ppp",
-	}, accessToken)
+	}, "newAccessToken")
 
 	if err == nil {
 		t.Fail()
