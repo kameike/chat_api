@@ -53,8 +53,7 @@ func configureAPI(api *operations.ChatAPI) http.Handler {
 		return middleware.NotImplemented("operation chat_rooms.GetChatroomsIDMessages has not yet been implemented")
 	})
 	api.DeployGetHealthHandler = deploy.GetHealthHandlerFunc(func(params deploy.GetHealthParams) middleware.Responder {
-		return deploy.NewGetHealthOK().WithPayload("just test")
-		// return middleware.NotImplemented("operation deploy.GetHealth has not yet been implemented")
+		return middleware.NotImplemented("operation deploy.GetHealth has not yet been implemented")
 	})
 	api.AuthPostAuthHandler = auth.PostAuthHandlerFunc(func(params auth.PostAuthParams) middleware.Responder {
 		return middleware.NotImplemented("operation auth.PostAuth has not yet been implemented")
