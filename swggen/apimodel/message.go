@@ -12,9 +12,9 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// Chat チャットに使われるやつ
-// swagger:model chat
-type Chat struct {
+// Message チャットに使われるやつ
+// swagger:model message
+type Message struct {
 
 	// id
 	ID int64 `json:"id,omitempty"`
@@ -29,8 +29,8 @@ type Chat struct {
 	User *User `json:"user,omitempty"`
 }
 
-// Validate validates this chat
-func (m *Chat) Validate(formats strfmt.Registry) error {
+// Validate validates this message
+func (m *Message) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateUser(formats); err != nil {
@@ -43,7 +43,7 @@ func (m *Chat) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Chat) validateUser(formats strfmt.Registry) error {
+func (m *Message) validateUser(formats strfmt.Registry) error {
 
 	if swag.IsZero(m.User) { // not required
 		return nil
@@ -62,7 +62,7 @@ func (m *Chat) validateUser(formats strfmt.Registry) error {
 }
 
 // MarshalBinary interface implementation
-func (m *Chat) MarshalBinary() ([]byte, error) {
+func (m *Message) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -70,8 +70,8 @@ func (m *Chat) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *Chat) UnmarshalBinary(b []byte) error {
-	var res Chat
+func (m *Message) UnmarshalBinary(b []byte) error {
+	var res Message
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

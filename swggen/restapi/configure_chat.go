@@ -11,12 +11,12 @@ import (
 	middleware "github.com/go-openapi/runtime/middleware"
 
 	"github.com/kameike/chat_api/swggen/restapi/operations"
-	"github.com/kameike/chat_api/swggen/restapi/operations/auth"
+	"github.com/kameike/chat_api/swggen/restapi/operations/account"
 	"github.com/kameike/chat_api/swggen/restapi/operations/chat_rooms"
 	"github.com/kameike/chat_api/swggen/restapi/operations/deploy"
 )
 
-//go:generate swagger generate server --target ../../swggen --name Chat --spec ../../swagger.yml --model-package apimodel --exclude-main
+//go:generate swagger generate server --target ../swggen --name Chat --spec ../swagger.yml --model-package apimodel --exclude-main
 
 func configureFlags(api *operations.ChatAPI) {
 	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
@@ -55,14 +55,20 @@ func configureAPI(api *operations.ChatAPI) http.Handler {
 	api.DeployGetHealthHandler = deploy.GetHealthHandlerFunc(func(params deploy.GetHealthParams) middleware.Responder {
 		return middleware.NotImplemented("operation deploy.GetHealth has not yet been implemented")
 	})
-	api.AuthPostAuthHandler = auth.PostAuthHandlerFunc(func(params auth.PostAuthParams) middleware.Responder {
-		return middleware.NotImplemented("operation auth.PostAuth has not yet been implemented")
+	api.AccountPostAuthHandler = account.PostAuthHandlerFunc(func(params account.PostAuthParams) middleware.Responder {
+		return middleware.NotImplemented("operation account.PostAuth has not yet been implemented")
 	})
 	api.ChatRoomsPostChatroomsHandler = chat_rooms.PostChatroomsHandlerFunc(func(params chat_rooms.PostChatroomsParams, principal interface{}) middleware.Responder {
 		return middleware.NotImplemented("operation chat_rooms.PostChatrooms has not yet been implemented")
 	})
 	api.ChatRoomsPostChatroomsIDMessagesHandler = chat_rooms.PostChatroomsIDMessagesHandlerFunc(func(params chat_rooms.PostChatroomsIDMessagesParams, principal interface{}) middleware.Responder {
 		return middleware.NotImplemented("operation chat_rooms.PostChatroomsIDMessages has not yet been implemented")
+	})
+	api.ChatRoomsPostChatroomsIDReadHandler = chat_rooms.PostChatroomsIDReadHandlerFunc(func(params chat_rooms.PostChatroomsIDReadParams, principal interface{}) middleware.Responder {
+		return middleware.NotImplemented("operation chat_rooms.PostChatroomsIDRead has not yet been implemented")
+	})
+	api.AccountPostProfileHandler = account.PostProfileHandlerFunc(func(params account.PostProfileParams, principal interface{}) middleware.Responder {
+		return middleware.NotImplemented("operation account.PostProfile has not yet been implemented")
 	})
 
 	api.ServerShutdown = func() {}

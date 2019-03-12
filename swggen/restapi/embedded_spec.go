@@ -44,7 +44,7 @@ func init() {
           "application/json"
         ],
         "tags": [
-          "auth"
+          "account"
         ],
         "summary": "ログイン",
         "parameters": [
@@ -80,11 +80,11 @@ func init() {
             "api_key": []
           }
         ],
-        "description": "一覧が頑張るよ",
+        "description": "一覧が出るよ",
         "tags": [
           "chatRooms"
         ],
-        "summary": "メッセージの一覧が取ってこれるよ",
+        "summary": "チャットルームの一覧が取ってこれるよ",
         "parameters": [
           {
             "name": "body",
@@ -153,7 +153,7 @@ func init() {
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/chat"
+                "$ref": "#/definitions/message"
               }
             }
           }
@@ -194,6 +194,38 @@ func init() {
         }
       ]
     },
+    "/chatrooms/{id}/read": {
+      "post": {
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "tags": [
+          "chatRooms"
+        ],
+        "responses": {
+          "200": {
+            "description": "更新されたメッセージ一覧",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/message"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "string",
+          "description": "長いハッシュ値",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/health": {
       "get": {
         "description": "一覧が頑張るよ",
@@ -216,6 +248,42 @@ func init() {
           }
         }
       }
+    },
+    "/profile": {
+      "post": {
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "description": "nameをアップデートできます。",
+        "tags": [
+          "account"
+        ],
+        "summary": "ユーザープロファイルのアップデート",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "名前",
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "画像のURL",
+            "name": "imageUrl",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -226,23 +294,6 @@ func init() {
         "accessToken": {
           "type": "string",
           "example": "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
-        }
-      }
-    },
-    "chat": {
-      "description": "チャットに使われるやつ",
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer"
-        },
-        "text": {
-          "type": "string",
-          "example": "よろしくお願いします"
-        },
-        "timestamp": {
-          "type": "integer",
-          "format": "int64"
         },
         "user": {
           "$ref": "#/definitions/user"
@@ -264,6 +315,9 @@ func init() {
         "id": {
           "type": "string"
         },
+        "name": {
+          "type": "string"
+        },
         "participants": {
           "type": "array",
           "items": {
@@ -274,7 +328,7 @@ func init() {
           "description": "最大3件メッセージがあればpeekします。",
           "type": "array",
           "items": {
-            "$ref": "#/definitions/chat"
+            "$ref": "#/definitions/message"
           }
         },
         "unreads": {
@@ -300,10 +354,10 @@ func init() {
         "chatroom": {
           "$ref": "#/definitions/chatroom"
         },
-        "chats": {
+        "messages": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/chat"
+            "$ref": "#/definitions/message"
           }
         }
       }
@@ -326,6 +380,26 @@ func init() {
         }
       }
     },
+    "message": {
+      "description": "チャットに使われるやつ",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string",
+          "example": "よろしくお願いします"
+        },
+        "timestamp": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "user": {
+          "$ref": "#/definitions/user"
+        }
+      }
+    },
     "user": {
       "description": "汎用的に出てくるユーザーオブジェクト",
       "type": "object",
@@ -333,6 +407,14 @@ func init() {
         "hash": {
           "type": "string",
           "example": "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
+        },
+        "id": {
+          "type": "string",
+          "example": "1"
+        },
+        "imageUrl;": {
+          "type": "string",
+          "example": "https://hogehoge.s3.amazon.com"
         },
         "name": {
           "type": "string",
@@ -376,7 +458,7 @@ func init() {
           "application/json"
         ],
         "tags": [
-          "auth"
+          "account"
         ],
         "summary": "ログイン",
         "parameters": [
@@ -410,11 +492,11 @@ func init() {
             "api_key": []
           }
         ],
-        "description": "一覧が頑張るよ",
+        "description": "一覧が出るよ",
         "tags": [
           "chatRooms"
         ],
-        "summary": "メッセージの一覧が取ってこれるよ",
+        "summary": "チャットルームの一覧が取ってこれるよ",
         "parameters": [
           {
             "name": "body",
@@ -483,7 +565,7 @@ func init() {
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/chat"
+                "$ref": "#/definitions/message"
               }
             }
           }
@@ -524,6 +606,38 @@ func init() {
         }
       ]
     },
+    "/chatrooms/{id}/read": {
+      "post": {
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "tags": [
+          "chatRooms"
+        ],
+        "responses": {
+          "200": {
+            "description": "更新されたメッセージ一覧",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/message"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "type": "string",
+          "description": "長いハッシュ値",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/health": {
       "get": {
         "description": "一覧が頑張るよ",
@@ -546,6 +660,42 @@ func init() {
           }
         }
       }
+    },
+    "/profile": {
+      "post": {
+        "security": [
+          {
+            "api_key": []
+          }
+        ],
+        "description": "nameをアップデートできます。",
+        "tags": [
+          "account"
+        ],
+        "summary": "ユーザープロファイルのアップデート",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "名前",
+            "name": "name",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "画像のURL",
+            "name": "imageUrl",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -556,23 +706,6 @@ func init() {
         "accessToken": {
           "type": "string",
           "example": "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
-        }
-      }
-    },
-    "chat": {
-      "description": "チャットに使われるやつ",
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer"
-        },
-        "text": {
-          "type": "string",
-          "example": "よろしくお願いします"
-        },
-        "timestamp": {
-          "type": "integer",
-          "format": "int64"
         },
         "user": {
           "$ref": "#/definitions/user"
@@ -594,6 +727,9 @@ func init() {
         "id": {
           "type": "string"
         },
+        "name": {
+          "type": "string"
+        },
         "participants": {
           "type": "array",
           "items": {
@@ -604,7 +740,7 @@ func init() {
           "description": "最大3件メッセージがあればpeekします。",
           "type": "array",
           "items": {
-            "$ref": "#/definitions/chat"
+            "$ref": "#/definitions/message"
           }
         },
         "unreads": {
@@ -630,10 +766,10 @@ func init() {
         "chatroom": {
           "$ref": "#/definitions/chatroom"
         },
-        "chats": {
+        "messages": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/chat"
+            "$ref": "#/definitions/message"
           }
         }
       }
@@ -656,6 +792,26 @@ func init() {
         }
       }
     },
+    "message": {
+      "description": "チャットに使われるやつ",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string",
+          "example": "よろしくお願いします"
+        },
+        "timestamp": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "user": {
+          "$ref": "#/definitions/user"
+        }
+      }
+    },
     "user": {
       "description": "汎用的に出てくるユーザーオブジェクト",
       "type": "object",
@@ -663,6 +819,14 @@ func init() {
         "hash": {
           "type": "string",
           "example": "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
+        },
+        "id": {
+          "type": "string",
+          "example": "1"
+        },
+        "imageUrl;": {
+          "type": "string",
+          "example": "https://hogehoge.s3.amazon.com"
         },
         "name": {
           "type": "string",

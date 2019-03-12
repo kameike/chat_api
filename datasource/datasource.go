@@ -1,19 +1,22 @@
 package datasource
 
 import (
-	"errors"
 	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	. "github.com/kameike/chat_api/error"
 	. "github.com/kameike/chat_api/model"
 )
 
 type DataSourceDescriptor interface {
 	RDB() *gorm.DB
+	Begin()
+	Commit()
+	Rollback()
 	MigrateIfNeed() ChatAPIError
 	CheckHealth() (string, bool)
 	Close()
@@ -21,14 +24,43 @@ type DataSourceDescriptor interface {
 
 type appDatasourceDescriptor struct {
 	db *gorm.DB
+	tx *gorm.DB
 }
 
 func (d *appDatasourceDescriptor) RDB() *gorm.DB {
+	if d.tx != nil {
+		return d.tx
+	}
 	return d.db
 }
 
 func (d *appDatasourceDescriptor) Close() {
 	d.RDB().Close()
+}
+
+func (d *appDatasourceDescriptor) Rollback() {
+	if d.tx != nil {
+		d.tx.Rollback()
+	} else {
+		log.Fatalf("try rollback even tx not exist")
+	}
+	d.tx = nil
+}
+
+func (d *appDatasourceDescriptor) Commit() {
+	if d.tx != nil {
+		d.tx.Commit()
+	} else {
+		log.Fatalf("try rollback even tx not exist")
+	}
+	d.tx = nil
+}
+
+func (d *appDatasourceDescriptor) Begin() {
+	if d.tx != nil {
+		log.Fatalf("dose not support nested transaction")
+	}
+	d.tx = d.db.Begin()
 }
 
 func (d *appDatasourceDescriptor) CheckHealth() (string, bool) {
@@ -57,7 +89,15 @@ func (d *appDatasourceDescriptor) CheckHealth() (string, bool) {
 }
 
 func pingRedis() error {
-	return errors.New("errro")
+	env := GetEnvs()
+	client := redis.NewClient(&redis.Options{
+		Addr:     env.RedisAddr,
+		Password: env.RedisPass,
+		DB:       0,
+	})
+	_, err := client.Ping().Result()
+
+	return err
 }
 
 func (d *appDatasourceDescriptor) MigrateIfNeed() ChatAPIError {
@@ -66,32 +106,43 @@ func (d *appDatasourceDescriptor) MigrateIfNeed() ChatAPIError {
 	d.db.CreateTable(&UserChatRoom{})
 	d.db.CreateTable(&ChatRoom{})
 	d.db.CreateTable(&Message{})
+
+	d.db.Model(&User{}).ModifyColumn("url", "text")
+
 	return nil
 }
 
+var mysqlDB *gorm.DB
+
 func PrepareDatasource() DataSourceDescriptor {
-	env := GetEnvs()
-	dbUrl := env.dbAddr
-	db, err := gorm.Open("mysql", dbUrl)
-	if err != nil {
-		panic(err.Error())
+	if mysqlDB == nil {
+		db, err := gorm.Open("mysql", GetEnvs().DbAddr)
+		if err != nil {
+			panic(err.Error())
+		}
+		mysqlDB = db
 	}
 
 	return &appDatasourceDescriptor{
-		db: db,
+		db: mysqlDB,
 	}
 }
 
-func PrepareInmemoryDatasource() DataSourceDescriptor {
-	db, err := gorm.Open("sqlite3", ":memory:")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return &appDatasourceDescriptor{
-		db: db,
-	}
-}
+// var inmemoryDB *gorm.DB
+//
+// func PrepareInmemoryDatasource() DataSourceDescriptor {
+// 	if inmemoryDB == nil {
+// 		db, err := gorm.Open("sqlite3", ":memory:")
+// 		if err != nil {
+// 			panic(err.Error())
+// 		}
+// 		inmemoryDB = db
+// 	}
+//
+// 	return &appDatasourceDescriptor{
+// 		db: inmemoryDB,
+// 	}
+// }
 
 func (d *appDatasourceDescriptor) pingRDB() ChatAPIError {
 	if d.db == nil {

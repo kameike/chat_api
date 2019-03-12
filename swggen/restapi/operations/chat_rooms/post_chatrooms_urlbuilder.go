@@ -33,14 +33,14 @@ func (o *PostChatroomsURL) SetBasePath(bp string) {
 
 // Build a url path and query string
 func (o *PostChatroomsURL) Build() (*url.URL, error) {
-	var _result url.URL
+	var result url.URL
 
 	var _path = "/chatrooms"
 
 	_basePath := o._basePath
-	_result.Path = golangswaggerpaths.Join(_basePath, _path)
+	result.Path = golangswaggerpaths.Join(_basePath, _path)
 
-	return &_result, nil
+	return &result, nil
 }
 
 // Must is a helper function to panic when the url builder returns an error

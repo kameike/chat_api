@@ -18,6 +18,12 @@ type User struct {
 	// hash
 	Hash string `json:"hash,omitempty"`
 
+	// id
+	ID string `json:"id,omitempty"`
+
+	// image Url
+	ImageURL string `json:"imageUrl;,omitempty"`
+
 	// name
 	Name string `json:"name,omitempty"`
 }
