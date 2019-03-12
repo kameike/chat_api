@@ -169,12 +169,11 @@
   version = "v1.4.0"
 
 [[projects]]
-  digest = "1:d97449baab35722b65361a58c2b016404aa25c88dc31ded1c46df02f1e3a045d"
+  digest = "1:420ec120a74b22e8a967f2a2928d89503e373848c0d4447d16ddbbbef9a9965c"
   name = "github.com/jinzhu/gorm"
   packages = [
     ".",
     "dialects/mysql",
-    "dialects/sqlite",
   ]
   pruneopts = "UT"
   revision = "472c70caa40267cb89fd8facb07fe6454b578626"
@@ -212,20 +211,28 @@
   revision = "60711f1a8329503b04e1c88535f419d0bb440bff"
 
 [[projects]]
-  digest = "1:4a49346ca45376a2bba679ca0e83bec949d780d4e927931317904bad482943ec"
-  name = "github.com/mattn/go-sqlite3"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "c7c4067b79cc51e6dfdcef5c702e74b1e0fa7c75"
-  version = "v1.10.0"
-
-[[projects]]
   digest = "1:53bc4cd4914cd7cd52139990d5170d6dc99067ae31c56530621b18b35fc30318"
   name = "github.com/mitchellh/mapstructure"
   packages = ["."]
   pruneopts = "UT"
   revision = "3536a929edddb9a5b34bd6861dc4a9647cb459fe"
   version = "v1.1.2"
+
+[[projects]]
+  digest = "1:cf31692c14422fa27c83a05292eb5cbe0fb2775972e8f1f8446a71549bd8980b"
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
+  version = "v0.8.1"
+
+[[projects]]
+  digest = "1:7d99649602f68b73ade640ca6975ccc38735f329e159c6a507b63f00213678c0"
+  name = "github.com/pressly/goose"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e4b98955473e91a12fc7d8816c28d06376d1d92c"
+  version = "v2.6.0"
 
 [[projects]]
   branch = "master"
@@ -293,11 +300,12 @@
     "github.com/go-openapi/swag",
     "github.com/go-openapi/validate",
     "github.com/go-redis/redis",
+    "github.com/go-sql-driver/mysql",
     "github.com/jessevdk/go-flags",
     "github.com/jinzhu/gorm",
     "github.com/jinzhu/gorm/dialects/mysql",
-    "github.com/jinzhu/gorm/dialects/sqlite",
     "github.com/joho/godotenv/autoload",
+    "github.com/pressly/goose",
     "golang.org/x/net/netutil",
   ]
   solver-name = "gps-cdcl"
