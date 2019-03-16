@@ -12,7 +12,7 @@ var accessToken = "hogehoge"
 
 func prepareDB() {
 	ds := datasource.PrepareDatasource()
-	ds.RDB().LogMode(true)
+	// ds.RDB().LogMode(true)
 	println("==== new case ====")
 	repo = &userRepotory{
 		datasource: ds,
