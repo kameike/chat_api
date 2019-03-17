@@ -9,16 +9,23 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
+
+	apimodel "github.com/kameike/chat_api/swggen/apimodel"
 )
 
 // PostAuthOKCode is the HTTP code returned for type PostAuthOK
 const PostAuthOKCode int = 200
 
-/*PostAuthOK 認証認可用のオブジェクト、x_chat_access_tokenのヘッダに入れて使用します。
+/*PostAuthOK ok
 
 swagger:response postAuthOK
 */
 type PostAuthOK struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *apimodel.AuthInfo `json:"body,omitempty"`
 }
 
 // NewPostAuthOK creates PostAuthOK with default headers values
@@ -27,34 +34,25 @@ func NewPostAuthOK() *PostAuthOK {
 	return &PostAuthOK{}
 }
 
+// WithPayload adds the payload to the post auth o k response
+func (o *PostAuthOK) WithPayload(payload *apimodel.AuthInfo) *PostAuthOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the post auth o k response
+func (o *PostAuthOK) SetPayload(payload *apimodel.AuthInfo) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *PostAuthOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(200)
-}
-
-// PostAuthForbiddenCode is the HTTP code returned for type PostAuthForbidden
-const PostAuthForbiddenCode int = 403
-
-/*PostAuthForbidden post auth forbidden
-
-swagger:response postAuthForbidden
-*/
-type PostAuthForbidden struct {
-}
-
-// NewPostAuthForbidden creates PostAuthForbidden with default headers values
-func NewPostAuthForbidden() *PostAuthForbidden {
-
-	return &PostAuthForbidden{}
-}
-
-// WriteResponse to the client
-func (o *PostAuthForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
-
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
-	rw.WriteHeader(403)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }

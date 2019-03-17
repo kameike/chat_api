@@ -17,10 +17,6 @@ paths:
       - account
       summary: "ログイン"
       description: "サインアップもしくはアクセストークンの更新を行います"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
       parameters:
         - in: "query"
           description: "他のユーザーから見えないユーザーを特定するハッシュ値です。パスワードのように扱われます。アクセストークンの取得に使用します。"
@@ -34,9 +30,9 @@ paths:
           type: "string"
       responses:
         200:
-          $ref: "#/definitions/authInfo"
-        403:
-          $ref: "#/definitions/error"
+          description: ok
+          schema:
+            $ref: "#/definitions/authInfo"
   /profile:
     post:
       tags:
@@ -78,7 +74,9 @@ paths:
       description: "一覧が頑張るよ"
       responses:
         200:
-          $ref: "#/definitions/chatroomFull"
+          description: ok
+          schema:
+            $ref: "#/definitions/chatroomFull"
           
   /chatrooms/{id}/messages:
     parameters: 
@@ -100,7 +98,9 @@ paths:
       summary: "メッセージの投稿"
       responses:
         200:
-          $ref: "#/definitions/chatroomFull"
+          description: ok
+          schema:
+            $ref: "#/definitions/chatroomFull"
     get: 
       security: 
         - api_key: []

@@ -9,16 +9,23 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/runtime"
+
+	apimodel "github.com/kameike/chat_api/swggen/apimodel"
 )
 
 // GetChatroomsIDOKCode is the HTTP code returned for type GetChatroomsIDOK
 const GetChatroomsIDOKCode int = 200
 
-/*GetChatroomsIDOK チャットルームを完全に取得する際にでてくるやつ
+/*GetChatroomsIDOK ok
 
 swagger:response getChatroomsIdOK
 */
 type GetChatroomsIDOK struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *apimodel.ChatroomFull `json:"body,omitempty"`
 }
 
 // NewGetChatroomsIDOK creates GetChatroomsIDOK with default headers values
@@ -27,10 +34,25 @@ func NewGetChatroomsIDOK() *GetChatroomsIDOK {
 	return &GetChatroomsIDOK{}
 }
 
+// WithPayload adds the payload to the get chatrooms Id o k response
+func (o *GetChatroomsIDOK) WithPayload(payload *apimodel.ChatroomFull) *GetChatroomsIDOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get chatrooms Id o k response
+func (o *GetChatroomsIDOK) SetPayload(payload *apimodel.ChatroomFull) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *GetChatroomsIDOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(200)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
 }

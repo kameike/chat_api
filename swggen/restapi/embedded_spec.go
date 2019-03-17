@@ -37,12 +37,6 @@ func init() {
     "/auth": {
       "post": {
         "description": "サインアップもしくはアクセストークンの更新を行います",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
         "tags": [
           "account"
         ],
@@ -65,10 +59,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "$ref": "#/definitions/authInfo"
-          },
-          "403": {
-            "$ref": "#/definitions/error"
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/authInfo"
+            }
           }
         }
       }
@@ -130,7 +124,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "$ref": "#/definitions/chatroomFull"
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/chatroomFull"
+            }
           }
         }
       }
@@ -180,7 +177,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "$ref": "#/definitions/chatroomFull"
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/chatroomFull"
+            }
           }
         }
       },
@@ -451,12 +451,6 @@ func init() {
     "/auth": {
       "post": {
         "description": "サインアップもしくはアクセストークンの更新を行います",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
         "tags": [
           "account"
         ],
@@ -479,9 +473,11 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "認証認可用のオブジェクト、x_chat_access_tokenのヘッダに入れて使用します。"
-          },
-          "403": {}
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/authInfo"
+            }
+          }
         }
       }
     },
@@ -542,7 +538,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "チャットルームを完全に取得する際にでてくるやつ"
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/chatroomFull"
+            }
           }
         }
       }
@@ -592,7 +591,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "チャットルームを完全に取得する際にでてくるやつ"
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/chatroomFull"
+            }
           }
         }
       },

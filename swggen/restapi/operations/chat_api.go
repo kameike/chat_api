@@ -272,9 +272,6 @@ func (o *ChatAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Consumer 
 		case "application/io.goswagger.examples.todo-list.v1+json":
 			result["application/io.goswagger.examples.todo-list.v1+json"] = o.JSONConsumer
 
-		case "application/json":
-			result["application/json"] = o.JSONConsumer
-
 		}
 
 		if c, ok := o.customConsumers[mt]; ok {
@@ -294,9 +291,6 @@ func (o *ChatAPI) ProducersFor(mediaTypes []string) map[string]runtime.Producer 
 
 		case "application/io.goswagger.examples.todo-list.v1+json":
 			result["application/io.goswagger.examples.todo-list.v1+json"] = o.JSONProducer
-
-		case "application/json":
-			result["application/json"] = o.JSONProducer
 
 		}
 
