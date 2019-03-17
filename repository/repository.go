@@ -6,9 +6,18 @@ import (
 	"github.com/kameike/chat_api/model"
 )
 
+type AuthRepositable interface {
+	FindOrCreateUser(token string, hash string) (*model.User, *model.AccessToken, error.ChatAPIError)
+	FindUser(token string) (*model.User, error.ChatAPIError)
+}
+
+type UserUpdateInfoDescriable interface {
+	Name() string
+	ImageUrl() string
+}
+
 type UserRepositable interface {
-	createUser(user model.User)
-	updateToken(user model.User)
+	UpdateUser(UserUpdateInfoDescriable) (*model.User, error.ChatAPIError)
 }
 
 type ChatRepostitable interface {
@@ -21,6 +30,7 @@ type ChatRepostitable interface {
 
 type ReposotryProvidable interface {
 	CheckHealth() (string, bool)
+	AuthRepository() AuthRepositable
 	UserRepository() (UserRepositable, error.ChatAPIError)
 	ChatRepository() (ChatRepostitable, error.ChatAPIError)
 	Close()
@@ -35,6 +45,14 @@ func CreateAppRepositoryProvider() ReposotryProvidable {
 	return &applicationRepositoryProvidable{
 		datasource: ds,
 	}
+}
+
+func (r *applicationRepositoryProvidable) AuthRepository() AuthRepositable {
+	repo := authRepository{
+		d: r.datasource,
+	}
+
+	return &repo
 }
 
 func (r *applicationRepositoryProvidable) CheckHealth() (string, bool) {

@@ -37,6 +37,7 @@ type appRequestHandler struct {
 
 func (a *appRequestHandler) AccountPostAuthHandler() account.PostAuthHandlerFunc {
 	return func(params account.PostAuthParams) middleware.Responder {
+		res := account.NewPostAuth()
 		return middleware.NotImplemented("not yet")
 	}
 }

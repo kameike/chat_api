@@ -67,7 +67,3 @@ func (r *userRepotory) findUser(token string) (*model.User, error.ChatAPIError) 
 
 	return user, nil
 }
-
-func generateRandomToken() string {
-	return "hoghogehogeo"
-}
