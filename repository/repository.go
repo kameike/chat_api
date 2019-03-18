@@ -12,8 +12,8 @@ type AuthRepositable interface {
 }
 
 type UserUpdateInfoDescriable interface {
-	Name() string
-	ImageURL() string
+	Name() *string
+	ImageURL() *string
 }
 
 type UserRepositable interface {

@@ -42,10 +42,12 @@ func Test_userRepository_UpdateUser(t *testing.T) {
 
 type testAuthInfo struct{}
 
-func (p testAuthInfo) Name() string {
-	return "name"
+func (p testAuthInfo) Name() *string {
+	data := "name"
+	return &data
 }
 
-func (p testAuthInfo) ImageURL() string {
-	return "url"
+func (p testAuthInfo) ImageURL() *string {
+	data := "url"
+	return &data
 }

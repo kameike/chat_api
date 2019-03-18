@@ -16,12 +16,12 @@ func (u *userRepository) UpdateUser(data UserUpdateInfoDescriable) (*model.User,
 
 	user := u.user
 
-	if data.ImageURL() != "" {
-		user.Url = data.ImageURL()
+	if data.ImageURL() != nil {
+		user.Url = *data.ImageURL()
 	}
 
-	if data.ImageURL() != "" {
-		user.Name = data.Name()
+	if data.ImageURL() != nil {
+		user.Name = *data.Name()
 	}
 
 	err := rdb.Save(&user).Error

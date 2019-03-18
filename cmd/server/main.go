@@ -30,6 +30,11 @@ func main() {
 
 	api := operations.NewChatAPI(swaggerSpec)
 
+	api.APIKeyAuth = func(token string) (interface{}, error) {
+		result, err := handlers.AuthUser(token)
+		return result, err
+	}
+
 	api.JSONConsumer = runtime.JSONConsumer()
 
 	api.JSONProducer = runtime.JSONProducer()
@@ -59,10 +64,8 @@ func main() {
 	api.ChatRoomsPostChatroomsIDReadHandler = chat_rooms.PostChatroomsIDReadHandlerFunc(func(params chat_rooms.PostChatroomsIDReadParams, principal interface{}) middleware.Responder {
 		return middleware.NotImplemented("operation chat_rooms.PostChatroomsIDRead has not yet been implemented")
 	})
-	api.AccountPostProfileHandler = account.PostProfileHandlerFunc(func(params account.PostProfileParams, principal interface{}) middleware.Responder {
-		return middleware.NotImplemented("operation account.PostProfile has not yet been implemented")
-	})
 
+	api.AccountPostProfileHandler = handlers.AccountPostProfileHandler()
 	api.DeployGetHealthHandler = handlers.DeployGetHealthHandler()
 	api.AccountPostAuthHandler = handlers.AccountPostAuthHandler()
 

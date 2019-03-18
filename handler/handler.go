@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/kameike/chat_api/error"
+	"github.com/kameike/chat_api/model"
 	"github.com/kameike/chat_api/swggen/apimodel"
 
 	"github.com/go-openapi/runtime"
@@ -21,6 +22,7 @@ type RequestHandlable interface {
 
 	AccountPostAuthHandler() account.PostAuthHandlerFunc
 	AccountPostProfileHandler() account.PostProfileHandlerFunc
+	AuthUser(token string) (*model.User, error.ChatAPIError)
 
 	ChatRoomsGetChatroomsIDMessagesHandler() chat_rooms.GetChatroomsIDMessagesHandlerFunc
 	ChatRoomsGetChatroomsIDHandler() chat_rooms.GetChatroomsIDHandlerFunc
@@ -37,6 +39,11 @@ func SetUpHandler() RequestHandlable {
 
 type appRequestHandler struct {
 	p repository.ReposotryProvidable
+}
+
+func (a *appRequestHandler) AuthUser(token string) (*model.User, error.ChatAPIError) {
+	repo := a.p.AuthRepository()
+	return repo.FindUser(token)
 }
 
 func (a *appRequestHandler) AccountPostAuthHandler() account.PostAuthHandlerFunc {
@@ -62,8 +69,46 @@ func (a *appRequestHandler) AccountPostAuthHandler() account.PostAuthHandlerFunc
 	}
 }
 
+type userUpdateData struct {
+	name *string
+	url  *string
+}
+
+func (d userUpdateData) Name() *string {
+	return d.name
+}
+
+func (d userUpdateData) ImageURL() *string {
+	return d.url
+}
+
 func (a *appRequestHandler) AccountPostProfileHandler() account.PostProfileHandlerFunc {
-	panic("not implemented")
+	return func(params account.PostProfileParams, principal interface{}) middleware.Responder {
+		user := principal.(*model.User)
+
+		repo, err := a.p.UserRepository(*user)
+
+		if err != nil {
+			return errorResponse(err)
+		}
+
+		user, err = repo.UpdateUser(userUpdateData{
+			name: params.Name,
+			url:  params.ImageURL,
+		})
+
+		if err != nil {
+			return errorResponse(err)
+		}
+
+		return account.NewPostProfileOK().WithPayload(&apimodel.User{
+			Name:     user.Name,
+			ImageURL: user.Url,
+			ID:       fmt.Sprint(user.ID),
+			Hash:     user.UserHash,
+		})
+
+	}
 }
 
 func (a *appRequestHandler) ChatRoomsGetChatroomsIDMessagesHandler() chat_rooms.GetChatroomsIDMessagesHandlerFunc {
