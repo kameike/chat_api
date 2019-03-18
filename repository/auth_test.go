@@ -7,34 +7,51 @@ import (
 	"github.com/kameike/chat_api/model"
 )
 
-func before() {
-	d = datasource.PrepareDatasource()
-	d.Begin()
-	r = &authRepository{d}
+func generalBefore() {
+	ds = datasource.PrepareDatasource()
+	ds.RDB().LogMode(true)
+	ds.Begin()
+
+	provider = &applicationRepositoryProvidable{
+		datasource: ds,
+	}
+}
+
+func generalAfter() {
+	ds.Rollback()
+}
+
+func authBefore() {
+	generalBefore()
 	token = generateRandomToken()
 	hash = generateRandomToken()
 }
 
-func after() {
-	d.Rollback()
+func authAfter() {
+	generalAfter()
 }
 
-var r *authRepository
-var d datasource.DataSourceDescriptor
+var provider ReposotryProvidable
+var ds datasource.DataSourceDescriptor
 var hash string
 var token string
 
 func Test_authRepository_FindOrCreateUser_普通にユーザーが作れる(t *testing.T) {
-	before()
-	defer after()
+	authBefore()
+	defer authAfter()
+	r := provider.AuthRepository()
 
 	beforeCount := 0
-	d.RDB().Model(&model.User{}).Count(&beforeCount)
+	ds.RDB().Model(&model.User{}).Count(&beforeCount)
 
-	user, tokens, _ := r.FindOrCreateUser(token, hash)
+	user, tokens, err := r.FindOrCreateUser(token, hash)
 
 	afterCount := 0
-	d.RDB().Model(&model.User{}).Count(&afterCount)
+	ds.RDB().Model(&model.User{}).Count(&afterCount)
+
+	if err != nil {
+		t.Fail()
+	}
 
 	if afterCount-beforeCount != 1 {
 		t.Fail()
@@ -53,27 +70,49 @@ func Test_authRepository_FindOrCreateUser_普通にユーザーが作れる(t *t
 	}
 }
 func Test_authRepository_FindOrCreateUser_ユーザーが重複して作れない(t *testing.T) {
-	before()
-	defer after()
+	authBefore()
+	defer authAfter()
+	r := provider.AuthRepository()
 
 	beforeCount := 0
-	d.RDB().Model(&model.User{}).Count(&beforeCount)
+	ds.RDB().Model(&model.User{}).Count(&beforeCount)
 
 	r.FindOrCreateUser(token, hash)
 
-	_, _, err := r.FindOrCreateUser("anther token", hash)
-	if err == nil {
+	_, _, err := r.FindOrCreateUser(generateRandomToken(), hash)
+	if err != nil {
 		t.Fail()
 	}
-	_, _, err = r.FindOrCreateUser(token, "another hash")
+	_, _, err = r.FindOrCreateUser(token, generateRandomToken())
 	if err == nil {
 		t.Fail()
 	}
 }
 
+func Test_authRepository_FindOrCreateUser_作ったユーザーをfindできる(t *testing.T) {
+	authBefore()
+	defer authAfter()
+	r := provider.AuthRepository()
+
+	beforeCount := 0
+	ds.RDB().Model(&model.User{}).Count(&beforeCount)
+
+	user, _, _ := r.FindOrCreateUser(token, hash)
+	user1, _, err := r.FindOrCreateUser(token, hash)
+
+	if err != nil {
+		t.Fail()
+	}
+
+	if user.ID != user1.ID {
+		t.Fail()
+	}
+}
+
 func Test_authRepository_FindUserユーザーが見つかる(t *testing.T) {
-	before()
-	defer after()
+	authBefore()
+	defer authAfter()
+	r := provider.AuthRepository()
 
 	user, token, _ := r.FindOrCreateUser(token, hash)
 	user1, _ := r.FindUser(token.AccessToken)
@@ -84,12 +123,26 @@ func Test_authRepository_FindUserユーザーが見つかる(t *testing.T) {
 }
 
 func Test_authRepository_FindUser存在しないユーザーは見つからない(t *testing.T) {
-	before()
-	defer after()
+	authBefore()
+	defer authAfter()
+	r := provider.AuthRepository()
 
 	user1, _ := r.FindUser(generateRandomToken())
 
 	if user1 != nil {
+		t.Fail()
+	}
+}
+
+func Test_authRepository_FindOrCreateUser_再取得時にtokenが更新される(t *testing.T) {
+	authBefore()
+	defer authAfter()
+	r := provider.AuthRepository()
+
+	_, accessToken1, _ := r.FindOrCreateUser(token, hash)
+	_, accessToken2, _ := r.FindOrCreateUser(token, hash)
+
+	if accessToken1.AccessToken == accessToken2.AccessToken {
 		t.Fail()
 	}
 }

@@ -1,8 +1,11 @@
 package handler
 
 import (
-	"log"
+	"fmt"
 	"net/http"
+
+	"github.com/kameike/chat_api/error"
+	"github.com/kameike/chat_api/swggen/apimodel"
 
 	"github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
@@ -12,8 +15,6 @@ import (
 	"github.com/kameike/chat_api/swggen/restapi/operations/chat_rooms"
 	"github.com/kameike/chat_api/swggen/restapi/operations/deploy"
 )
-
-var repo repository.ReposotryProvidable
 
 type RequestHandlable interface {
 	DeployGetHealthHandler() deploy.GetHealthHandlerFunc
@@ -29,16 +30,35 @@ type RequestHandlable interface {
 }
 
 func SetUpHandler() RequestHandlable {
-	return &appRequestHandler{}
+	return &appRequestHandler{
+		p: repository.CreateAppRepositoryProvider(),
+	}
 }
 
 type appRequestHandler struct {
+	p repository.ReposotryProvidable
 }
 
 func (a *appRequestHandler) AccountPostAuthHandler() account.PostAuthHandlerFunc {
 	return func(params account.PostAuthParams) middleware.Responder {
-		res := account.NewPostAuth()
-		return middleware.NotImplemented("not yet")
+		repo := a.p.AuthRepository()
+		user, authInfo, err := repo.FindOrCreateUser(params.AuthToken, params.UserHash)
+
+		if err != nil {
+			return errorResponse(err)
+		}
+
+		res := account.NewPostAuthOK().WithPayload(&apimodel.AuthInfo{
+			User: &apimodel.User{
+				Name:     user.Name,
+				ImageURL: user.Url,
+				ID:       fmt.Sprint(user.ID),
+				Hash:     user.UserHash,
+			},
+			AccessToken: authInfo.AccessToken,
+		})
+
+		return res
 	}
 }
 
@@ -68,6 +88,7 @@ func (a *appRequestHandler) ChatRoomsPostChatroomsIDReadHandler() chat_rooms.Pos
 
 func (h *appRequestHandler) DeployGetHealthHandler() deploy.GetHealthHandlerFunc {
 	return func(params deploy.GetHealthParams) middleware.Responder {
+		repo := h.p
 		message, isHealthy := repo.CheckHealth()
 		if isHealthy {
 			return deploy.NewGetHealthOK().WithPayload(message)
@@ -78,11 +99,15 @@ func (h *appRequestHandler) DeployGetHealthHandler() deploy.GetHealthHandlerFunc
 }
 
 // TODO: いい感じにエラーを整形する
-func errorResponse(code int, message string) middleware.ResponderFunc {
+func errorResponseWithCode(code int, message string) middleware.ResponderFunc {
 	return func(res http.ResponseWriter, pro runtime.Producer) {
 		res.WriteHeader(code)
 		res.Write([]byte(message))
 	}
+}
+
+func errorResponse(err error.ChatAPIError) middleware.ResponderFunc {
+	return errorResponseWithCode(500, err.Localize())
 }
 
 func notHealthy(message string) middleware.ResponderFunc {
@@ -91,10 +116,3 @@ func notHealthy(message string) middleware.ResponderFunc {
 		res.Write([]byte(message))
 	}
 }
-
-var hello = runtime.OperationHandlerFunc(func(params interface{}) (interface{}, error) {
-	log.Println("received 'findTodos'")
-	log.Printf("%#v\n", params)
-
-	return "hello", nil
-})

@@ -13,7 +13,7 @@ type AuthRepositable interface {
 
 type UserUpdateInfoDescriable interface {
 	Name() string
-	ImageUrl() string
+	ImageURL() string
 }
 
 type UserRepositable interface {
@@ -31,7 +31,7 @@ type ChatRepostitable interface {
 type ReposotryProvidable interface {
 	CheckHealth() (string, bool)
 	AuthRepository() AuthRepositable
-	UserRepository() (UserRepositable, error.ChatAPIError)
+	UserRepository(model.User) (UserRepositable, error.ChatAPIError)
 	ChatRepository() (ChatRepostitable, error.ChatAPIError)
 	Close()
 }
@@ -63,8 +63,12 @@ func (r *applicationRepositoryProvidable) Close() {
 	r.datasource.Close()
 }
 
-func (r *applicationRepositoryProvidable) UserRepository() (UserRepositable, error.ChatAPIError) {
-	return nil, nil
+func (r *applicationRepositoryProvidable) UserRepository(user model.User) (UserRepositable, error.ChatAPIError) {
+	u := userRepository{
+		user: user,
+		ds:   r.datasource,
+	}
+	return &u, nil
 }
 
 func (r *applicationRepositoryProvidable) ChatRepository() (ChatRepostitable, error.ChatAPIError) {
