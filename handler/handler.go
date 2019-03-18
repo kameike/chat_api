@@ -85,7 +85,6 @@ func (d userUpdateData) ImageURL() *string {
 func (a *appRequestHandler) AccountPostProfileHandler() account.PostProfileHandlerFunc {
 	return func(params account.PostProfileParams, principal interface{}) middleware.Responder {
 		user := principal.(*model.User)
-
 		repo, err := a.p.UserRepository(*user)
 
 		if err != nil {
