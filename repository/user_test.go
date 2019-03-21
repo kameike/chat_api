@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/kameike/chat_api/model"
@@ -40,18 +41,17 @@ func Test_userRepository_UpdateUser(t *testing.T) {
 }
 
 func Testチャットルームが存在しなくても作られる(t *testing.T) {
-	t.Skipf("skipping")
 	beforeUser()
 	defer afterUser()
 	u, _ := provider.UserRepository(authUser)
 
 	var roomSign []string
-	roomSign = append(roomSign, `{
-			"users": ["hogehohge", "fugafuga"],
+	roomSign = append(roomSign, fmt.Sprintf(`{
+			"users": ["%s"],
 			"roomId": "hoge",
 			"roomName": "fuga"
 		}
-	`)
+	`, authUser.UserHash))
 
 	testData := testChatRoomCreateInfo{
 		data: roomSign,
@@ -68,7 +68,7 @@ func Testチャットルームが存在しなくても作られる(t *testing.T)
 	}
 }
 
-func Testチャットルームのタイプを渡すといい感じになる(t *testing.T) {
+func Testチャットルームの型によってチャットを作ることができる(t *testing.T) {
 	data := []chatRoomData{
 		chatRoomData{
 			Users: []string{
@@ -83,7 +83,12 @@ func Testチャットルームのタイプを渡すといい感じになる(t *t
 	defer afterUser()
 	repo, _ := provider.UserRepository(authUser)
 	app := repo.(*userRepository)
+
+	beforeCount := 0
+	ds.RDB().Model(&model.ChatRoom{}).Count(&beforeCount)
 	res, err := app.getChatrooms(data)
+	afterCount := 0
+	ds.RDB().Model(&model.ChatRoom{}).Count(&afterCount)
 
 	if err != nil {
 		t.Fail()
@@ -91,6 +96,133 @@ func Testチャットルームのタイプを渡すといい感じになる(t *t
 
 	if len(res) != 1 {
 		t.Fail()
+	}
+
+	if afterCount-beforeCount != 1 {
+		t.Fail()
+	}
+}
+func Testチャットルームが複数作られる(t *testing.T) {
+	data := []chatRoomData{
+		chatRoomData{
+			Users: []string{
+				authUser.UserHash,
+			},
+			RoomId:   "roomid1",
+			RoomName: "pppp",
+		},
+		chatRoomData{
+			Users: []string{
+				authUser.UserHash,
+			},
+			RoomId:   "roomid2",
+			RoomName: "hohoh",
+		},
+	}
+
+	beforeUser()
+	defer afterUser()
+	repo, _ := provider.UserRepository(authUser)
+	app := repo.(*userRepository)
+
+	beforeCount := 0
+	ds.RDB().Model(&model.ChatRoom{}).Count(&beforeCount)
+	res, err := app.getChatrooms(data)
+	afterCount := 0
+	ds.RDB().Model(&model.ChatRoom{}).Count(&afterCount)
+
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	if len(res) != 2 {
+		t.Fatalf("count is weard %d", len(res))
+	}
+
+	if afterCount-beforeCount != 2 {
+		t.Fatalf("dame %d, -> %d", beforeCount, afterCount)
+	}
+}
+
+func Test条件が一緒であればチャットルームは複数作られない(t *testing.T) {
+	data := []chatRoomData{
+		chatRoomData{
+			Users: []string{
+				authUser.UserHash,
+			},
+			RoomId:   "roomid",
+			RoomName: "hoge",
+		},
+	}
+
+	beforeUser()
+	defer afterUser()
+	repo, _ := provider.UserRepository(authUser)
+	app := repo.(*userRepository)
+
+	beforeCount := 0
+	ds.RDB().Model(&model.ChatRoom{}).Count(&beforeCount)
+	app.getChatrooms(data)
+	app.getChatrooms(data)
+	app.getChatrooms(data)
+	app.getChatrooms(data)
+	res, err := app.getChatrooms(data)
+	afterCount := 0
+	ds.RDB().Model(&model.ChatRoom{}).Count(&afterCount)
+
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	if len(res) != 1 {
+		t.Fatalf("count is weard %d", len(res))
+	}
+
+	if afterCount-beforeCount != 1 {
+		t.Fatalf("dame %d, -> %d", beforeCount, afterCount)
+	}
+}
+
+func Test条件が一緒であればチャットルームはたとえ同時リクエスであっても作られない(t *testing.T) {
+	data := []chatRoomData{
+		chatRoomData{
+			Users: []string{
+				authUser.UserHash,
+			},
+			RoomId:   "roomid",
+			RoomName: "hoge",
+		},
+		chatRoomData{
+			Users: []string{
+				authUser.UserHash,
+			},
+			RoomId:   "roomid",
+			RoomName: "hoge",
+		},
+	}
+
+	beforeUser()
+	defer afterUser()
+	repo, _ := provider.UserRepository(authUser)
+	app := repo.(*userRepository)
+
+	beforeCount := 0
+	ds.RDB().Model(&model.ChatRoom{}).Count(&beforeCount)
+	app.getChatrooms(data)
+	res, err := app.getChatrooms(data)
+	afterCount := 0
+	ds.RDB().Model(&model.ChatRoom{}).Count(&afterCount)
+
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	if len(res) != 2 {
+		t.Fatalf("count is weard %d", len(res))
+	}
+
+	if afterCount-beforeCount != 1 {
+		t.Fatalf("dame %d, -> %d", beforeCount, afterCount)
 	}
 }
 
@@ -134,6 +266,26 @@ func TestChatRoomからハッシュが作れる(t *testing.T) {
 	}
 
 	if hash1 != hash0 {
+		t.Fatalf("hash should be same %s <=> %s", hash0, hash1)
+	}
+}
+
+func TestChatRoomからハッシュが作れるてroomが違うと色々違う(t *testing.T) {
+	data0 := chatRoomData{
+		Users:    []string{"t", "u"},
+		RoomId:   "piyo",
+		RoomName: "piyo",
+	}
+	data1 := chatRoomData{
+		Users:    []string{"u", "t"},
+		RoomId:   "hoge",
+		RoomName: "piyo",
+	}
+
+	hash0 := concatString(data0)
+	hash1 := concatString(data1)
+
+	if hash1 == hash0 {
 		t.Fatalf("hash should be same %s <=> %s", hash0, hash1)
 	}
 }

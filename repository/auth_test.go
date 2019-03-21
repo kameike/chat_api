@@ -10,6 +10,7 @@ import (
 func generalBefore() {
 	ds = datasource.PrepareDatasource()
 	ds.RDB().LogMode(true)
+	println("===start case===")
 	ds.Begin()
 
 	provider = &applicationRepositoryProvidable{

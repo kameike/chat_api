@@ -35,9 +35,9 @@ func (u *userRepository) GetChatRooms(data ChatRoomsInfoDescriable) (*model.Chat
 		}
 	}
 
-	result, err := u.getChatrooms(roomsInfo)
+	_, err := u.getChatrooms(roomsInfo)
 
-	return result[0], err
+	return nil, err
 }
 
 func (u *userRepository) getChatrooms(data []chatRoomData) ([]*model.ChatRoom, error.ChatAPIError) {
@@ -50,6 +50,7 @@ func (u *userRepository) getChatrooms(data []chatRoomData) ([]*model.ChatRoom, e
 			return currentChatrooms, error.GeneralError(err)
 		}
 		result := u.findChatrooms(result.notFound)
+
 		if len(result.notFound) != 0 {
 			panic("cant find chatrooms even create succeeded")
 		}
@@ -121,7 +122,8 @@ func (u *userRepository) findChatrooms(data []chatRoomData) findChatRoomInfo {
 
 	for i, d := range data {
 		roomHashes[i] = d.hashValue()
-		roomInfoMap[d.hashValue()] = &d
+		data := d
+		roomInfoMap[d.hashValue()] = &data
 	}
 
 	rooms := u.preloadRooms(roomHashes)

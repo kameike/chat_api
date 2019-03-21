@@ -1,6 +1,7 @@
 package error
 
 import (
+	"bytes"
 	"fmt"
 )
 
@@ -22,10 +23,15 @@ func FailToCreateChatRooom(description string) ChatAPIError {
 }
 
 func NestedError(err []ChatAPIError) ChatAPIError {
+	buf := bytes.NewBufferString("")
+	for _, e := range err {
+		fmt.Fprintf(buf, "%s \n", e.Error())
+	}
+
 	return &apiError{
 		errorCode:    0,
 		err:          nil,
-		errorMessage: "error",
+		errorMessage: buf.String(),
 	}
 }
 
