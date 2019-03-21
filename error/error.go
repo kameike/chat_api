@@ -13,6 +13,22 @@ func GeneralError(err error) ChatAPIError {
 	}
 }
 
+func FailToCreateChatRooom(description string) ChatAPIError {
+	return &apiError{
+		errorCode:    0,
+		err:          nil,
+		errorMessage: "faild to create" + description,
+	}
+}
+
+func NestedError(err []ChatAPIError) ChatAPIError {
+	return &apiError{
+		errorCode:    0,
+		err:          nil,
+		errorMessage: "error",
+	}
+}
+
 func ErroRDBConnection(err error) ChatAPIError {
 	return &apiError{
 		errorCode:    1,
