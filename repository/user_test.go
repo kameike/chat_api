@@ -86,3 +86,33 @@ type testChatRoomCreateInfo struct {
 func (t testChatRoomCreateInfo) RoomHashes() []string {
 	return t.data
 }
+
+func TestChatRoomからハッシュが作れる(t *testing.T) {
+	data0 := chatRoomData{
+		Users:    []string{"t", "u"},
+		RoomId:   "hoge",
+		RoomName: "piyo",
+	}
+	data1 := chatRoomData{
+		Users:    []string{"u", "t"},
+		RoomId:   "hoge",
+		RoomName: "piyo",
+	}
+
+	hash0 := concatString(data0)
+	hash1 := concatString(data1)
+
+	if hash1 != "tuhoge" {
+		t.Fail()
+	}
+
+	if hash1 != hash0 {
+		t.Fatalf("hash should be same %s <=> %s", hash0, hash1)
+	}
+}
+
+func TestConvertToHash(t *testing.T) {
+	if convertToHash("test") != "gCoQ4N_Csn3p8pqNz1SrRN2t2mhcj1ZOL2e9Pdn1srs" {
+		t.Fatalf("faild to hash %s", convertToHash("test"))
+	}
+}

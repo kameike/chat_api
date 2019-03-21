@@ -16,13 +16,13 @@ type UserUpdateInfoDescriable interface {
 	ImageURL() *string
 }
 
-type ChatRoomInfoDescriable interface {
+type ChatRoomsInfoDescriable interface {
 	RoomHashes() []string
 }
 
 type UserRepositable interface {
 	UpdateUser(UserUpdateInfoDescriable) (*model.User, error.ChatAPIError)
-	GetChatRooms(ChatRoomInfoDescriable) (*model.ChatRoom, error.ChatAPIError)
+	GetChatRooms(ChatRoomsInfoDescriable) (*model.ChatRoom, error.ChatAPIError)
 }
 
 type ChatRepostitable interface {
