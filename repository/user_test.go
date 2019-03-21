@@ -48,7 +48,7 @@ func Testチャットルームが存在しなくても作られる(t *testing.T)
 	roomSign = append(roomSign, `{
 			"users": ["hogehohge", "fugafuga"],
 			"roomId": "hoge",
-			"roomName": "fuga",
+			"roomName": "fuga"
 		}
 	`)
 

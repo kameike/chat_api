@@ -3,6 +3,7 @@ package repository
 import (
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
 	"sort"
 
 	"github.com/kameike/chat_api/datasource"
@@ -21,11 +22,26 @@ type chatRoomData struct {
 	RoomName string   `json:"roomName"`
 }
 
-func (u *userRepository) GetChatRooms(ChatRoomsInfoDescriable) (*model.ChatRoom, error.ChatAPIError) {
+func (u *userRepository) GetChatRooms(data ChatRoomsInfoDescriable) (*model.ChatRoom, error.ChatAPIError) {
 	room := model.ChatRoom{}
-
 	result := room
+	hashes := data.RoomHashes()
+
+	rooms := make([]chatRoomData, len(hashes), len(hashes))
+
+	for i, chank := range data.RoomHashes() {
+		err := json.Unmarshal([]byte(chank), &rooms[i])
+		if err != nil {
+			return nil, error.GeneralError(err)
+		}
+	}
+
 	return &result, nil
+}
+
+func (d chatRoomData) hashValue() string {
+	res := concatString(d)
+	return convertToHash(res)
 }
 
 func convertToHash(seed string) string {
