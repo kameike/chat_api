@@ -21,7 +21,6 @@ type UserRepositable interface {
 }
 
 type ChatRepostitable interface {
-	createChatRoom()
 	getChatRoom()
 	postMessage()
 	getMessages()
