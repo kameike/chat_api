@@ -22,7 +22,6 @@ func afterUser() {
 func Test_userRepository_UpdateUser(t *testing.T) {
 	beforeUser()
 	defer afterUser()
-
 	u, _ := provider.UserRepository(authUser)
 	user, err := u.UpdateUser(testAuthInfo{})
 
@@ -40,6 +39,34 @@ func Test_userRepository_UpdateUser(t *testing.T) {
 	}
 }
 
+func Testチャットルームが存在しなくても作られる(t *testing.T) {
+	beforeUser()
+	defer afterUser()
+	u, _ := provider.UserRepository(authUser)
+
+	var roomSign []string
+	roomSign = append(roomSign, `{
+			"users": ["hogehohge", "fugafuga"],
+			"roomId": "hoge",
+			"roomName": "fuga",
+		}
+	`)
+
+	testData := testChatRoomCreateInfo{
+		data: roomSign,
+	}
+
+	result, err := u.GetChatRooms(testData)
+
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	if result == nil {
+		t.Fatalf("chat room has not been created")
+	}
+}
+
 type testAuthInfo struct{}
 
 func (p testAuthInfo) Name() *string {
@@ -50,4 +77,12 @@ func (p testAuthInfo) Name() *string {
 func (p testAuthInfo) ImageURL() *string {
 	data := "url"
 	return &data
+}
+
+type testChatRoomCreateInfo struct {
+	data []string
+}
+
+func (t testChatRoomCreateInfo) RoomHashes() []string {
+	return t.data
 }

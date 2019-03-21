@@ -11,6 +11,11 @@ type userRepository struct {
 	ds   datasource.DataSourceDescriptor
 }
 
+func (u *userRepository) GetChatRooms(ChatRoomInfoDescriable) (*model.ChatRoom, error.ChatAPIError) {
+
+	return nil, nil
+}
+
 func (u *userRepository) UpdateUser(data UserUpdateInfoDescriable) (*model.User, error.ChatAPIError) {
 	rdb := u.ds.RDB()
 
