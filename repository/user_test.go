@@ -85,10 +85,14 @@ func Testチャットルームの型によってチャットを作ることが�
 	app := repo.(*userRepository)
 
 	beforeCount := 0
+	beforeRelationCount := 0
 	ds.RDB().Model(&model.ChatRoom{}).Count(&beforeCount)
+	ds.RDB().Model(&model.UserChatRoom{}).Count(&beforeRelationCount)
 	res, err := app.getChatrooms(data)
 	afterCount := 0
+	afterRelationCount := 0
 	ds.RDB().Model(&model.ChatRoom{}).Count(&afterCount)
+	ds.RDB().Model(&model.UserChatRoom{}).Count(&afterRelationCount)
 
 	if err != nil {
 		t.Fail()
@@ -100,6 +104,10 @@ func Testチャットルームの型によってチャットを作ることが�
 
 	if afterCount-beforeCount != 1 {
 		t.Fail()
+	}
+
+	if afterRelationCount-beforeRelationCount != 1 {
+		t.Fatalf("failed to make relation")
 	}
 }
 func Testチャットルームが複数作られる(t *testing.T) {
@@ -317,11 +325,15 @@ func Testメッセージの作成(t *testing.T) {
 	beforeCount := 0
 	rdb.Model(&model.Message{}).Count(&beforeCount)
 
-	app.CreateMessage(CreateMessageRequest{
+	err := app.CreateMessage(CreateMessageRequest{
 		Message: "test",
 		Room:    room,
 		User:    authUser,
 	})
+
+	if err != nil {
+		t.Fatalf("%s", err.Error())
+	}
 
 	afterCount := 0
 	rdb.Model(&model.Message{}).Count(&afterCount)

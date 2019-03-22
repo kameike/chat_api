@@ -36,10 +36,9 @@ type ChatRoom struct {
 
 type Message struct {
 	gorm.Model
-	Text      string
-	UserID    uint `gorm:"index"`
-	RoomID    uint `gorm:"index"`
-	TimeStamp int64
+	Text   string
+	UserID uint `gorm:"index"`
+	RoomID uint `gorm:"index"`
 }
 
 func migrate(db *gorm.DB) {

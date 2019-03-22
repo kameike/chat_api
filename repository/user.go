@@ -91,6 +91,7 @@ NEXT_CHAT_ROOM:
 	db := u.ds.RDB()
 
 	for _, r := range rooms {
+
 		e := db.Save(r).Error
 		if e != nil {
 			errors = append(errors, error.GeneralError(e))
@@ -239,9 +240,16 @@ type CreateMessageRequest struct {
 
 func (u *userRepository) CreateMessage(req CreateMessageRequest) error.ChatAPIError {
 	db := u.ds.RDB()
-	message := model.Message{
+	message := &model.Message{
 		UserID: req.User.ID,
+		RoomID: req.Room.ID,
+		Text:   req.Message,
 	}
 
+	err := db.Save(message).Error
+
+	if err != nil {
+		return error.GeneralError(err)
+	}
 	return nil
 }
