@@ -37,8 +37,8 @@ type ChatRoom struct {
 type Message struct {
 	gorm.Model
 	Text      string
-	UserID    int `gorm:"index"`
-	RoomID    int `gorm:"index"`
+	UserID    uint `gorm:"index"`
+	RoomID    uint `gorm:"index"`
 	TimeStamp int64
 }
 

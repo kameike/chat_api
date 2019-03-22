@@ -24,7 +24,7 @@ type chatRoomData struct {
 	RoomName string   `json:"roomName"`
 }
 
-func (u *userRepository) GetChatRooms(data ChatRoomsInfoDescriable) (*model.ChatRoom, error.ChatAPIError) {
+func (u *userRepository) GetChatRooms(data ChatRoomsInfoDescriable) ([]*model.ChatRoom, error.ChatAPIError) {
 	hashes := data.RoomHashes()
 	roomsInfo := make([]chatRoomData, len(hashes), len(hashes))
 
@@ -34,10 +34,7 @@ func (u *userRepository) GetChatRooms(data ChatRoomsInfoDescriable) (*model.Chat
 			return nil, error.GeneralError(err)
 		}
 	}
-
-	_, err := u.getChatrooms(roomsInfo)
-
-	return nil, err
+	return u.getChatrooms(roomsInfo)
 }
 
 func (u *userRepository) getChatrooms(data []chatRoomData) ([]*model.ChatRoom, error.ChatAPIError) {
@@ -224,4 +221,27 @@ func (u *userRepository) UpdateUser(data UserUpdateInfoDescriable) (*model.User,
 	}
 
 	return &user, nil
+}
+
+func (u *userRepository) PeekMessages([]*model.ChatRoom) map[string]model.Message {
+	panic("not implemented")
+}
+
+func (u *userRepository) GetUnreadCount([]*model.ChatRoom) map[string]*Unread {
+	panic("not implemented")
+}
+
+type CreateMessageRequest struct {
+	Message string
+	User    model.User
+	Room    model.ChatRoom
+}
+
+func (u *userRepository) CreateMessage(req CreateMessageRequest) error.ChatAPIError {
+	db := u.ds.RDB()
+	message := model.Message{
+		UserID: req.User.ID,
+	}
+
+	return nil
 }

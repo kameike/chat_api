@@ -22,21 +22,23 @@ type ChatRoomsInfoDescriable interface {
 
 type UserRepositable interface {
 	UpdateUser(UserUpdateInfoDescriable) (*model.User, error.ChatAPIError)
-	GetChatRooms(ChatRoomsInfoDescriable) (*model.ChatRoom, error.ChatAPIError)
+	GetChatRooms(ChatRoomsInfoDescriable) ([]*model.ChatRoom, error.ChatAPIError)
+	PeekMessages([]*model.ChatRoom) map[string]model.Message
+	GetUnreadCount([]*model.ChatRoom) map[string]*Unread
 }
 
-type ChatRepostitable interface {
-	getChatRoom()
-	postMessage()
-	getMessages()
-	getUnreads()
+type Unread struct {
+	UserUnreads map[string]int
+}
+
+type ChatRepositable interface {
 }
 
 type ReposotryProvidable interface {
 	CheckHealth() (string, bool)
 	AuthRepository() AuthRepositable
 	UserRepository(model.User) (UserRepositable, error.ChatAPIError)
-	ChatRepository() (ChatRepostitable, error.ChatAPIError)
+	ChatRepository() (ChatRepositable, error.ChatAPIError)
 	Close()
 }
 
@@ -75,7 +77,7 @@ func (r *applicationRepositoryProvidable) UserRepository(user model.User) (UserR
 	return &u, nil
 }
 
-func (r *applicationRepositoryProvidable) ChatRepository() (ChatRepostitable, error.ChatAPIError) {
+func (r *applicationRepositoryProvidable) ChatRepository() (ChatRepositable, error.ChatAPIError) {
 	return nil, nil
 }
 

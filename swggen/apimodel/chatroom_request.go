@@ -16,7 +16,7 @@ import (
 type ChatroomRequest struct {
 
 	// request
-	Request string `json:"request,omitempty"`
+	Request []string `json:"request"`
 }
 
 // Validate validates this chatroom request

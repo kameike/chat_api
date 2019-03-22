@@ -63,7 +63,7 @@ func Testチャットルームが存在しなくても作られる(t *testing.T)
 		t.Fatalf(err.Error())
 	}
 
-	if result != nil {
+	if result == nil {
 		t.Fatalf("chat room has not been created")
 	}
 }
@@ -294,4 +294,50 @@ func TestConvertToHash(t *testing.T) {
 	if convertToHash("test") != "gCoQ4N_Csn3p8pqNz1SrRN2t2mhcj1ZOL2e9Pdn1srs" {
 		t.Fatalf("faild to hash %s", convertToHash("test"))
 	}
+}
+
+func TestPeekMessages(t *testing.T) {
+	beforeUser()
+	defer afterUser()
+}
+
+func Test未読カウントの取得(t *testing.T) {
+
+}
+
+func Testメッセージの作成(t *testing.T) {
+	beforeUser()
+	defer afterUser()
+
+	repo, _ := provider.UserRepository(authUser)
+	app := repo.(*userRepository)
+	room := createStubChatRoom(app)
+	rdb := app.ds.RDB()
+
+	beforeCount := 0
+	rdb.Model(&model.Message{}).Count(&beforeCount)
+
+	app.CreateMessage(CreateMessageRequest{
+		Message: "test",
+		Room:    room,
+		User:    authUser,
+	})
+
+	afterCount := 0
+	rdb.Model(&model.Message{}).Count(&afterCount)
+
+	if afterCount-beforeCount != 1 {
+		t.Fatalf("bad count %d, %d", beforeCount, afterCount)
+	}
+}
+
+func createStubChatRoom(app *userRepository) model.ChatRoom {
+	rooms, _ := app.getChatrooms([]chatRoomData{
+		chatRoomData{
+			Users:    []string{authUser.UserHash},
+			RoomId:   "test",
+			RoomName: "hoge",
+		},
+	})
+	return *rooms[0]
 }

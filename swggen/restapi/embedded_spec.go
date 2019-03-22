@@ -366,7 +366,10 @@ func init() {
       "type": "object",
       "properties": {
         "request": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -780,7 +783,10 @@ func init() {
       "type": "object",
       "properties": {
         "request": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
