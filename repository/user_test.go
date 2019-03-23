@@ -1,8 +1,10 @@
 package repository
 
 import (
+	"bytes"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/kameike/chat_api/model"
 )
@@ -191,6 +193,62 @@ func Test条件が一緒であればチャットルームは複数作られな�
 	}
 }
 
+func Testチャットを一気に読み込む際にはUserとChatRoomUserもプリロードされている(t *testing.T) {
+	beforeUser()
+	defer afterUser()
+	repo, _ := provider.UserRepository(authUser)
+	app := repo.(*userRepository)
+
+	data := []chatRoomData{
+		chatRoomData{
+			Users: []string{
+				authUser.UserHash,
+			},
+			RoomId:   "roomid",
+			RoomName: "hoge",
+		},
+	}
+	app.creatChatrooms(data)
+
+	res := app.preloadRooms([]string{data[0].hashValue()})
+	target := res[data[0].hashValue()]
+
+	if len(target.Users) != 1 {
+		buf := bytes.NewBufferString("")
+		for _, u := range target.Users {
+			fmt.Fprintf(buf, " %s", u.UserHash)
+		}
+		t.Fatalf("%d, %s", len(target.Users), buf.String())
+	}
+
+	if len(target.UserChatRooms) != 1 {
+		t.Fatalf("failed to prelaod user chatroom")
+	}
+}
+
+func Testメッセージのプリロード(t *testing.T) {
+	beforeUser()
+	defer afterUser()
+
+	repo, _ := provider.UserRepository(authUser)
+	app := repo.(*userRepository)
+	room := createStubChatRoom(app)
+
+	app.CreateMessage(CreateMessageRequest{
+		Message: "test",
+		Room:    room,
+		User:    authUser,
+	})
+
+	res := app.preloadRooms([]string{room.RoomHash})
+
+	target := res[room.RoomHash]
+
+	if len(target.Messages) != 1 {
+		t.Fatalf("%d", len(target.Messages))
+	}
+}
+
 func Test条件が一緒であればチャットルームはたとえ同時リクエスであっても作られない(t *testing.T) {
 	data := []chatRoomData{
 		chatRoomData{
@@ -341,6 +399,20 @@ func Testメッセージの作成(t *testing.T) {
 	if afterCount-beforeCount != 1 {
 		t.Fatalf("bad count %d, %d", beforeCount, afterCount)
 	}
+
+	t.Run("ユーザーデータがアップデートされている", func(t *testing.T) {
+		target := &model.UserChatRoom{}
+		if rdb.Where(&model.UserChatRoom{
+			ChatRoomID: room.ID,
+			UserID:     authUser.ID,
+		}).First(target).Error != nil {
+			t.Fatalf("db error")
+		}
+
+		if target.UpdatedAt.Unix() < time.Now().Unix()-100 {
+			t.Fail()
+		}
+	})
 }
 
 func createStubChatRoom(app *userRepository) model.ChatRoom {

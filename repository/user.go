@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"time"
 
 	"github.com/kameike/chat_api/datasource"
 	"github.com/kameike/chat_api/error"
@@ -89,9 +90,7 @@ NEXT_CHAT_ROOM:
 	}
 
 	db := u.ds.RDB()
-
 	for _, r := range rooms {
-
 		e := db.Save(r).Error
 		if e != nil {
 			errors = append(errors, error.GeneralError(e))
@@ -144,10 +143,10 @@ func (u *userRepository) findChatrooms(data []chatRoomData) findChatRoomInfo {
 
 func (u *userRepository) preloadRooms(hashes []string) map[string]*model.ChatRoom {
 	db := u.ds.RDB()
-
 	target := map[string]*model.ChatRoom{}
 	rooms := make([]*model.ChatRoom, 0, len(hashes))
-	db.Where("room_hash in (?)", hashes).Find(&rooms)
+
+	db.Preload("UserChatRooms").Preload("Users").Preload("Messages").Where("room_hash in (?)", hashes).Find(&rooms)
 
 	for _, r := range rooms {
 		target[r.RoomHash] = r
@@ -251,5 +250,19 @@ func (u *userRepository) CreateMessage(req CreateMessageRequest) error.ChatAPIEr
 	if err != nil {
 		return error.GeneralError(err)
 	}
+
+	rel := &model.UserChatRoom{}
+
+	err = db.Where(&model.UserChatRoom{
+		UserID:     req.User.ID,
+		ChatRoomID: req.Room.ID,
+	}).First(rel).Error
+
+	if err != nil {
+		return error.GeneralError(err)
+	}
+
+	db.Model(&rel).Update("UpdatedAt", time.Now())
+
 	return nil
 }

@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 	// _ "github.com/jinzhu/gorm/dialects/sqlite"
 )
@@ -21,17 +23,20 @@ type AccessToken struct {
 }
 
 type UserChatRoom struct {
-	gorm.Model
+	ID         uint `gorm:"index"`
 	UserID     uint `gorm:"index"`
 	ChatRoomID uint `gorm:"index"`
 	LastReadAt uint
+	UpdatedAt  time.Time
 }
 
 type ChatRoom struct {
 	gorm.Model
-	Users    []User
-	RoomHash string
-	Name     string
+	Users         []User    `gorm:"many2many:user_chat_rooms;"`
+	Messages      []Message `gorm:"foreignkey:RoomID"`
+	UserChatRooms []UserChatRoom
+	RoomHash      string
+	Name          string
 }
 
 type Message struct {
@@ -39,15 +44,6 @@ type Message struct {
 	Text   string
 	UserID uint `gorm:"index"`
 	RoomID uint `gorm:"index"`
-}
-
-func migrate(db *gorm.DB) {
-	// 	db.CreateTable(&User{})
-	// 	db.CreateTable(&AccessToken{})
-	// 	db.CreateTable(&UserChatRoom{})
-	// 	db.CreateTable(&ChatRoom{})
-	// 	db.CreateTable(&Message{})
-	db.Model(&User{}).ModifyColumn("test", "text")
 }
 
 type ChatRoomRedisModel struct {
