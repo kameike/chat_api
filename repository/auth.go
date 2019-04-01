@@ -6,8 +6,8 @@ import (
 
 	"github.com/jinzhu/gorm"
 
+	"github.com/kameike/chat_api/apierror"
 	"github.com/kameike/chat_api/datasource"
-	"github.com/kameike/chat_api/error"
 	"github.com/kameike/chat_api/model"
 )
 
@@ -15,25 +15,25 @@ type authRepository struct {
 	d datasource.DataSourceDescriptor
 }
 
-func (r *authRepository) createUser(user model.User) (*model.User, error.ChatAPIError) {
+func (r *authRepository) createUser(user model.User) (*model.User, apierror.ChatAPIError) {
 	rdb := r.d.RDB()
 
 	err := rdb.Create(&user).Error
 
 	if err != nil {
-		return nil, error.ErrorLoginAuthFail(err)
+		return nil, apierror.ErrorLoginAuthFail(err)
 	}
 
 	updatedUser := &model.User{}
 	err = rdb.Where("user_hash = ?", user.UserHash).First(updatedUser).Error
 
 	if err != nil {
-		return nil, error.ErrorLoginAuthFail(err)
+		return nil, apierror.ErrorLoginAuthFail(err)
 	}
 	return updatedUser, nil
 }
 
-func (r *authRepository) FindOrCreateUser(token string, hash string) (*model.User, *model.AccessToken, error.ChatAPIError) {
+func (r *authRepository) FindOrCreateUser(token string, hash string) (*model.User, *model.AccessToken, apierror.ChatAPIError) {
 	rdb := r.d.RDB()
 
 	updatedUser := &model.User{}
@@ -47,19 +47,19 @@ func (r *authRepository) FindOrCreateUser(token string, hash string) (*model.Use
 	}
 
 	if err != nil {
-		return nil, nil, error.ErrorLoginAuthFail(err)
+		return nil, nil, apierror.ErrorLoginAuthFail(err)
 	}
 
 	accessToken, err := r.createOrUpdateAccessToken(*updatedUser)
 
 	if err != nil {
-		return nil, nil, error.ErrorLoginAuthFail(err)
+		return nil, nil, apierror.ErrorLoginAuthFail(err)
 	}
 
 	return updatedUser, accessToken, nil
 }
 
-func (r *authRepository) createOrUpdateAccessToken(u model.User) (*model.AccessToken, error.ChatAPIError) {
+func (r *authRepository) createOrUpdateAccessToken(u model.User) (*model.AccessToken, apierror.ChatAPIError) {
 	rdb := r.d.RDB()
 
 	accestToken := &model.AccessToken{
@@ -68,7 +68,7 @@ func (r *authRepository) createOrUpdateAccessToken(u model.User) (*model.AccessT
 
 	err := rdb.Where("user_id = ?", u.ID).First(&accestToken).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
-		return nil, error.ErrorLoginAuthFail(err)
+		return nil, apierror.ErrorLoginAuthFail(err)
 	}
 
 	accestToken.AccessToken = generateRandomToken()
@@ -77,7 +77,7 @@ func (r *authRepository) createOrUpdateAccessToken(u model.User) (*model.AccessT
 	return accestToken, nil
 }
 
-func (r *authRepository) FindUser(token string) (*model.User, error.ChatAPIError) {
+func (r *authRepository) FindUser(token string) (*model.User, apierror.ChatAPIError) {
 	db := r.d.RDB()
 
 	tokenResult := &model.AccessToken{}
@@ -86,7 +86,7 @@ func (r *authRepository) FindUser(token string) (*model.User, error.ChatAPIError
 
 	err := db.Where("access_token = ?", token).First(tokenResult).Error
 	if err != nil {
-		return nil, error.GeneralError(err)
+		return nil, apierror.GeneralError(err)
 	}
 	db.Model(tokenResult).Related(user)
 

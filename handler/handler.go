@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/kameike/chat_api/error"
+	"github.com/kameike/chat_api/apierror"
 	"github.com/kameike/chat_api/model"
 	"github.com/kameike/chat_api/swggen/apimodel"
 
@@ -22,7 +22,7 @@ type RequestHandlable interface {
 
 	AccountPostAuthHandler() account.PostAuthHandlerFunc
 	AccountPostProfileHandler() account.PostProfileHandlerFunc
-	AuthUser(token string) (*model.User, error.ChatAPIError)
+	AuthUser(token string) (*model.User, apierror.ChatAPIError)
 
 	ChatRoomsGetChatroomsIDMessagesHandler() chat_rooms.GetChatroomsIDMessagesHandlerFunc
 	ChatRoomsGetChatroomsIDHandler() chat_rooms.GetChatroomsIDHandlerFunc
@@ -41,7 +41,7 @@ type appRequestHandler struct {
 	p repository.ReposotryProvidable
 }
 
-func (a *appRequestHandler) AuthUser(token string) (*model.User, error.ChatAPIError) {
+func (a *appRequestHandler) AuthUser(token string) (*model.User, apierror.ChatAPIError) {
 	repo := a.p.AuthRepository()
 	return repo.FindUser(token)
 }
@@ -197,7 +197,7 @@ func errorResponseWithCode(code int, message string) middleware.ResponderFunc {
 	}
 }
 
-func errorResponse(err error.ChatAPIError) middleware.ResponderFunc {
+func errorResponse(err apierror.ChatAPIError) middleware.ResponderFunc {
 	return errorResponseWithCode(500, err.Localize())
 }
 

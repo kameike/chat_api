@@ -1,34 +1,40 @@
 package repository
 
 import (
+	"github.com/kameike/chat_api/apierror"
 	"github.com/kameike/chat_api/datasource"
-	"github.com/kameike/chat_api/error"
 	"github.com/kameike/chat_api/model"
 )
 
+// AuthRepositable Support Auth Repository
 type AuthRepositable interface {
-	FindOrCreateUser(token string, hash string) (*model.User, *model.AccessToken, error.ChatAPIError)
-	FindUser(token string) (*model.User, error.ChatAPIError)
+	FindOrCreateUser(token string, hash string) (*model.User, *model.AccessToken, apierror.ChatAPIError)
+	FindUser(token string) (*model.User, apierror.ChatAPIError)
 }
 
+// UserUpdateInfoDescriable Require users info which can be updated
 type UserUpdateInfoDescriable interface {
 	Name() *string
 	ImageURL() *string
 }
 
+//ChatRoomsInfoDescriable support signed json strings
 type ChatRoomsInfoDescriable interface {
 	RoomHashes() []string
 }
 
+// GetChatRoomRequest exprain chat room with long uniqe hashed string
 type GetChatRoomRequest struct {
 	hash string
 }
 
+// UserRepositable with can be dispended from  repository providable
 type UserRepositable interface {
-	UpdateUser(UserUpdateInfoDescriable) (*model.User, error.ChatAPIError)
-	GetChatRooms(ChatRoomsInfoDescriable) ([]*model.ChatRoom, error.ChatAPIError)
-	CreateMessage(CreateMessageRequest) error.ChatAPIError
-	GetChatRoom(GetChatRoomRequest) (*model.ChatRoom, error.ChatAPIError)
+	UpdateUser(UserUpdateInfoDescriable) (*model.User, apierror.ChatAPIError)
+	GetChatRooms(ChatRoomsInfoDescriable) ([]*model.ChatRoom, apierror.ChatAPIError)
+	CreateMessage(CreateMessageRequest) apierror.ChatAPIError
+	GetMessages(GetMessageRequest) ([]*model.Message, apierror.ChatAPIError)
+	GetChatRoom(GetChatRoomRequest) (*model.ChatRoom, apierror.ChatAPIError)
 }
 
 type Unread struct {
@@ -41,8 +47,8 @@ type ChatRepositable interface {
 type ReposotryProvidable interface {
 	CheckHealth() (string, bool)
 	AuthRepository() AuthRepositable
-	UserRepository(model.User) (UserRepositable, error.ChatAPIError)
-	ChatRepository() (ChatRepositable, error.ChatAPIError)
+	UserRepository(model.User) (UserRepositable, apierror.ChatAPIError)
+	ChatRepository() (ChatRepositable, apierror.ChatAPIError)
 	Close()
 }
 
@@ -73,7 +79,7 @@ func (r *applicationRepositoryProvidable) Close() {
 	r.datasource.Close()
 }
 
-func (r *applicationRepositoryProvidable) UserRepository(user model.User) (UserRepositable, error.ChatAPIError) {
+func (r *applicationRepositoryProvidable) UserRepository(user model.User) (UserRepositable, apierror.ChatAPIError) {
 	u := userRepository{
 		user: user,
 		ds:   r.datasource,
@@ -81,7 +87,7 @@ func (r *applicationRepositoryProvidable) UserRepository(user model.User) (UserR
 	return &u, nil
 }
 
-func (r *applicationRepositoryProvidable) ChatRepository() (ChatRepositable, error.ChatAPIError) {
+func (r *applicationRepositoryProvidable) ChatRepository() (ChatRepositable, apierror.ChatAPIError) {
 	return nil, nil
 }
 

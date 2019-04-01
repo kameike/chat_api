@@ -9,8 +9,8 @@ import (
 	"sort"
 	"time"
 
+	"github.com/kameike/chat_api/apierror"
 	"github.com/kameike/chat_api/datasource"
-	"github.com/kameike/chat_api/error"
 	"github.com/kameike/chat_api/model"
 )
 
@@ -25,27 +25,27 @@ type chatRoomData struct {
 	RoomName string   `json:"roomName"`
 }
 
-func (u *userRepository) GetChatRooms(data ChatRoomsInfoDescriable) ([]*model.ChatRoom, error.ChatAPIError) {
+func (u *userRepository) GetChatRooms(data ChatRoomsInfoDescriable) ([]*model.ChatRoom, apierror.ChatAPIError) {
 	hashes := data.RoomHashes()
 	roomsInfo := make([]chatRoomData, len(hashes), len(hashes))
 
 	for i, chank := range data.RoomHashes() {
 		err := json.Unmarshal([]byte(chank), &roomsInfo[i])
 		if err != nil {
-			return nil, error.GeneralError(err)
+			return nil, apierror.GeneralError(err)
 		}
 	}
 	return u.getChatrooms(roomsInfo)
 }
 
-func (u *userRepository) getChatrooms(data []chatRoomData) ([]*model.ChatRoom, error.ChatAPIError) {
+func (u *userRepository) getChatrooms(data []chatRoomData) ([]*model.ChatRoom, apierror.ChatAPIError) {
 	result := u.findChatrooms(data)
 	currentChatrooms := result.found
 
 	if len(result.notFound) != 0 {
 		err := u.creatChatrooms(result.notFound)
 		if err != nil {
-			return currentChatrooms, error.GeneralError(err)
+			return currentChatrooms, apierror.GeneralError(err)
 		}
 		result := u.findChatrooms(result.notFound)
 
@@ -62,9 +62,9 @@ type findChatRoomInfo struct {
 	notFound []chatRoomData
 }
 
-func (u *userRepository) creatChatrooms(data []chatRoomData) error.ChatAPIError {
+func (u *userRepository) creatChatrooms(data []chatRoomData) apierror.ChatAPIError {
 	userMaps := u.preloadUser(extractUserHashes(data))
-	errors := []error.ChatAPIError{}
+	errors := []apierror.ChatAPIError{}
 	rooms := []*model.ChatRoom{}
 
 NEXT_CHAT_ROOM:
@@ -74,7 +74,7 @@ NEXT_CHAT_ROOM:
 		for i, u := range d.Users {
 			t := userMaps[u]
 			if t == nil {
-				errors = append(errors, error.FailToCreateChatRooom(d.description()))
+				errors = append(errors, apierror.FailToCreateChatRooom(d.description()))
 				continue NEXT_CHAT_ROOM
 			}
 			users[i] = *t
@@ -93,12 +93,12 @@ NEXT_CHAT_ROOM:
 	for _, r := range rooms {
 		e := db.Save(r).Error
 		if e != nil {
-			errors = append(errors, error.GeneralError(e))
+			errors = append(errors, apierror.GeneralError(e))
 		}
 	}
 
 	if len(errors) != 0 {
-		return error.NestedError(errors)
+		return apierror.NestedError(errors)
 	}
 
 	return nil
@@ -201,7 +201,7 @@ func concatString(data chatRoomData) string {
 	return target
 }
 
-func (u *userRepository) UpdateUser(data UserUpdateInfoDescriable) (*model.User, error.ChatAPIError) {
+func (u *userRepository) UpdateUser(data UserUpdateInfoDescriable) (*model.User, apierror.ChatAPIError) {
 	rdb := u.ds.RDB()
 
 	user := u.user
@@ -217,7 +217,7 @@ func (u *userRepository) UpdateUser(data UserUpdateInfoDescriable) (*model.User,
 	err := rdb.Save(&user).Error
 
 	if err != nil {
-		return nil, error.GeneralError(err)
+		return nil, apierror.GeneralError(err)
 	}
 
 	return &user, nil
@@ -229,7 +229,10 @@ type CreateMessageRequest struct {
 	Room    model.ChatRoom
 }
 
-func (u *userRepository) CreateMessage(req CreateMessageRequest) error.ChatAPIError {
+type GetMessageRequest struct {
+}
+
+func (u *userRepository) CreateMessage(req CreateMessageRequest) apierror.ChatAPIError {
 	db := u.ds.RDB()
 	message := &model.Message{
 		UserID: req.User.ID,
@@ -240,7 +243,7 @@ func (u *userRepository) CreateMessage(req CreateMessageRequest) error.ChatAPIEr
 	err := db.Save(message).Error
 
 	if err != nil {
-		return error.GeneralError(err)
+		return apierror.GeneralError(err)
 	}
 
 	rel := &model.UserChatRoom{}
@@ -251,7 +254,7 @@ func (u *userRepository) CreateMessage(req CreateMessageRequest) error.ChatAPIEr
 	}).First(rel).Error
 
 	if err != nil {
-		return error.GeneralError(err)
+		return apierror.GeneralError(err)
 	}
 
 	db.Model(&rel).Update("UpdatedAt", time.Now())
@@ -259,14 +262,18 @@ func (u *userRepository) CreateMessage(req CreateMessageRequest) error.ChatAPIEr
 	return nil
 }
 
-func (u *userRepository) GetChatRoom(req GetChatRoomRequest) (*model.ChatRoom, error.ChatAPIError) {
+func (u *userRepository) GetMessages(GetMessageRequest) ([]*model.Message, apierror.ChatAPIError) {
+	return nil, nil
+}
+
+func (u *userRepository) GetChatRoom(req GetChatRoomRequest) (*model.ChatRoom, apierror.ChatAPIError) {
 	db := u.ds.RDB()
 	result := model.ChatRoom{}
 
 	err := db.Preload("Users").Preload("Messages").Model(&model.ChatRoom{}).Where("room_hash = ?", req.hash).Find(&result).Error
 
 	if err != nil {
-		return nil, error.GeneralError(err)
+		return nil, apierror.GeneralError(err)
 	}
 
 	isContain := false
@@ -278,7 +285,7 @@ func (u *userRepository) GetChatRoom(req GetChatRoomRequest) (*model.ChatRoom, e
 	}
 
 	if !isContain {
-		return nil, error.ErrorNoPermission()
+		return nil, apierror.ErrorNoPermission()
 	}
 
 	return &result, nil

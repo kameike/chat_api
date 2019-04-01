@@ -8,7 +8,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	. "github.com/kameike/chat_api/error"
+	. "github.com/kameike/chat_api/apierror"
 	. "github.com/kameike/chat_api/model"
 )
 
