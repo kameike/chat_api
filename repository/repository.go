@@ -20,11 +20,15 @@ type ChatRoomsInfoDescriable interface {
 	RoomHashes() []string
 }
 
+type GetChatRoomRequest struct {
+	hash string
+}
+
 type UserRepositable interface {
 	UpdateUser(UserUpdateInfoDescriable) (*model.User, error.ChatAPIError)
 	GetChatRooms(ChatRoomsInfoDescriable) ([]*model.ChatRoom, error.ChatAPIError)
-	PeekMessages([]*model.ChatRoom) map[string]model.Message
-	GetUnreadCount([]*model.ChatRoom) map[string]*Unread
+	CreateMessage(CreateMessageRequest) error.ChatAPIError
+	GetChatRoom(GetChatRoomRequest) (*model.ChatRoom, error.ChatAPIError)
 }
 
 type Unread struct {

@@ -223,14 +223,6 @@ func (u *userRepository) UpdateUser(data UserUpdateInfoDescriable) (*model.User,
 	return &user, nil
 }
 
-func (u *userRepository) PeekMessages([]*model.ChatRoom) map[string]model.Message {
-	panic("not implemented")
-}
-
-func (u *userRepository) GetUnreadCount([]*model.ChatRoom) map[string]*Unread {
-	panic("not implemented")
-}
-
 type CreateMessageRequest struct {
 	Message string
 	User    model.User
@@ -265,4 +257,29 @@ func (u *userRepository) CreateMessage(req CreateMessageRequest) error.ChatAPIEr
 	db.Model(&rel).Update("UpdatedAt", time.Now())
 
 	return nil
+}
+
+func (u *userRepository) GetChatRoom(req GetChatRoomRequest) (*model.ChatRoom, error.ChatAPIError) {
+	db := u.ds.RDB()
+	result := model.ChatRoom{}
+
+	err := db.Preload("Users").Preload("Messages").Model(&model.ChatRoom{}).Where("room_hash = ?", req.hash).Find(&result).Error
+
+	if err != nil {
+		return nil, error.GeneralError(err)
+	}
+
+	isContain := false
+
+	for _, us := range result.Users {
+		if us.ID == u.user.ID {
+			isContain = true
+		}
+	}
+
+	if !isContain {
+		return nil, error.ErrorNoPermission()
+	}
+
+	return &result, nil
 }

@@ -111,6 +111,62 @@ func Testチャットルームの型によってチャットを作ることが�
 	if afterRelationCount-beforeRelationCount != 1 {
 		t.Fatalf("failed to make relation")
 	}
+
+	t.Run("ハッシュからチャットルームを見つけることができる", func(t *testing.T) {
+		ds.RDB().LogMode(true)
+		hash := res[0].RoomHash
+		res, err := app.GetChatRoom(GetChatRoomRequest{hash})
+
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+
+		err = app.CreateMessage(CreateMessageRequest{
+			User:    app.user,
+			Room:    *res,
+			Message: "test",
+		})
+
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+
+		res, err = app.GetChatRoom(GetChatRoomRequest{hash})
+
+		if err != nil {
+			t.Fatalf(err.Error())
+		}
+
+		ds.RDB().LogMode(false)
+		if res == nil {
+			t.Fatalf("result must not be nil")
+		}
+
+		if len(res.Users) != 1 {
+			t.Fatalf("faild to preload user")
+		}
+
+		if len(res.Messages) != 1 {
+			t.Fatalf("faild to preload message %d", len(res.Messages))
+		}
+
+		for _, u := range res.Users {
+			if u.ID != authUser.ID {
+				t.Fatalf("invald user")
+			}
+		}
+	})
+
+	t.Run("チャットルームに含まれないユーザーをもったリポジトリからは発見できない", func(t *testing.T) {
+		hash := res[0].RoomHash
+		app.user = model.User{}
+
+		_, err := app.GetChatRoom(GetChatRoomRequest{hash})
+
+		if err == nil {
+			t.Fatalf("err should not be nil")
+		}
+	})
 }
 func Testチャットルームが複数作られる(t *testing.T) {
 	data := []chatRoomData{

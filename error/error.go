@@ -50,7 +50,13 @@ func ErroRDBMigration(err error) ChatAPIError {
 		errorMessage: "rdb migration failed",
 	}
 }
-
+func ErrorNoPermission() ChatAPIError {
+	return &apiError{
+		errorCode:    3,
+		err:          nil,
+		errorMessage: "invalid login request",
+	}
+}
 func ErrorLoginAuthFail(err error) ChatAPIError {
 	return &apiError{
 		errorCode:    3,
