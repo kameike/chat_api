@@ -98,10 +98,10 @@ type ChatAPI struct {
 	// It has a default implemention in the security package, however you can replace it for your particular usage.
 	BearerAuthenticator func(string, security.ScopedTokenAuthentication) runtime.Authenticator
 
-	// JSONConsumer registers a consumer for a "application/io.goswagger.examples.todo-list.v1+json" mime type
+	// JSONConsumer registers a consumer for a "application/json" mime type
 	JSONConsumer runtime.Consumer
 
-	// JSONProducer registers a producer for a "application/io.goswagger.examples.todo-list.v1+json" mime type
+	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
 
 	// APIKeyAuth registers a function that takes a token and returns a principal
@@ -269,8 +269,8 @@ func (o *ChatAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Consumer 
 	for _, mt := range mediaTypes {
 		switch mt {
 
-		case "application/io.goswagger.examples.todo-list.v1+json":
-			result["application/io.goswagger.examples.todo-list.v1+json"] = o.JSONConsumer
+		case "application/json":
+			result["application/json"] = o.JSONConsumer
 
 		}
 
@@ -289,8 +289,8 @@ func (o *ChatAPI) ProducersFor(mediaTypes []string) map[string]runtime.Producer 
 	for _, mt := range mediaTypes {
 		switch mt {
 
-		case "application/io.goswagger.examples.todo-list.v1+json":
-			result["application/io.goswagger.examples.todo-list.v1+json"] = o.JSONProducer
+		case "application/json":
+			result["application/json"] = o.JSONProducer
 
 		}
 

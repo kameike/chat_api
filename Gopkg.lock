@@ -88,10 +88,11 @@
   version = "v0.18.0"
 
 [[projects]]
-  digest = "1:eb66dfa6d0b3fbb2e1473de99a7fb1cc90c0b27da7e444105865b119c38d6ca5"
+  digest = "1:432502d3dfa294cc0a74354ae02a507ddec357e2887e544759400b40368701b5"
   name = "github.com/go-openapi/runtime"
   packages = [
     ".",
+    "client",
     "flagext",
     "logger",
     "middleware",
@@ -292,6 +293,7 @@
     "github.com/go-openapi/errors",
     "github.com/go-openapi/loads",
     "github.com/go-openapi/runtime",
+    "github.com/go-openapi/runtime/client",
     "github.com/go-openapi/runtime/flagext",
     "github.com/go-openapi/runtime/middleware",
     "github.com/go-openapi/runtime/security",
