@@ -2,28 +2,30 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"math/rand"
 	"sync"
 	"time"
 
 	"github.com/go-openapi/runtime"
-	httptransport "github.com/go-openapi/runtime/client"
+	httpclient "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/kameike/chat_api/swggen/apimodel"
 	apiclient "github.com/kameike/chat_api/swggen/client"
 	"github.com/kameike/chat_api/swggen/client/account"
+	"github.com/kameike/chat_api/swggen/client/chat_rooms"
 )
 
-var count = 100
+var userCount = 100
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	createAccounts()
 
 	wg := sync.WaitGroup{}
-	for _, u := range users {
+	for i, u := range users {
 		wg.Add(1)
-		time.Sleep(1000 * 1000 * 10)
+		time.Sleep(1000 * 1000 * 10 * time.Duration(i))
 		uc := u
 		go func() {
 			updateProfiles(uc)
@@ -32,14 +34,28 @@ func main() {
 	}
 	wg.Wait()
 
-	for i := 0; i < 1000; i++ {
-		r := randomRoomInfo()
-		println(r.user1.user.ID, r.user2.user.ID, r.name)
+	for i, u := range users {
+		wg.Add(1)
+		go func() {
+			time.Sleep(1000 * 1000 * 1000 * time.Duration(i))
+			room := make([]roomInfo, 10, 10)
+			for i := 0; i < 10; i++ {
+				r := randomRoomInfo(u)
+				room[i] = r
+			}
+			before := time.Now().UnixNano()
+			postRoomRequest(room, u)
+			after := time.Now().UnixNano()
+			ms := (after - before) / 1000 / 1000
+			println(ms)
+			wg.Done()
+		}()
 	}
+	wg.Wait()
 }
 
-var counter = 0
-var users = make([]basicAccount, count, count)
+var users = make([]basicAccount, userCount, userCount)
+var rooms = make(map[string]roomInfo)
 
 type basicAccount struct {
 	accessToken string
@@ -53,8 +69,7 @@ type roomInfo struct {
 	hash  string
 }
 
-func randomRoomInfo() roomInfo {
-	u1 := users[rand.Intn(len(users))]
+func randomRoomInfo(u1 basicAccount) roomInfo {
 	u2 := users[rand.Intn(len(users))]
 	name := randStringBytes(10)
 
@@ -66,7 +81,60 @@ func randomRoomInfo() roomInfo {
 }
 
 func authFor(a basicAccount) runtime.ClientAuthInfoWriter {
-	return httptransport.APIKeyAuth("x_chat_access_token", "header", a.accessToken)
+	return httpclient.APIKeyAuth("x_chat_access_token", "header", a.accessToken)
+}
+
+func roomString(r roomInfo) string {
+	data := struct {
+		Users    []string `json:"users"`
+		RoomId   string   `json:"roomId"`
+		RoomName string   `json:"roomName"`
+	}{
+		Users: []string{
+			r.user1.user.Hash,
+			r.user2.user.Hash,
+		},
+		RoomId: r.name,
+	}
+
+	d, err := json.Marshal(data)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return string(d)
+}
+
+func roomsString(r []roomInfo) []string {
+	s := make([]string, len(r), len(r))
+
+	for i, rr := range r {
+		s[i] = roomString(rr)
+	}
+
+	return s
+}
+
+func postRoomRequest(r []roomInfo, u basicAccount) {
+	res, err := client.ChatRooms.PostChatrooms(&chat_rooms.PostChatroomsParams{
+		Body: &apimodel.ChatroomRequest{
+			Request: roomsString(r),
+		},
+		Context: cxt,
+	}, authFor(u))
+
+	if err != nil {
+		println(err.Error())
+	} else {
+		println("====")
+		println(len(r))
+		for _, v := range res.Payload {
+			r := rooms[v.Name]
+			r.hash = v.ID
+			rooms[r.name] = r
+			println(v.ID)
+		}
+	}
 }
 
 func updateProfiles(a basicAccount) {
@@ -86,7 +154,7 @@ func updateProfiles(a basicAccount) {
 
 func createAccounts() {
 	wg := sync.WaitGroup{}
-	for i := 0; i < count; i++ {
+	for i := 0; i < userCount; i++ {
 		wg.Add(1)
 		time.Sleep(1000 * 1000 * 1)
 		c := i
@@ -100,25 +168,15 @@ func createAccounts() {
 
 var cxt = context.Background()
 var host = "localhost:1323"
-var transport = httptransport.New(host, "", nil)
+var transport = httpclient.New(host, "", nil)
 var client = apiclient.New(transport, strfmt.Default)
 
 func testCreateAcoount(index int) {
-	c := counter
-	counter++
-
-	before := time.Now()
-
 	res, err := client.Account.PostAuth(&account.PostAuthParams{
 		Context:   cxt,
 		AuthToken: generateRandomToken(),
 		UserHash:  generateRandomToken(),
 	})
-
-	after := time.Now()
-	ms := (after.UnixNano() - before.UnixNano()) / 1000 / 1000
-
-	println(c, ms)
 
 	if err != nil {
 		println(err.Error())

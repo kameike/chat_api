@@ -55,9 +55,6 @@ func main() {
 	api.AccountPostAuthHandler = account.PostAuthHandlerFunc(func(params account.PostAuthParams) middleware.Responder {
 		return middleware.NotImplemented("operation account.PostAuth has not yet been implemented")
 	})
-	api.ChatRoomsPostChatroomsHandler = chat_rooms.PostChatroomsHandlerFunc(func(params chat_rooms.PostChatroomsParams, principal interface{}) middleware.Responder {
-		return middleware.NotImplemented("operation chat_rooms.PostChatrooms has not yet been implemented")
-	})
 	api.ChatRoomsPostChatroomsIDMessagesHandler = chat_rooms.PostChatroomsIDMessagesHandlerFunc(func(params chat_rooms.PostChatroomsIDMessagesParams, principal interface{}) middleware.Responder {
 		return middleware.NotImplemented("operation chat_rooms.PostChatroomsIDMessages has not yet been implemented")
 	})
@@ -65,6 +62,7 @@ func main() {
 		return middleware.NotImplemented("operation chat_rooms.PostChatroomsIDRead has not yet been implemented")
 	})
 
+	api.ChatRoomsPostChatroomsHandler = handlers.ChatRoomsPostChatroomsHandler()
 	api.AccountPostProfileHandler = handlers.AccountPostProfileHandler()
 	api.DeployGetHealthHandler = handlers.DeployGetHealthHandler()
 	api.AccountPostAuthHandler = handlers.AccountPostAuthHandler()
