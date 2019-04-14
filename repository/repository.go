@@ -98,6 +98,10 @@ func (r *applicationRepositoryProvidable) ChatRepository(u model.User, chatId st
 		Hash: chatId,
 	})
 
+	if err != nil {
+		return nil, err
+	}
+
 	repo := chatRepository{
 		ds:   r.datasource,
 		room: *res,

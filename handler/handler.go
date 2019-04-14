@@ -141,7 +141,6 @@ func (a *appRequestHandler) ChatRoomsPostChatroomsHandler() chat_rooms.PostChatr
 				Name:         r.Name,
 				Unreads:      []*apimodel.ChatroomUnreadsItems0{},
 			}
-			println(r.Name)
 			result[i] = &data
 		}
 
@@ -178,6 +177,10 @@ func (d chatRoomMapper) RoomHashes() []string {
 func (a *appRequestHandler) ChatRoomsPostChatroomsIDMessagesHandler() chat_rooms.PostChatroomsIDMessagesHandlerFunc {
 	return func(params chat_rooms.PostChatroomsIDMessagesParams, principal interface{}) middleware.Responder {
 		u := principal.(*model.User)
+
+		if u == nil {
+			return errorResponse(apierror.ErrorNoPermission())
+		}
 
 		cr, err := a.p.ChatRepository(*u, params.ID)
 		if err != nil {
