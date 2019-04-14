@@ -32,7 +32,7 @@ type UserChatRoom struct {
 
 type ChatRoom struct {
 	gorm.Model
-	Users         []User    `gorm:"many2many:user_chat_rooms;"`
+	Users         []User    `gorm:"many2many:user_chat_rooms;association_autoupdate:false"`
 	Messages      []Message `gorm:"foreignkey:RoomID"`
 	UserChatRooms []UserChatRoom
 	RoomHash      string

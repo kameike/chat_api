@@ -123,10 +123,14 @@ func (a *appRequestHandler) ChatRoomsPostChatroomsHandler() chat_rooms.PostChatr
 		u := principal.(*model.User)
 		repo, err := a.p.UserRepository(*u)
 		if err != nil {
-			return errorResponse(err)
 		}
 
 		rooms, err := repo.GetChatRooms(chatRoomMapper{params})
+
+		if err != nil {
+			return errorResponse(err)
+		}
+
 		result := make([]*apimodel.Chatroom, len(rooms), len(rooms))
 
 		for i, r := range rooms {
@@ -134,8 +138,10 @@ func (a *appRequestHandler) ChatRoomsPostChatroomsHandler() chat_rooms.PostChatr
 				ID:           r.RoomHash,
 				Participants: mapUsers(r.Users),
 				PeekedChat:   []*apimodel.Message{},
+				Name:         r.Name,
 				Unreads:      []*apimodel.ChatroomUnreadsItems0{},
 			}
+			println(r.Name)
 			result[i] = &data
 		}
 
@@ -170,7 +176,18 @@ func (d chatRoomMapper) RoomHashes() []string {
 }
 
 func (a *appRequestHandler) ChatRoomsPostChatroomsIDMessagesHandler() chat_rooms.PostChatroomsIDMessagesHandlerFunc {
-	panic("not implemented")
+	return func(params chat_rooms.PostChatroomsIDMessagesParams, principal interface{}) middleware.Responder {
+		u := principal.(*model.User)
+
+		cr, err := a.p.ChatRepository(*u, params.ID)
+		if err != nil {
+			return errorResponse(err)
+		}
+
+		cr.CreateMessage(params.Body.Message)
+
+		return chat_rooms.NewPostChatroomsIDMessagesOK().WithPayload(&apimodel.ChatroomFull{})
+	}
 }
 
 func (a *appRequestHandler) ChatRoomsPostChatroomsIDReadHandler() chat_rooms.PostChatroomsIDReadHandlerFunc {

@@ -25,7 +25,7 @@ type ChatRoomsInfoDescriable interface {
 
 // GetChatRoomRequest exprain chat room with long uniqe hashed string
 type GetChatRoomRequest struct {
-	hash string
+	Hash string
 }
 
 // UserRepositable with can be dispended from  repository providable
@@ -42,13 +42,14 @@ type Unread struct {
 }
 
 type ChatRepositable interface {
+	CreateMessage(string) apierror.ChatAPIError
 }
 
 type ReposotryProvidable interface {
 	CheckHealth() (string, bool)
 	AuthRepository() AuthRepositable
 	UserRepository(model.User) (UserRepositable, apierror.ChatAPIError)
-	ChatRepository() (ChatRepositable, apierror.ChatAPIError)
+	ChatRepository(model.User, string) (ChatRepositable, apierror.ChatAPIError)
 	Close()
 }
 
@@ -87,8 +88,23 @@ func (r *applicationRepositoryProvidable) UserRepository(user model.User) (UserR
 	return &u, nil
 }
 
-func (r *applicationRepositoryProvidable) ChatRepository() (ChatRepositable, apierror.ChatAPIError) {
-	return nil, nil
+func (r *applicationRepositoryProvidable) ChatRepository(u model.User, chatId string) (ChatRepositable, apierror.ChatAPIError) {
+	ur, err := r.UserRepository(u)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := ur.GetChatRoom(GetChatRoomRequest{
+		Hash: chatId,
+	})
+
+	repo := chatRepository{
+		ds:   r.datasource,
+		room: *res,
+		user: u,
+	}
+
+	return &repo, nil
 }
 
 type AuthInfoProvidable interface {

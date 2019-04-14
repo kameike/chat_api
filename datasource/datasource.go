@@ -122,27 +122,12 @@ func PrepareDatasource() DataSourceDescriptor {
 		}
 		mysqlDB = db
 	}
+	mysqlDB.LogMode(true)
 
 	return &appDatasourceDescriptor{
 		db: mysqlDB,
 	}
 }
-
-// var inmemoryDB *gorm.DB
-//
-// func PrepareInmemoryDatasource() DataSourceDescriptor {
-// 	if inmemoryDB == nil {
-// 		db, err := gorm.Open("sqlite3", ":memory:")
-// 		if err != nil {
-// 			panic(err.Error())
-// 		}
-// 		inmemoryDB = db
-// 	}
-//
-// 	return &appDatasourceDescriptor{
-// 		db: inmemoryDB,
-// 	}
-// }
 
 func (d *appDatasourceDescriptor) pingRDB() ChatAPIError {
 	if d.db == nil {

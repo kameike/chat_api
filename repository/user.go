@@ -20,9 +20,9 @@ type userRepository struct {
 }
 
 type chatRoomData struct {
-	Users    []string `json:"users"`
-	RoomId   string   `json:"roomId"`
-	RoomName string   `json:"roomName"`
+	Users        []string `json:"users"`
+	RoomName     string   `json:"roomId"`
+	RoomMemoText string   `json:"roomName"`
 }
 
 func (u *userRepository) GetChatRooms(data ChatRoomsInfoDescriable) ([]*model.ChatRoom, apierror.ChatAPIError) {
@@ -43,7 +43,7 @@ func (u *userRepository) getChatrooms(data []chatRoomData) ([]*model.ChatRoom, a
 	currentChatrooms := result.found
 
 	if len(result.notFound) != 0 {
-		err := u.creatChatrooms(result.notFound)
+		err := u.createChatrooms(result.notFound)
 		if err != nil {
 			return currentChatrooms, apierror.GeneralError(err)
 		}
@@ -62,7 +62,7 @@ type findChatRoomInfo struct {
 	notFound []chatRoomData
 }
 
-func (u *userRepository) creatChatrooms(data []chatRoomData) apierror.ChatAPIError {
+func (u *userRepository) createChatrooms(data []chatRoomData) apierror.ChatAPIError {
 	userMaps := u.preloadUser(extractUserHashes(data))
 	errors := []apierror.ChatAPIError{}
 	rooms := []*model.ChatRoom{}
@@ -71,10 +71,16 @@ NEXT_CHAT_ROOM:
 	for _, d := range data {
 		users := make([]model.User, len(d.Users), len(d.Users))
 
+		if len(users) == 0 {
+			println("cant create empty room")
+			continue NEXT_CHAT_ROOM
+		}
+
 		for i, u := range d.Users {
 			t := userMaps[u]
 			if t == nil {
 				errors = append(errors, apierror.FailToCreateChatRooom(d.description()))
+				println("faild to create due to user")
 				continue NEXT_CHAT_ROOM
 			}
 			users[i] = *t
@@ -89,10 +95,15 @@ NEXT_CHAT_ROOM:
 		rooms = append(rooms, room)
 	}
 
+	if len(rooms) == 0 {
+		return apierror.NestedError(errors)
+	}
+
 	db := u.ds.RDB()
 	for _, r := range rooms {
 		e := db.Save(r).Error
 		if e != nil {
+			println("faild to save")
 			errors = append(errors, apierror.GeneralError(e))
 		}
 	}
@@ -172,7 +183,7 @@ func (u *userRepository) preloadUser(hashes []string) map[string]*model.User {
 
 func (d chatRoomData) description() string {
 	buf := bytes.NewBufferString("")
-	fmt.Fprintf(buf, "faild to create %s", d.RoomName)
+	fmt.Fprintf(buf, "faild to create %s", d.RoomMemoText)
 	return buf.String()
 }
 func (d chatRoomData) hashValue() string {
@@ -197,7 +208,7 @@ func concatString(data chatRoomData) string {
 		target += u
 	}
 
-	target += data.RoomId
+	target += data.RoomName
 	return target
 }
 
@@ -210,7 +221,7 @@ func (u *userRepository) UpdateUser(data UserUpdateInfoDescriable) (*model.User,
 		user.Url = *data.ImageURL()
 	}
 
-	if data.ImageURL() != nil {
+	if data.Name() != nil {
 		user.Name = *data.Name()
 	}
 
@@ -270,7 +281,7 @@ func (u *userRepository) GetChatRoom(req GetChatRoomRequest) (*model.ChatRoom, a
 	db := u.ds.RDB()
 	result := model.ChatRoom{}
 
-	err := db.Preload("Users").Preload("Messages").Model(&model.ChatRoom{}).Where("room_hash = ?", req.hash).Find(&result).Error
+	err := db.Preload("Users").Preload("Messages").Model(&model.ChatRoom{}).Where("room_hash = ?", req.Hash).Find(&result).Error
 
 	if err != nil {
 		return nil, apierror.GeneralError(err)

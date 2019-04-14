@@ -16,7 +16,13 @@ import (
 	"github.com/kameike/chat_api/swggen/client/chat_rooms"
 )
 
-var userCount = 100
+var userCount = 20
+var reqPerSec = 40
+var wtime = time.Duration(1000 / reqPerSec)
+
+var users = make([]basicAccount, userCount, userCount)
+var rooms = make(map[string]roomInfo)
+var userRooms = make(map[string][]roomInfo)
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
@@ -24,38 +30,98 @@ func main() {
 
 	wg := sync.WaitGroup{}
 	for i, u := range users {
-		wg.Add(1)
-		time.Sleep(1000 * 1000 * 10 * time.Duration(i))
 		uc := u
+		id := i
+		wg.Add(1)
 		go func() {
+			time.Sleep(1000 * 1000 * wtime * time.Duration(id))
 			updateProfiles(uc)
 			wg.Done()
 		}()
 	}
 	wg.Wait()
 
-	for i, u := range users {
+	for _, u := range users {
+		count := 3
+		room := make([]roomInfo, count, count)
+		for i := 0; i < count; i++ {
+			r := randomRoomInfo(u)
+			room[i] = r
+			rooms[r.name] = r
+		}
+		userRooms[u.user.ID] = room
+	}
+
+	for k := 0; k < 1; k++ {
+		for i, u := range users {
+			wg.Add(1)
+			id := i
+			us := u
+			go func() {
+				time.Sleep(1000 * 1000 * 30 * time.Duration(id*k))
+				benchmark("get rooms", func() {
+					postRoomRequest(userRooms[us.user.ID], us)
+				})
+				wg.Done()
+			}()
+		}
+	}
+	wg.Wait()
+
+	for k := 0; k < 1; k++ {
+		for i, u := range users {
+			wg.Add(1)
+			id := i
+			us := u
+			go func() {
+				time.Sleep(1000 * 1000 * wtime * time.Duration(id*k))
+				benchmark("get rooms", func() {
+					postRoomRequest(userRooms[us.user.ID], us)
+				})
+				wg.Done()
+			}()
+		}
+	}
+	wg.Wait()
+
+	counter := 0
+	for _, r := range rooms {
+		counter++
+		c := counter
 		wg.Add(1)
 		go func() {
-			time.Sleep(1000 * 1000 * 1000 * time.Duration(i))
-			room := make([]roomInfo, 10, 10)
-			for i := 0; i < 10; i++ {
-				r := randomRoomInfo(u)
-				room[i] = r
-			}
-			before := time.Now().UnixNano()
-			postRoomRequest(room, u)
-			after := time.Now().UnixNano()
-			ms := (after - before) / 1000 / 1000
-			println(ms)
+			time.Sleep(1000 * 1000 * wtime * time.Duration(c))
+			rm := r
+			benchmark("post chat", func() {
+				postMessage(rm)
+			})
 			wg.Done()
 		}()
 	}
 	wg.Wait()
 }
 
-var users = make([]basicAccount, userCount, userCount)
-var rooms = make(map[string]roomInfo)
+func benchmark(name string, proc func()) {
+	before := time.Now().UnixNano()
+	proc()
+	after := time.Now().UnixNano()
+	ms := (after - before) / 1000 / 1000
+	println(ms, "ms:", name)
+}
+
+func postMessage(r roomInfo) {
+	_, err := client.ChatRooms.PostChatroomsIDMessages(&chat_rooms.PostChatroomsIDMessagesParams{
+		Body: &apimodel.ChatCreate{
+			Message: "test",
+		},
+		ID:      r.hash,
+		Context: cxt,
+	}, authFor(r.user1))
+
+	if err != nil {
+		println("err", err.Error())
+	}
+}
 
 type basicAccount struct {
 	accessToken string
@@ -126,13 +192,10 @@ func postRoomRequest(r []roomInfo, u basicAccount) {
 	if err != nil {
 		println(err.Error())
 	} else {
-		println("====")
-		println(len(r))
 		for _, v := range res.Payload {
 			r := rooms[v.Name]
 			r.hash = v.ID
-			rooms[r.name] = r
-			println(v.ID)
+			rooms[v.Name] = r
 		}
 	}
 }
@@ -156,9 +219,9 @@ func createAccounts() {
 	wg := sync.WaitGroup{}
 	for i := 0; i < userCount; i++ {
 		wg.Add(1)
-		time.Sleep(1000 * 1000 * 1)
 		c := i
 		go func() {
+			time.Sleep(1000 * 1000 * wtime * time.Duration(c))
 			testCreateAcoount(c)
 			wg.Done()
 		}()
@@ -185,6 +248,7 @@ func testCreateAcoount(index int) {
 			user:        *res.Payload.User,
 			accessToken: res.Payload.AccessToken,
 		}
+		println(users[index].accessToken)
 	}
 }
 
