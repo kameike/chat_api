@@ -122,7 +122,7 @@ func PrepareDatasource() DataSourceDescriptor {
 		}
 		mysqlDB = db
 	}
-	mysqlDB.LogMode(true)
+	// mysqlDB.LogMode(true)
 
 	return &appDatasourceDescriptor{
 		db: mysqlDB,

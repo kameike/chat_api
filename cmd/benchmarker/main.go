@@ -17,7 +17,7 @@ import (
 )
 
 var userCount = 20
-var reqPerSec = 40
+var reqPerSec = 20
 var wtime = time.Duration(1000 / reqPerSec)
 
 var users = make([]basicAccount, userCount, userCount)
@@ -89,9 +89,13 @@ func main() {
 		counter++
 		c := counter
 		wg.Add(1)
+		rm := r
+		if rm.hash == "" {
+			continue
+		}
 		go func() {
 			time.Sleep(1000 * 1000 * wtime * time.Duration(c))
-			rm := r
+			println(rm.hash, rm.name)
 			benchmark("post chat", func() {
 				postMessage(rm)
 			})
@@ -110,6 +114,10 @@ func benchmark(name string, proc func()) {
 }
 
 func postMessage(r roomInfo) {
+	if r.hash == "" {
+		println("not effective room")
+		return
+	}
 	_, err := client.ChatRooms.PostChatroomsIDMessages(&chat_rooms.PostChatroomsIDMessagesParams{
 		Body: &apimodel.ChatCreate{
 			Message: "test",
@@ -196,6 +204,7 @@ func postRoomRequest(r []roomInfo, u basicAccount) {
 			r := rooms[v.Name]
 			r.hash = v.ID
 			rooms[v.Name] = r
+			println("room ->", rooms[v.Name].hash)
 		}
 	}
 }
