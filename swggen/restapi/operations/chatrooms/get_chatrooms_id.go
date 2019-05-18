@@ -12,16 +12,16 @@ import (
 )
 
 // GetChatroomsIDHandlerFunc turns a function with the right signature into a get chatrooms ID handler
-type GetChatroomsIDHandlerFunc func(GetChatroomsIDParams) middleware.Responder
+type GetChatroomsIDHandlerFunc func(GetChatroomsIDParams, interface{}) middleware.Responder
 
 // Handle executing the request and returning a response
-func (fn GetChatroomsIDHandlerFunc) Handle(params GetChatroomsIDParams) middleware.Responder {
-	return fn(params)
+func (fn GetChatroomsIDHandlerFunc) Handle(params GetChatroomsIDParams, principal interface{}) middleware.Responder {
+	return fn(params, principal)
 }
 
 // GetChatroomsIDHandler interface for that can handle valid get chatrooms ID params
 type GetChatroomsIDHandler interface {
-	Handle(GetChatroomsIDParams) middleware.Responder
+	Handle(GetChatroomsIDParams, interface{}) middleware.Responder
 }
 
 // NewGetChatroomsID creates a new http.Handler for the get chatrooms ID operation
@@ -48,12 +48,25 @@ func (o *GetChatroomsID) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	}
 	var Params = NewGetChatroomsIDParams()
 
+	uprinc, aCtx, err := o.Context.Authorize(r, route)
+	if err != nil {
+		o.Context.Respond(rw, r, route.Produces, route, err)
+		return
+	}
+	if aCtx != nil {
+		r = aCtx
+	}
+	var principal interface{}
+	if uprinc != nil {
+		principal = uprinc
+	}
+
 	if err := o.Context.BindValidRequest(r, route, &Params); err != nil { // bind params
 		o.Context.Respond(rw, r, route.Produces, route, err)
 		return
 	}
 
-	res := o.Handler.Handle(Params) // actually handle the request
+	res := o.Handler.Handle(Params, principal) // actually handle the request
 
 	o.Context.Respond(rw, r, route.Produces, route, res)
 

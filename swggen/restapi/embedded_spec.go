@@ -36,6 +36,11 @@ func init() {
   "paths": {
     "/admin/search/chatrooms": {
       "get": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "description": "accountHashとchannelNameが指定されなかった場合、全部のchatroomsを返します。",
         "tags": [
           "chatrooms"
@@ -120,6 +125,11 @@ func init() {
     },
     "/chatrooms": {
       "post": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "description": "一覧が出るよ.それぞれの文字列はこの形でお願いします。\n{ accounts: [\"userId\", \"userId\"], channelName: \"name\" } ",
         "tags": [
           "chatrooms"
@@ -160,6 +170,11 @@ func init() {
     },
     "/chatrooms/{channel_hash}/read": {
       "post": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "tags": [
           "chatrooms"
         ],
@@ -191,6 +206,11 @@ func init() {
     },
     "/chatrooms/{chatroom_hash}/messages": {
       "get": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "tags": [
           "messages"
         ],
@@ -211,6 +231,11 @@ func init() {
         }
       },
       "post": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "tags": [
           "messages"
         ],
@@ -251,6 +276,11 @@ func init() {
     },
     "/chatrooms/{id}": {
       "get": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "description": "一覧が頑張るよ",
         "tags": [
           "chatrooms"
@@ -304,6 +334,11 @@ func init() {
     },
     "/profile": {
       "post": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "description": "nameをアップデートできます。",
         "tags": [
           "account"
@@ -542,6 +577,11 @@ func init() {
   "paths": {
     "/admin/search/chatrooms": {
       "get": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "description": "accountHashとchannelNameが指定されなかった場合、全部のchatroomsを返します。",
         "tags": [
           "chatrooms"
@@ -626,6 +666,11 @@ func init() {
     },
     "/chatrooms": {
       "post": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "description": "一覧が出るよ.それぞれの文字列はこの形でお願いします。\n{ accounts: [\"userId\", \"userId\"], channelName: \"name\" } ",
         "tags": [
           "chatrooms"
@@ -666,6 +711,11 @@ func init() {
     },
     "/chatrooms/{channel_hash}/read": {
       "post": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "tags": [
           "chatrooms"
         ],
@@ -697,6 +747,11 @@ func init() {
     },
     "/chatrooms/{chatroom_hash}/messages": {
       "get": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "tags": [
           "messages"
         ],
@@ -717,6 +772,11 @@ func init() {
         }
       },
       "post": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "tags": [
           "messages"
         ],
@@ -757,6 +817,11 @@ func init() {
     },
     "/chatrooms/{id}": {
       "get": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "description": "一覧が頑張るよ",
         "tags": [
           "chatrooms"
@@ -810,6 +875,11 @@ func init() {
     },
     "/profile": {
       "post": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
         "description": "nameをアップデートできます。",
         "tags": [
           "account"

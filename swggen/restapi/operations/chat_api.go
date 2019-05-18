@@ -42,13 +42,13 @@ func NewChatAPI(spec *loads.Document) *ChatAPI {
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
 		JSONProducer:        runtime.JSONProducer(),
-		ChatroomsGetAdminSearchChatroomsHandler: chatrooms.GetAdminSearchChatroomsHandlerFunc(func(params chatrooms.GetAdminSearchChatroomsParams) middleware.Responder {
+		ChatroomsGetAdminSearchChatroomsHandler: chatrooms.GetAdminSearchChatroomsHandlerFunc(func(params chatrooms.GetAdminSearchChatroomsParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation ChatroomsGetAdminSearchChatrooms has not yet been implemented")
 		}),
-		MessagesGetChatroomsChatroomHashMessagesHandler: messages.GetChatroomsChatroomHashMessagesHandlerFunc(func(params messages.GetChatroomsChatroomHashMessagesParams) middleware.Responder {
+		MessagesGetChatroomsChatroomHashMessagesHandler: messages.GetChatroomsChatroomHashMessagesHandlerFunc(func(params messages.GetChatroomsChatroomHashMessagesParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation MessagesGetChatroomsChatroomHashMessages has not yet been implemented")
 		}),
-		ChatroomsGetChatroomsIDHandler: chatrooms.GetChatroomsIDHandlerFunc(func(params chatrooms.GetChatroomsIDParams) middleware.Responder {
+		ChatroomsGetChatroomsIDHandler: chatrooms.GetChatroomsIDHandlerFunc(func(params chatrooms.GetChatroomsIDParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation ChatroomsGetChatroomsID has not yet been implemented")
 		}),
 		DeployGetHealthHandler: deploy.GetHealthHandlerFunc(func(params deploy.GetHealthParams) middleware.Responder {
@@ -57,18 +57,26 @@ func NewChatAPI(spec *loads.Document) *ChatAPI {
 		AccountPostAuthHandler: account.PostAuthHandlerFunc(func(params account.PostAuthParams) middleware.Responder {
 			return middleware.NotImplemented("operation AccountPostAuth has not yet been implemented")
 		}),
-		ChatroomsPostChatroomsHandler: chatrooms.PostChatroomsHandlerFunc(func(params chatrooms.PostChatroomsParams) middleware.Responder {
+		ChatroomsPostChatroomsHandler: chatrooms.PostChatroomsHandlerFunc(func(params chatrooms.PostChatroomsParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation ChatroomsPostChatrooms has not yet been implemented")
 		}),
-		ChatroomsPostChatroomsChannelHashReadHandler: chatrooms.PostChatroomsChannelHashReadHandlerFunc(func(params chatrooms.PostChatroomsChannelHashReadParams) middleware.Responder {
+		ChatroomsPostChatroomsChannelHashReadHandler: chatrooms.PostChatroomsChannelHashReadHandlerFunc(func(params chatrooms.PostChatroomsChannelHashReadParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation ChatroomsPostChatroomsChannelHashRead has not yet been implemented")
 		}),
-		MessagesPostChatroomsChatroomHashMessagesHandler: messages.PostChatroomsChatroomHashMessagesHandlerFunc(func(params messages.PostChatroomsChatroomHashMessagesParams) middleware.Responder {
+		MessagesPostChatroomsChatroomHashMessagesHandler: messages.PostChatroomsChatroomHashMessagesHandlerFunc(func(params messages.PostChatroomsChatroomHashMessagesParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation MessagesPostChatroomsChatroomHashMessages has not yet been implemented")
 		}),
-		AccountPostProfileHandler: account.PostProfileHandlerFunc(func(params account.PostProfileParams) middleware.Responder {
+		AccountPostProfileHandler: account.PostProfileHandlerFunc(func(params account.PostProfileParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation AccountPostProfile has not yet been implemented")
 		}),
+
+		// Applies when the "X-CHAT-ACCESS-TOKEN" header is set
+		APIKeyAuth: func(token string) (interface{}, error) {
+			return nil, errors.NotImplemented("api key auth (apiKey) X-CHAT-ACCESS-TOKEN from header param [X-CHAT-ACCESS-TOKEN] has not yet been implemented")
+		},
+
+		// default authorizer is authorized meaning no requests are blocked
+		APIAuthorizer: security.Authorized(),
 	}
 }
 
@@ -99,6 +107,13 @@ type ChatAPI struct {
 
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
+
+	// APIKeyAuth registers a function that takes a token and returns a principal
+	// it performs authentication based on an api key X-CHAT-ACCESS-TOKEN provided in the header
+	APIKeyAuth func(string) (interface{}, error)
+
+	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
+	APIAuthorizer runtime.Authorizer
 
 	// ChatroomsGetAdminSearchChatroomsHandler sets the operation handler for the get admin search chatrooms operation
 	ChatroomsGetAdminSearchChatroomsHandler chatrooms.GetAdminSearchChatroomsHandler
@@ -181,6 +196,10 @@ func (o *ChatAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
+	if o.APIKeyAuth == nil {
+		unregistered = append(unregistered, "XCHATACCESSTOKENAuth")
+	}
+
 	if o.ChatroomsGetAdminSearchChatroomsHandler == nil {
 		unregistered = append(unregistered, "chatrooms.GetAdminSearchChatroomsHandler")
 	}
@@ -232,14 +251,24 @@ func (o *ChatAPI) ServeErrorFor(operationID string) func(http.ResponseWriter, *h
 // AuthenticatorsFor gets the authenticators for the specified security schemes
 func (o *ChatAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) map[string]runtime.Authenticator {
 
-	return nil
+	result := make(map[string]runtime.Authenticator)
+	for name, scheme := range schemes {
+		switch name {
+
+		case "apiKey":
+
+			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, o.APIKeyAuth)
+
+		}
+	}
+	return result
 
 }
 
 // Authorizer returns the registered authorizer
 func (o *ChatAPI) Authorizer() runtime.Authorizer {
 
-	return nil
+	return o.APIAuthorizer
 
 }
 

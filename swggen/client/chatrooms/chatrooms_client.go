@@ -29,7 +29,7 @@ GetAdminSearchChatrooms アドミンがユーザーのhashを使ってチャッ�
 
 accountHashとchannelNameが指定されなかった場合、全部のchatroomsを返します。
 */
-func (a *Client) GetAdminSearchChatrooms(params *GetAdminSearchChatroomsParams) (*GetAdminSearchChatroomsOK, error) {
+func (a *Client) GetAdminSearchChatrooms(params *GetAdminSearchChatroomsParams, authInfo runtime.ClientAuthInfoWriter) (*GetAdminSearchChatroomsOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewGetAdminSearchChatroomsParams()
@@ -44,6 +44,7 @@ func (a *Client) GetAdminSearchChatrooms(params *GetAdminSearchChatroomsParams) 
 		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &GetAdminSearchChatroomsReader{formats: a.formats},
+		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	})
@@ -59,7 +60,7 @@ GetChatroomsID メッセージの一覧が取ってこれるよs
 
 一覧が頑張るよ
 */
-func (a *Client) GetChatroomsID(params *GetChatroomsIDParams) (*GetChatroomsIDOK, error) {
+func (a *Client) GetChatroomsID(params *GetChatroomsIDParams, authInfo runtime.ClientAuthInfoWriter) (*GetChatroomsIDOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewGetChatroomsIDParams()
@@ -74,6 +75,7 @@ func (a *Client) GetChatroomsID(params *GetChatroomsIDParams) (*GetChatroomsIDOK
 		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &GetChatroomsIDReader{formats: a.formats},
+		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	})
@@ -90,7 +92,7 @@ PostChatrooms チャットルームの一覧が取ってこれるよs
 一覧が出るよ.それぞれの文字列はこの形でお願いします。
 { accounts: ["userId", "userId"], channelName: "name" }
 */
-func (a *Client) PostChatrooms(params *PostChatroomsParams) (*PostChatroomsOK, error) {
+func (a *Client) PostChatrooms(params *PostChatroomsParams, authInfo runtime.ClientAuthInfoWriter) (*PostChatroomsOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewPostChatroomsParams()
@@ -105,6 +107,7 @@ func (a *Client) PostChatrooms(params *PostChatroomsParams) (*PostChatroomsOK, e
 		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &PostChatroomsReader{formats: a.formats},
+		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	})
@@ -118,7 +121,7 @@ func (a *Client) PostChatrooms(params *PostChatroomsParams) (*PostChatroomsOK, e
 /*
 PostChatroomsChannelHashRead 全部既読にするやつs
 */
-func (a *Client) PostChatroomsChannelHashRead(params *PostChatroomsChannelHashReadParams) (*PostChatroomsChannelHashReadOK, error) {
+func (a *Client) PostChatroomsChannelHashRead(params *PostChatroomsChannelHashReadParams, authInfo runtime.ClientAuthInfoWriter) (*PostChatroomsChannelHashReadOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewPostChatroomsChannelHashReadParams()
@@ -133,6 +136,7 @@ func (a *Client) PostChatroomsChannelHashRead(params *PostChatroomsChannelHashRe
 		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &PostChatroomsChannelHashReadReader{formats: a.formats},
+		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	})

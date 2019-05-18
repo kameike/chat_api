@@ -27,7 +27,7 @@ type Client struct {
 /*
 GetChatroomsChatroomHashMessages メッセージの取得s
 */
-func (a *Client) GetChatroomsChatroomHashMessages(params *GetChatroomsChatroomHashMessagesParams) (*GetChatroomsChatroomHashMessagesOK, error) {
+func (a *Client) GetChatroomsChatroomHashMessages(params *GetChatroomsChatroomHashMessagesParams, authInfo runtime.ClientAuthInfoWriter) (*GetChatroomsChatroomHashMessagesOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewGetChatroomsChatroomHashMessagesParams()
@@ -42,6 +42,7 @@ func (a *Client) GetChatroomsChatroomHashMessages(params *GetChatroomsChatroomHa
 		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &GetChatroomsChatroomHashMessagesReader{formats: a.formats},
+		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	})
@@ -55,7 +56,7 @@ func (a *Client) GetChatroomsChatroomHashMessages(params *GetChatroomsChatroomHa
 /*
 PostChatroomsChatroomHashMessages メッセージの投稿s
 */
-func (a *Client) PostChatroomsChatroomHashMessages(params *PostChatroomsChatroomHashMessagesParams) (*PostChatroomsChatroomHashMessagesOK, error) {
+func (a *Client) PostChatroomsChatroomHashMessages(params *PostChatroomsChatroomHashMessagesParams, authInfo runtime.ClientAuthInfoWriter) (*PostChatroomsChatroomHashMessagesOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewPostChatroomsChatroomHashMessagesParams()
@@ -70,6 +71,7 @@ func (a *Client) PostChatroomsChatroomHashMessages(params *PostChatroomsChatroom
 		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &PostChatroomsChatroomHashMessagesReader{formats: a.formats},
+		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	})

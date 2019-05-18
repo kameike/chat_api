@@ -12,16 +12,16 @@ import (
 )
 
 // GetChatroomsChatroomHashMessagesHandlerFunc turns a function with the right signature into a get chatrooms chatroom hash messages handler
-type GetChatroomsChatroomHashMessagesHandlerFunc func(GetChatroomsChatroomHashMessagesParams) middleware.Responder
+type GetChatroomsChatroomHashMessagesHandlerFunc func(GetChatroomsChatroomHashMessagesParams, interface{}) middleware.Responder
 
 // Handle executing the request and returning a response
-func (fn GetChatroomsChatroomHashMessagesHandlerFunc) Handle(params GetChatroomsChatroomHashMessagesParams) middleware.Responder {
-	return fn(params)
+func (fn GetChatroomsChatroomHashMessagesHandlerFunc) Handle(params GetChatroomsChatroomHashMessagesParams, principal interface{}) middleware.Responder {
+	return fn(params, principal)
 }
 
 // GetChatroomsChatroomHashMessagesHandler interface for that can handle valid get chatrooms chatroom hash messages params
 type GetChatroomsChatroomHashMessagesHandler interface {
-	Handle(GetChatroomsChatroomHashMessagesParams) middleware.Responder
+	Handle(GetChatroomsChatroomHashMessagesParams, interface{}) middleware.Responder
 }
 
 // NewGetChatroomsChatroomHashMessages creates a new http.Handler for the get chatrooms chatroom hash messages operation
@@ -46,12 +46,25 @@ func (o *GetChatroomsChatroomHashMessages) ServeHTTP(rw http.ResponseWriter, r *
 	}
 	var Params = NewGetChatroomsChatroomHashMessagesParams()
 
+	uprinc, aCtx, err := o.Context.Authorize(r, route)
+	if err != nil {
+		o.Context.Respond(rw, r, route.Produces, route, err)
+		return
+	}
+	if aCtx != nil {
+		r = aCtx
+	}
+	var principal interface{}
+	if uprinc != nil {
+		principal = uprinc
+	}
+
 	if err := o.Context.BindValidRequest(r, route, &Params); err != nil { // bind params
 		o.Context.Respond(rw, r, route.Produces, route, err)
 		return
 	}
 
-	res := o.Handler.Handle(Params) // actually handle the request
+	res := o.Handler.Handle(Params, principal) // actually handle the request
 
 	o.Context.Respond(rw, r, route.Produces, route, res)
 
