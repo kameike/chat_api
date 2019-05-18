@@ -49,17 +49,20 @@ func (a *appRequestHandler) AuthUser(token string) (*model.User, apierror.ChatAP
 func (a *appRequestHandler) AccountPostAuthHandler() account.PostAuthHandlerFunc {
 	return func(params account.PostAuthParams) middleware.Responder {
 		repo := a.p.AuthRepository()
-		user, authInfo, err := repo.FindOrCreateUser(params.AuthToken, params.UserHash)
+		user, authInfo, err := repo.FindOrCreateUser(
+			params.Body.AuthToken,
+			params.Body.AccountHash,
+		)
 
 		if err != nil {
 			return errorResponse(err)
 		}
 
 		res := account.NewPostAuthOK().WithPayload(&apimodel.AuthInfo{
-			User: &apimodel.User{
+			Account: &apimodel.Account{
 				Name:     user.Name,
 				ImageURL: user.Url,
-				ID:       fmt.Sprint(user.ID),
+				ID:       int64(user.ID),
 				Hash:     user.UserHash,
 			},
 			AccessToken: authInfo.AccessToken,
