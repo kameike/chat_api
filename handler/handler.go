@@ -22,11 +22,12 @@ type RequestHandlable interface {
 
 	AccountPostAuthHandler() account.PostAuthHandlerFunc
 	AccountPostProfileHandler() account.PostProfileHandlerFunc
-	AuthUser(token string) (*model.User, apierror.ChatAPIError)
+	APIKeyAuthHandler() func(string) (interface{}, error)
 
 	// ChatRoomsGetChatroomsIDMessagesHandler() chatrooms.GetAdminSearchChatroomsHandlerFunc
 	// ChatRoomsGetChatroomsIDHandler() chatrooms.GetChatroomsIDHandlerFunc
 	// ChatRoomsPostChatroomsIDReadHandler() chatrooms.PostChatroomsChannelHashReadHandlerFunc
+
 	ChatRoomsPostChatroomsHandler() chatrooms.PostChatroomsHandlerFunc
 	ChatRoomsPostChatroomsIDMessagesHandler() messages.PostChatroomsChatroomHashMessagesHandlerFunc
 }
@@ -39,6 +40,12 @@ func SetUpHandler() RequestHandlable {
 
 type appRequestHandler struct {
 	p repository.ReposotryProvidable
+}
+
+func (a *appRequestHandler) APIKeyAuthHandler() func(string) (interface{}, error) {
+	return func(token string) (interface{}, error) {
+		return a.AuthUser(token)
+	}
 }
 
 func (a *appRequestHandler) AuthUser(token string) (*model.User, apierror.ChatAPIError) {

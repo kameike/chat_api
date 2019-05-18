@@ -28,17 +28,14 @@ func main() {
 
 	api := operations.NewChatAPI(swaggerSpec)
 
-	api.APIKeyAuth = func(token string) (interface{}, error) {
-		result, err := handlers.AuthUser(token)
-		return result, err
-	}
-
 	api.JSONConsumer = runtime.JSONConsumer()
 
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.RegisterConsumer("application/json", runtime.JSONConsumer())
 	api.RegisterProducer("application/json", runtime.JSONProducer())
+
+	api.APIKeyAuth = handlers.APIKeyAuthHandler()
 
 	api.MessagesPostChatroomsChatroomHashMessagesHandler = handlers.ChatRoomsPostChatroomsIDMessagesHandler()
 	api.ChatroomsPostChatroomsHandler = handlers.ChatRoomsPostChatroomsHandler()
