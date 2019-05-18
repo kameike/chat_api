@@ -9,7 +9,6 @@ import (
 
 func generalBefore() {
 	ds = datasource.PrepareDatasource()
-	// ds.RDB().LogMode(true)
 	println("===start case===")
 	ds.Begin()
 
@@ -24,6 +23,7 @@ func generalAfter() {
 
 func authBefore() {
 	generalBefore()
+	ds.RDB().LogMode(false)
 	token = generateRandomToken()
 	hash = generateRandomToken()
 }

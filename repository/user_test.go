@@ -11,6 +11,7 @@ import (
 
 func beforeUser() {
 	generalBefore()
+	ds.RDB().LogMode(false)
 
 	user, _, _ := provider.AuthRepository().FindOrCreateUser(token, hash)
 	authUser = *user
@@ -49,8 +50,7 @@ func Testチャットルームが存在しなくても作られる(t *testing.T)
 
 	var roomSign []string
 	roomSign = append(roomSign, fmt.Sprintf(`{
-			"users": ["%s"],
-			"roomId": "hoge",
+			"accounts": ["%s"],
 			"roomName": "fuga"
 		}
 	`, authUser.UserHash))
@@ -73,11 +73,10 @@ func Testチャットルームが存在しなくても作られる(t *testing.T)
 func Testチャットルームの型によってチャットを作ることができる(t *testing.T) {
 	data := []chatRoomData{
 		chatRoomData{
-			Users: []string{
+			Accounts: []string{
 				authUser.UserHash,
 			},
-			RoomName:     "roomid",
-			RoomMemoText: "hoge",
+			RoomName: "roomid",
 		},
 	}
 
@@ -171,18 +170,16 @@ func Testチャットルームの型によってチャットを作ることが�
 func Testチャットルームが複数作られる(t *testing.T) {
 	data := []chatRoomData{
 		chatRoomData{
-			Users: []string{
+			Accounts: []string{
 				authUser.UserHash,
 			},
-			RoomName:     "roomid1",
-			RoomMemoText: "pppp",
+			RoomName: "roomid1",
 		},
 		chatRoomData{
-			Users: []string{
+			Accounts: []string{
 				authUser.UserHash,
 			},
-			RoomName:     "roomid2",
-			RoomMemoText: "hohoh",
+			RoomName: "roomid2",
 		},
 	}
 
@@ -213,11 +210,10 @@ func Testチャットルームが複数作られる(t *testing.T) {
 func Test条件が一緒であればチャットルームは複数作られない(t *testing.T) {
 	data := []chatRoomData{
 		chatRoomData{
-			Users: []string{
+			Accounts: []string{
 				authUser.UserHash,
 			},
-			RoomName:     "roomid",
-			RoomMemoText: "hoge",
+			RoomName: "roomid",
 		},
 	}
 
@@ -257,11 +253,10 @@ func Testチャットを一気に読み込む際にはUserとChatRoomUserもプ�
 
 	data := []chatRoomData{
 		chatRoomData{
-			Users: []string{
+			Accounts: []string{
 				authUser.UserHash,
 			},
-			RoomName:     "roomid",
-			RoomMemoText: "hoge",
+			RoomName: "roomid",
 		},
 	}
 	app.createChatrooms(data)
@@ -308,18 +303,16 @@ func Testメッセージのプリロード(t *testing.T) {
 func Test条件が一緒であればチャットルームはたとえ同時リクエスであっても作られない(t *testing.T) {
 	data := []chatRoomData{
 		chatRoomData{
-			Users: []string{
+			Accounts: []string{
 				authUser.UserHash,
 			},
-			RoomName:     "roomid",
-			RoomMemoText: "hoge",
+			RoomName: "roomid",
 		},
 		chatRoomData{
-			Users: []string{
+			Accounts: []string{
 				authUser.UserHash,
 			},
-			RoomName:     "roomid",
-			RoomMemoText: "hoge",
+			RoomName: "roomid",
 		},
 	}
 
@@ -370,14 +363,12 @@ func (t testChatRoomCreateInfo) RoomHashes() []string {
 
 func TestChatRoomからハッシュが作れる(t *testing.T) {
 	data0 := chatRoomData{
-		Users:        []string{"t", "u"},
-		RoomName:     "hoge",
-		RoomMemoText: "piyo",
+		Accounts: []string{"t", "u"},
+		RoomName: "hoge",
 	}
 	data1 := chatRoomData{
-		Users:        []string{"u", "t"},
-		RoomName:     "hoge",
-		RoomMemoText: "piyo",
+		Accounts: []string{"u", "t"},
+		RoomName: "hoge",
 	}
 
 	hash0 := concatString(data0)
@@ -394,14 +385,12 @@ func TestChatRoomからハッシュが作れる(t *testing.T) {
 
 func TestChatRoomからハッシュが作れるてroomが違うと色々違う(t *testing.T) {
 	data0 := chatRoomData{
-		Users:        []string{"t", "u"},
-		RoomName:     "piyo",
-		RoomMemoText: "piyo",
+		Accounts: []string{"t", "u"},
+		RoomName: "piyo",
 	}
 	data1 := chatRoomData{
-		Users:        []string{"u", "t"},
-		RoomName:     "hoge",
-		RoomMemoText: "piyo",
+		Accounts: []string{"u", "t"},
+		RoomName: "hoge",
 	}
 
 	hash0 := concatString(data0)
@@ -474,9 +463,8 @@ func Testメッセージの作成(t *testing.T) {
 func createStubChatRoom(app *userRepository) model.ChatRoom {
 	rooms, _ := app.getChatrooms([]chatRoomData{
 		chatRoomData{
-			Users:        []string{authUser.UserHash},
-			RoomName:     "test",
-			RoomMemoText: "hoge",
+			Accounts: []string{authUser.UserHash},
+			RoomName: "test",
 		},
 	})
 	return *rooms[0]

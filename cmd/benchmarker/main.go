@@ -17,13 +17,18 @@ import (
 	"github.com/kameike/chat_api/swggen/client/messages"
 )
 
-var userCount = 1000
+var userCount = 10
 var reqPerSec = 10
 var wtime = time.Duration(1000 / reqPerSec)
 
 var users = make([]basicAccount, userCount, userCount)
 var rooms = make(map[string]roomInfo)
 var userRooms = make(map[int64][]roomInfo)
+
+var cxt = context.Background()
+var host = "dev-chat.taimee.co.jp"
+var transport = httpclient.New(host, "", nil)
+var client = apiclient.New(transport, strfmt.Default)
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
@@ -44,7 +49,6 @@ func main() {
 	}
 	wg.Wait()
 
-	println("get chat rooms")
 	for _, u := range users {
 		count := 3
 		room := make([]roomInfo, count, count)
@@ -71,6 +75,7 @@ func main() {
 		}
 	}
 	wg.Wait()
+	return
 
 	for k := 0; k < 1; k++ {
 		for i, u := range users {
@@ -164,15 +169,14 @@ func authFor(a basicAccount) runtime.ClientAuthInfoWriter {
 
 func roomString(r roomInfo) string {
 	data := struct {
-		Accounts []string `json:"users"`
-		RoomId   string   `json:"roomId"`
-		RoomName string   `json:"roomName"`
+		Accounts []string `json:"accounts"`
+		RoomName string   `json:"channelName"`
 	}{
 		Accounts: []string{
 			r.user1.user.Hash,
 			r.user2.user.Hash,
 		},
-		RoomId: r.name,
+		RoomName: r.name,
 	}
 
 	d, err := json.Marshal(data)
@@ -243,11 +247,6 @@ func createAccounts() {
 	}
 	wg.Wait()
 }
-
-var cxt = context.Background()
-var host = "localhost:1323"
-var transport = httpclient.New(host, "", nil)
-var client = apiclient.New(transport, strfmt.Default)
 
 func testCreateAcoount(index int) {
 	res, err := client.Account.PostAuth(&account.PostAuthParams{

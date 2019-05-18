@@ -20,9 +20,8 @@ type userRepository struct {
 }
 
 type chatRoomData struct {
-	Users        []string `json:"users"`
-	RoomName     string   `json:"roomId"`
-	RoomMemoText string   `json:"roomName"`
+	Accounts []string `json:"accounts"`
+	RoomName string   `json:"channelName"`
 }
 
 func (u *userRepository) GetChatRooms(data ChatRoomsInfoDescriable) ([]*model.ChatRoom, apierror.ChatAPIError) {
@@ -69,14 +68,14 @@ func (u *userRepository) createChatrooms(data []chatRoomData) apierror.ChatAPIEr
 
 NEXT_CHAT_ROOM:
 	for _, d := range data {
-		users := make([]model.User, len(d.Users), len(d.Users))
+		users := make([]model.User, len(d.Accounts), len(d.Accounts))
 
 		if len(users) == 0 {
 			println("cant create empty room")
 			continue NEXT_CHAT_ROOM
 		}
 
-		for i, u := range d.Users {
+		for i, u := range d.Accounts {
 			t := userMaps[u]
 			if t == nil {
 				errors = append(errors, apierror.FailToCreateChatRooom(d.description()))
@@ -118,7 +117,7 @@ func extractUserHashes(data []chatRoomData) []string {
 	result := make([]string, 0, len(data))
 
 	for _, d := range data {
-		result = append(result, d.Users...)
+		result = append(result, d.Accounts...)
 	}
 
 	return result
@@ -183,7 +182,7 @@ func (u *userRepository) preloadUser(hashes []string) map[string]*model.User {
 
 func (d chatRoomData) description() string {
 	buf := bytes.NewBufferString("")
-	fmt.Fprintf(buf, "faild to create %s", d.RoomMemoText)
+	fmt.Fprintf(buf, "faild to create %s", d.RoomName)
 	return buf.String()
 }
 func (d chatRoomData) hashValue() string {
@@ -201,7 +200,7 @@ func convertToHash(seed string) string {
 func concatString(data chatRoomData) string {
 	target := ""
 
-	users := data.Users
+	users := data.Accounts
 	sort.Slice(users, func(i, j int) bool { return users[i] < users[j] })
 
 	for _, u := range users {
