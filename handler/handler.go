@@ -95,18 +95,18 @@ func (a *appRequestHandler) AccountPostProfileHandler() account.PostProfileHandl
 		}
 
 		user, err = repo.UpdateUser(userUpdateData{
-			name: params.Name,
-			url:  params.ImageURL,
+			name: &params.Body.Name,
+			url:  &params.Body.ImageURL,
 		})
 
 		if err != nil {
 			return errorResponse(err)
 		}
 
-		return account.NewPostProfileOK().WithPayload(&apimodel.User{
+		return account.NewPostProfileOK().WithPayload(&apimodel.Account{
 			Name:     user.Name,
 			ImageURL: user.Url,
-			ID:       fmt.Sprint(user.ID),
+			ID:       int64(user.ID),
 			Hash:     user.UserHash,
 		})
 
