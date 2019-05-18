@@ -49,7 +49,6 @@ func (a *appRequestHandler) APIKeyAuthHandler() func(string) (interface{}, error
 }
 
 func (a *appRequestHandler) AuthUser(token string) (*model.User, apierror.ChatAPIError) {
-	println("auth : ", token)
 	repo := a.p.AuthRepository()
 	return repo.FindUser(token)
 }

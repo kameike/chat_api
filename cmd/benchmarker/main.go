@@ -17,8 +17,8 @@ import (
 	"github.com/kameike/chat_api/swggen/client/messages"
 )
 
-var userCount = 5
-var reqPerSec = 20
+var userCount = 1000
+var reqPerSec = 10
 var wtime = time.Duration(1000 / reqPerSec)
 
 var users = make([]basicAccount, userCount, userCount)
@@ -159,7 +159,7 @@ func randomRoomInfo(u1 basicAccount) roomInfo {
 }
 
 func authFor(a basicAccount) runtime.ClientAuthInfoWriter {
-	return httpclient.APIKeyAuth("x_chat_access_token", "header", a.accessToken)
+	return httpclient.APIKeyAuth("X-CHAT-ACCESS-TOKEN", "header", a.accessToken)
 }
 
 func roomString(r roomInfo) string {
