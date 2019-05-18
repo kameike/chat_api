@@ -13,7 +13,8 @@ import (
 	"github.com/kameike/chat_api/swggen/apimodel"
 	apiclient "github.com/kameike/chat_api/swggen/client"
 	"github.com/kameike/chat_api/swggen/client/account"
-	"github.com/kameike/chat_api/swggen/client/chat_rooms"
+	"github.com/kameike/chat_api/swggen/client/chatrooms"
+	"github.com/kameike/chat_api/swggen/client/messages"
 )
 
 var userCount = 20
@@ -22,12 +23,14 @@ var wtime = time.Duration(1000 / reqPerSec)
 
 var users = make([]basicAccount, userCount, userCount)
 var rooms = make(map[string]roomInfo)
-var userRooms = make(map[string][]roomInfo)
+var userRooms = make(map[int64][]roomInfo)
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
+	println("create user")
 	createAccounts()
 
+	println("udpate user")
 	wg := sync.WaitGroup{}
 	for i, u := range users {
 		uc := u
@@ -41,6 +44,7 @@ func main() {
 	}
 	wg.Wait()
 
+	println("get chat rooms")
 	for _, u := range users {
 		count := 3
 		room := make([]roomInfo, count, count)
@@ -118,12 +122,12 @@ func postMessage(r roomInfo) {
 		println("not effective room")
 		return
 	}
-	_, err := client.ChatRooms.PostChatroomsIDMessages(&chat_rooms.PostChatroomsIDMessagesParams{
-		Body: &apimodel.ChatCreate{
-			Message: "test",
+	_, err := client.Messages.PostChatroomsChatroomHashMessages(&messages.PostChatroomsChatroomHashMessagesParams{
+		Body: &apimodel.MessageRequest{
+			Content: "test",
 		},
-		ID:      r.hash,
-		Context: cxt,
+		ChatroomHash: r.hash,
+		Context:      cxt,
 	}, authFor(r.user1))
 
 	if err != nil {
@@ -133,7 +137,7 @@ func postMessage(r roomInfo) {
 
 type basicAccount struct {
 	accessToken string
-	user        apimodel.User
+	user        apimodel.Account
 }
 
 type roomInfo struct {
@@ -160,11 +164,11 @@ func authFor(a basicAccount) runtime.ClientAuthInfoWriter {
 
 func roomString(r roomInfo) string {
 	data := struct {
-		Users    []string `json:"users"`
+		Accounts []string `json:"users"`
 		RoomId   string   `json:"roomId"`
 		RoomName string   `json:"roomName"`
 	}{
-		Users: []string{
+		Accounts: []string{
 			r.user1.user.Hash,
 			r.user2.user.Hash,
 		},
@@ -190,9 +194,9 @@ func roomsString(r []roomInfo) []string {
 }
 
 func postRoomRequest(r []roomInfo, u basicAccount) {
-	res, err := client.ChatRooms.PostChatrooms(&chat_rooms.PostChatroomsParams{
+	res, err := client.Chatrooms.PostChatrooms(&chatrooms.PostChatroomsParams{
 		Body: &apimodel.ChatroomRequest{
-			Request: roomsString(r),
+			Chatrooms: roomsString(r),
 		},
 		Context: cxt,
 	}, authFor(u))
@@ -200,7 +204,7 @@ func postRoomRequest(r []roomInfo, u basicAccount) {
 	if err != nil {
 		println(err.Error())
 	} else {
-		for _, v := range res.Payload {
+		for _, v := range res.Payload.Chatrooms {
 			r := rooms[v.Name]
 			r.hash = v.ID
 			rooms[v.Name] = r
@@ -214,7 +218,9 @@ func updateProfiles(a basicAccount) {
 
 	res, err := client.Account.PostProfile(&account.PostProfileParams{
 		Context: cxt,
-		Name:    &newName,
+		Body: account.PostProfileBody{
+			Name: newName,
+		},
 	}, authFor(a))
 
 	if err != nil {
@@ -245,16 +251,18 @@ var client = apiclient.New(transport, strfmt.Default)
 
 func testCreateAcoount(index int) {
 	res, err := client.Account.PostAuth(&account.PostAuthParams{
-		Context:   cxt,
-		AuthToken: generateRandomToken(),
-		UserHash:  generateRandomToken(),
+		Context: cxt,
+		Body: account.PostAuthBody{
+			AuthToken:   generateRandomToken(),
+			AccountHash: generateRandomToken(),
+		},
 	})
 
 	if err != nil {
 		println(err.Error())
 	} else {
 		users[index] = basicAccount{
-			user:        *res.Payload.User,
+			user:        *res.Payload.Account,
 			accessToken: res.Payload.AccessToken,
 		}
 		println(users[index].accessToken)
