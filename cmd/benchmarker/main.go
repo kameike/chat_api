@@ -27,7 +27,7 @@ var userRooms = make(map[int64][]roomInfo)
 
 var cxt = context.Background()
 var host = "dev-chat.taimee.co.jp"
-var transport = httpclient.New(host, "", nil)
+var transport = httpclient.New(host, "", []string{"https"})
 var client = apiclient.New(transport, strfmt.Default)
 
 func main() {
@@ -170,7 +170,7 @@ func authFor(a basicAccount) runtime.ClientAuthInfoWriter {
 func roomString(r roomInfo) string {
 	data := struct {
 		Accounts []string `json:"accounts"`
-		RoomName string   `json:"channelName"`
+		RoomName string   `json:"accountHash"`
 	}{
 		Accounts: []string{
 			r.user1.user.Hash,

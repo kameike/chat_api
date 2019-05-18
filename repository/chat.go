@@ -31,7 +31,7 @@ func (c *chatRepository) CreateMessage(t string) apierror.ChatAPIError {
 	err := db.Save(message).Error
 
 	if err != nil {
-		return apierror.GeneralError(err)
+		return apierror.Error(apierror.POST_MESSAGE_FAILD, err)
 	}
 
 	rel := &model.UserChatRoom{}
@@ -42,7 +42,7 @@ func (c *chatRepository) CreateMessage(t string) apierror.ChatAPIError {
 	}).First(rel).Error
 
 	if err != nil {
-		return apierror.GeneralError(err)
+		return apierror.Error(apierror.RELOAD_AFTER_POST_FALID, err)
 	}
 
 	db.Model(&rel).Update("UpdatedAt", time.Now())

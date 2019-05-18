@@ -131,10 +131,10 @@ func PrepareDatasource() DataSourceDescriptor {
 
 func (d *appDatasourceDescriptor) pingRDB() ChatAPIError {
 	if d.db == nil {
-		return ErroRDBConnection(nil)
+		return Error(SERVICE_DOWN, nil)
 	}
 	if err := d.db.DB().Ping(); err != nil {
-		return ErroRDBConnection(err)
+		return Error(SERVICE_DOWN, err)
 	}
 	return nil
 }

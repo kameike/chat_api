@@ -31,7 +31,7 @@ func (u *userRepository) GetChatRooms(data ChatRoomsInfoDescriable) ([]*model.Ch
 	for i, chank := range data.RoomHashes() {
 		err := json.Unmarshal([]byte(chank), &roomsInfo[i])
 		if err != nil {
-			return nil, apierror.GeneralError(err)
+			return nil, apierror.Error(apierror.FATAL_ERROR, err)
 		}
 	}
 	return u.getChatrooms(roomsInfo)
@@ -44,7 +44,7 @@ func (u *userRepository) getChatrooms(data []chatRoomData) ([]*model.ChatRoom, a
 	if len(result.notFound) != 0 {
 		err := u.createChatrooms(result.notFound)
 		if err != nil {
-			return currentChatrooms, apierror.GeneralError(err)
+			return currentChatrooms, apierror.Error(apierror.CHATROOM_NOT_FOUND, err)
 		}
 		result := u.findChatrooms(result.notFound)
 
@@ -63,23 +63,22 @@ type findChatRoomInfo struct {
 
 func (u *userRepository) createChatrooms(data []chatRoomData) apierror.ChatAPIError {
 	userMaps := u.preloadUser(extractUserHashes(data))
-	errors := []apierror.ChatAPIError{}
 	rooms := []*model.ChatRoom{}
+	var errs apierror.ChatAPIError = nil
 
 NEXT_CHAT_ROOM:
 	for _, d := range data {
 		users := make([]model.User, len(d.Accounts), len(d.Accounts))
 
 		if len(users) == 0 {
-			println("cant create empty room")
 			continue NEXT_CHAT_ROOM
 		}
 
 		for i, u := range d.Accounts {
 			t := userMaps[u]
 			if t == nil {
-				errors = append(errors, apierror.FailToCreateChatRooom(d.description()))
-				println("faild to create due to user")
+				err := apierror.NewError(apierror.CHATROOM_NOT_FOUND)
+				errs = err.WrapWithSelf(errs)
 				continue NEXT_CHAT_ROOM
 			}
 			users[i] = *t
@@ -94,24 +93,20 @@ NEXT_CHAT_ROOM:
 		rooms = append(rooms, room)
 	}
 
-	if len(rooms) == 0 {
-		return apierror.NestedError(errors)
+	if errs != nil {
+		return errs
 	}
 
 	db := u.ds.RDB()
 	for _, r := range rooms {
 		e := db.Save(r).Error
 		if e != nil {
-			println("faild to save")
-			errors = append(errors, apierror.GeneralError(e))
+			err := apierror.NewError(apierror.CHATROOM_NOT_FOUND)
+			errs = err.WrapWithSelf(errs)
 		}
 	}
 
-	if len(errors) != 0 {
-		return apierror.NestedError(errors)
-	}
-
-	return nil
+	return errs
 }
 func extractUserHashes(data []chatRoomData) []string {
 	result := make([]string, 0, len(data))
@@ -227,7 +222,7 @@ func (u *userRepository) UpdateUser(data UserUpdateInfoDescriable) (*model.User,
 	err := rdb.Save(&user).Error
 
 	if err != nil {
-		return nil, apierror.GeneralError(err)
+		return nil, apierror.Error(apierror.FAILD_UPDATE_USER_INFO, err)
 	}
 
 	return &user, nil
@@ -253,7 +248,7 @@ func (u *userRepository) CreateMessage(req CreateMessageRequest) apierror.ChatAP
 	err := db.Save(message).Error
 
 	if err != nil {
-		return apierror.GeneralError(err)
+		return apierror.Error(apierror.THINK_LATER, err)
 	}
 
 	rel := &model.UserChatRoom{}
@@ -264,7 +259,7 @@ func (u *userRepository) CreateMessage(req CreateMessageRequest) apierror.ChatAP
 	}).First(rel).Error
 
 	if err != nil {
-		return apierror.GeneralError(err)
+		return apierror.Error(apierror.THINK_LATER, err)
 	}
 
 	db.Model(&rel).Update("UpdatedAt", time.Now())
@@ -283,7 +278,7 @@ func (u *userRepository) GetChatRoom(req GetChatRoomRequest) (*model.ChatRoom, a
 	err := db.Preload("Users").Preload("Messages").Model(&model.ChatRoom{}).Where("room_hash = ?", req.Hash).Find(&result).Error
 
 	if err != nil {
-		return nil, apierror.GeneralError(err)
+		return nil, apierror.Error(apierror.THINK_LATER, err)
 	}
 
 	isContain := false
@@ -295,7 +290,7 @@ func (u *userRepository) GetChatRoom(req GetChatRoomRequest) (*model.ChatRoom, a
 	}
 
 	if !isContain {
-		return nil, apierror.ErrorNoPermission()
+		return nil, apierror.Error(apierror.THINK_LATER, err)
 	}
 
 	return &result, nil

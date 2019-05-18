@@ -15,20 +15,20 @@ type authRepository struct {
 	d datasource.DataSourceDescriptor
 }
 
-func (r *authRepository) createUser(user model.User) (*model.User, apierror.ChatAPIError) {
+func (r *authRepository) createUser(user model.User) (*model.User, error) {
 	rdb := r.d.RDB()
 
 	err := rdb.Create(&user).Error
 
 	if err != nil {
-		return nil, apierror.ErrorLoginAuthFail(err)
+		return nil, err
 	}
 
 	updatedUser := &model.User{}
 	err = rdb.Where("user_hash = ?", user.UserHash).First(updatedUser).Error
 
 	if err != nil {
-		return nil, apierror.ErrorLoginAuthFail(err)
+		return nil, err
 	}
 	return updatedUser, nil
 }
@@ -47,19 +47,19 @@ func (r *authRepository) FindOrCreateUser(token string, hash string) (*model.Use
 	}
 
 	if err != nil {
-		return nil, nil, apierror.ErrorLoginAuthFail(err)
+		return nil, nil, apierror.Error(apierror.LOGIN_FAIL, err)
 	}
 
 	accessToken, err := r.createOrUpdateAccessToken(*updatedUser)
 
 	if err != nil {
-		return nil, nil, apierror.ErrorLoginAuthFail(err)
+		return nil, nil, apierror.Error(apierror.LOGIN_FAIL, err)
 	}
 
 	return updatedUser, accessToken, nil
 }
 
-func (r *authRepository) createOrUpdateAccessToken(u model.User) (*model.AccessToken, apierror.ChatAPIError) {
+func (r *authRepository) createOrUpdateAccessToken(u model.User) (*model.AccessToken, error) {
 	rdb := r.d.RDB()
 
 	accestToken := &model.AccessToken{
@@ -68,7 +68,7 @@ func (r *authRepository) createOrUpdateAccessToken(u model.User) (*model.AccessT
 
 	err := rdb.Where("user_id = ?", u.ID).First(&accestToken).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
-		return nil, apierror.ErrorLoginAuthFail(err)
+		return nil, err
 	}
 
 	accestToken.AccessToken = generateRandomToken()
@@ -86,7 +86,7 @@ func (r *authRepository) FindUser(token string) (*model.User, apierror.ChatAPIEr
 
 	err := db.Where("access_token = ?", token).First(tokenResult).Error
 	if err != nil {
-		return nil, apierror.GeneralError(err)
+		return nil, apierror.Error(apierror.INVALID_USER, err)
 	}
 	db.Model(tokenResult).Related(user)
 
