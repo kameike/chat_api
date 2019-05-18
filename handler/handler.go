@@ -95,6 +95,7 @@ func (d userUpdateData) ImageURL() *string {
 
 func (a *appRequestHandler) AccountPostProfileHandler() account.PostProfileHandlerFunc {
 	return func(params account.PostProfileParams, principal interface{}) middleware.Responder {
+		println("account-update")
 		user := principal.(*model.User)
 		repo, err := a.p.UserRepository(*user)
 

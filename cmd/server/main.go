@@ -29,7 +29,6 @@ func main() {
 	api := operations.NewChatAPI(swaggerSpec)
 
 	api.JSONConsumer = runtime.JSONConsumer()
-
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.RegisterConsumer("application/json", runtime.JSONConsumer())

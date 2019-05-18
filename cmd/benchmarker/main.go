@@ -17,7 +17,7 @@ import (
 	"github.com/kameike/chat_api/swggen/client/messages"
 )
 
-var userCount = 20
+var userCount = 5
 var reqPerSec = 20
 var wtime = time.Duration(1000 / reqPerSec)
 
