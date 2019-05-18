@@ -25,9 +25,7 @@ type Client struct {
 }
 
 /*
-GetHealth メッセージの一覧が取ってこれるよs
-
-一覧が頑張るよ
+GetHealth get health API
 */
 func (a *Client) GetHealth(params *GetHealthParams) (*GetHealthOK, error) {
 	// TODO: Validate the params before sending

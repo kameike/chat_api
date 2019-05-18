@@ -12,28 +12,28 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// Message チャットに使われるやつ
+// Message message
 // swagger:model message
 type Message struct {
 
+	// account
+	Account *Account `json:"account,omitempty"`
+
+	// content
+	Content string `json:"content,omitempty"`
+
+	// created at
+	CreatedAt int64 `json:"createdAt,omitempty"`
+
 	// id
 	ID int64 `json:"id,omitempty"`
-
-	// text
-	Text string `json:"text,omitempty"`
-
-	// timestamp
-	Timestamp int64 `json:"timestamp,omitempty"`
-
-	// user
-	User *User `json:"user,omitempty"`
 }
 
 // Validate validates this message
 func (m *Message) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateUser(formats); err != nil {
+	if err := m.validateAccount(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -43,16 +43,16 @@ func (m *Message) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Message) validateUser(formats strfmt.Registry) error {
+func (m *Message) validateAccount(formats strfmt.Registry) error {
 
-	if swag.IsZero(m.User) { // not required
+	if swag.IsZero(m.Account) { // not required
 		return nil
 	}
 
-	if m.User != nil {
-		if err := m.User.Validate(formats); err != nil {
+	if m.Account != nil {
+		if err := m.Account.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("user")
+				return ve.ValidateName("account")
 			}
 			return err
 		}

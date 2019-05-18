@@ -18,35 +18,45 @@ import (
 // swagger:model chatroom
 type Chatroom struct {
 
+	// accounts
+	Accounts []*Account `json:"accounts"`
+
+	// hash
+	Hash string `json:"hash,omitempty"`
+
 	// id
 	ID string `json:"id,omitempty"`
+
+	// メッセージを全て返します。
+	Messages []*Message `json:"messages"`
 
 	// name
 	Name string `json:"name,omitempty"`
 
-	// participants
-	Participants []*User `json:"participants"`
+	// read ats
+	ReadAts ReadAts `json:"readAts,omitempty"`
 
-	// 最大3件メッセージがあればpeekします。
-	PeekedChat []*Message `json:"peekedChat"`
-
-	// unreads
-	Unreads []*ChatroomUnreadsItems0 `json:"unreads"`
+	// unreads count
+	UnreadsCount []*UnreadCount `json:"unreadsCount"`
 }
 
 // Validate validates this chatroom
 func (m *Chatroom) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateParticipants(formats); err != nil {
+	if err := m.validateAccounts(formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.validatePeekedChat(formats); err != nil {
+	if err := m.validateMessages(formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.validateUnreads(formats); err != nil {
+	if err := m.validateReadAts(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateUnreadsCount(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -56,21 +66,21 @@ func (m *Chatroom) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Chatroom) validateParticipants(formats strfmt.Registry) error {
+func (m *Chatroom) validateAccounts(formats strfmt.Registry) error {
 
-	if swag.IsZero(m.Participants) { // not required
+	if swag.IsZero(m.Accounts) { // not required
 		return nil
 	}
 
-	for i := 0; i < len(m.Participants); i++ {
-		if swag.IsZero(m.Participants[i]) { // not required
+	for i := 0; i < len(m.Accounts); i++ {
+		if swag.IsZero(m.Accounts[i]) { // not required
 			continue
 		}
 
-		if m.Participants[i] != nil {
-			if err := m.Participants[i].Validate(formats); err != nil {
+		if m.Accounts[i] != nil {
+			if err := m.Accounts[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("participants" + "." + strconv.Itoa(i))
+					return ve.ValidateName("accounts" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -81,21 +91,21 @@ func (m *Chatroom) validateParticipants(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Chatroom) validatePeekedChat(formats strfmt.Registry) error {
+func (m *Chatroom) validateMessages(formats strfmt.Registry) error {
 
-	if swag.IsZero(m.PeekedChat) { // not required
+	if swag.IsZero(m.Messages) { // not required
 		return nil
 	}
 
-	for i := 0; i < len(m.PeekedChat); i++ {
-		if swag.IsZero(m.PeekedChat[i]) { // not required
+	for i := 0; i < len(m.Messages); i++ {
+		if swag.IsZero(m.Messages[i]) { // not required
 			continue
 		}
 
-		if m.PeekedChat[i] != nil {
-			if err := m.PeekedChat[i].Validate(formats); err != nil {
+		if m.Messages[i] != nil {
+			if err := m.Messages[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("peekedChat" + "." + strconv.Itoa(i))
+					return ve.ValidateName("messages" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -106,21 +116,37 @@ func (m *Chatroom) validatePeekedChat(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *Chatroom) validateUnreads(formats strfmt.Registry) error {
+func (m *Chatroom) validateReadAts(formats strfmt.Registry) error {
 
-	if swag.IsZero(m.Unreads) { // not required
+	if swag.IsZero(m.ReadAts) { // not required
 		return nil
 	}
 
-	for i := 0; i < len(m.Unreads); i++ {
-		if swag.IsZero(m.Unreads[i]) { // not required
+	if err := m.ReadAts.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("readAts")
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (m *Chatroom) validateUnreadsCount(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.UnreadsCount) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.UnreadsCount); i++ {
+		if swag.IsZero(m.UnreadsCount[i]) { // not required
 			continue
 		}
 
-		if m.Unreads[i] != nil {
-			if err := m.Unreads[i].Validate(formats); err != nil {
+		if m.UnreadsCount[i] != nil {
+			if err := m.UnreadsCount[i].Validate(formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("unreads" + "." + strconv.Itoa(i))
+					return ve.ValidateName("unreadsCount" + "." + strconv.Itoa(i))
 				}
 				return err
 			}
@@ -142,40 +168,6 @@ func (m *Chatroom) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary interface implementation
 func (m *Chatroom) UnmarshalBinary(b []byte) error {
 	var res Chatroom
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*m = res
-	return nil
-}
-
-// ChatroomUnreadsItems0 chatroom unreads items0
-// swagger:model ChatroomUnreadsItems0
-type ChatroomUnreadsItems0 struct {
-
-	// unread count
-	UnreadCount int64 `json:"unreadCount,omitempty"`
-
-	// user hash
-	UserHash string `json:"userHash,omitempty"`
-}
-
-// Validate validates this chatroom unreads items0
-func (m *ChatroomUnreadsItems0) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (m *ChatroomUnreadsItems0) MarshalBinary() ([]byte, error) {
-	if m == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(m)
-}
-
-// UnmarshalBinary interface implementation
-func (m *ChatroomUnreadsItems0) UnmarshalBinary(b []byte) error {
-	var res ChatroomUnreadsItems0
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

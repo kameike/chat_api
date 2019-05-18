@@ -13,12 +13,7 @@ import (
 
 // PostProfileURL generates an URL for the post profile operation
 type PostProfileURL struct {
-	ImageURL *string
-	Name     *string
-
 	_basePath string
-	// avoid unkeyed usage
-	_ struct{}
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the
@@ -44,26 +39,6 @@ func (o *PostProfileURL) Build() (*url.URL, error) {
 
 	_basePath := o._basePath
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)
-
-	qs := make(url.Values)
-
-	var imageURL string
-	if o.ImageURL != nil {
-		imageURL = *o.ImageURL
-	}
-	if imageURL != "" {
-		qs.Set("imageUrl", imageURL)
-	}
-
-	var name string
-	if o.Name != nil {
-		name = *o.Name
-	}
-	if name != "" {
-		qs.Set("name", name)
-	}
-
-	_result.RawQuery = qs.Encode()
 
 	return &_result, nil
 }

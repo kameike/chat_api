@@ -20,8 +20,9 @@ import (
 	"github.com/go-openapi/swag"
 
 	"github.com/kameike/chat_api/swggen/restapi/operations/account"
-	"github.com/kameike/chat_api/swggen/restapi/operations/chat_rooms"
+	"github.com/kameike/chat_api/swggen/restapi/operations/chatrooms"
 	"github.com/kameike/chat_api/swggen/restapi/operations/deploy"
+	"github.com/kameike/chat_api/swggen/restapi/operations/messages"
 )
 
 // NewChatAPI creates a new Chat instance
@@ -41,11 +42,14 @@ func NewChatAPI(spec *loads.Document) *ChatAPI {
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
 		JSONProducer:        runtime.JSONProducer(),
-		ChatRoomsGetChatroomsIDHandler: chat_rooms.GetChatroomsIDHandlerFunc(func(params chat_rooms.GetChatroomsIDParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation ChatRoomsGetChatroomsID has not yet been implemented")
+		ChatroomsGetAdminSearchChatroomsHandler: chatrooms.GetAdminSearchChatroomsHandlerFunc(func(params chatrooms.GetAdminSearchChatroomsParams) middleware.Responder {
+			return middleware.NotImplemented("operation ChatroomsGetAdminSearchChatrooms has not yet been implemented")
 		}),
-		ChatRoomsGetChatroomsIDMessagesHandler: chat_rooms.GetChatroomsIDMessagesHandlerFunc(func(params chat_rooms.GetChatroomsIDMessagesParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation ChatRoomsGetChatroomsIDMessages has not yet been implemented")
+		MessagesGetChatroomsChatroomHashMessagesHandler: messages.GetChatroomsChatroomHashMessagesHandlerFunc(func(params messages.GetChatroomsChatroomHashMessagesParams) middleware.Responder {
+			return middleware.NotImplemented("operation MessagesGetChatroomsChatroomHashMessages has not yet been implemented")
+		}),
+		ChatroomsGetChatroomsIDHandler: chatrooms.GetChatroomsIDHandlerFunc(func(params chatrooms.GetChatroomsIDParams) middleware.Responder {
+			return middleware.NotImplemented("operation ChatroomsGetChatroomsID has not yet been implemented")
 		}),
 		DeployGetHealthHandler: deploy.GetHealthHandlerFunc(func(params deploy.GetHealthParams) middleware.Responder {
 			return middleware.NotImplemented("operation DeployGetHealth has not yet been implemented")
@@ -53,26 +57,18 @@ func NewChatAPI(spec *loads.Document) *ChatAPI {
 		AccountPostAuthHandler: account.PostAuthHandlerFunc(func(params account.PostAuthParams) middleware.Responder {
 			return middleware.NotImplemented("operation AccountPostAuth has not yet been implemented")
 		}),
-		ChatRoomsPostChatroomsHandler: chat_rooms.PostChatroomsHandlerFunc(func(params chat_rooms.PostChatroomsParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation ChatRoomsPostChatrooms has not yet been implemented")
+		ChatroomsPostChatroomsHandler: chatrooms.PostChatroomsHandlerFunc(func(params chatrooms.PostChatroomsParams) middleware.Responder {
+			return middleware.NotImplemented("operation ChatroomsPostChatrooms has not yet been implemented")
 		}),
-		ChatRoomsPostChatroomsIDMessagesHandler: chat_rooms.PostChatroomsIDMessagesHandlerFunc(func(params chat_rooms.PostChatroomsIDMessagesParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation ChatRoomsPostChatroomsIDMessages has not yet been implemented")
+		ChatroomsPostChatroomsChannelHashReadHandler: chatrooms.PostChatroomsChannelHashReadHandlerFunc(func(params chatrooms.PostChatroomsChannelHashReadParams) middleware.Responder {
+			return middleware.NotImplemented("operation ChatroomsPostChatroomsChannelHashRead has not yet been implemented")
 		}),
-		ChatRoomsPostChatroomsIDReadHandler: chat_rooms.PostChatroomsIDReadHandlerFunc(func(params chat_rooms.PostChatroomsIDReadParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation ChatRoomsPostChatroomsIDRead has not yet been implemented")
+		MessagesPostChatroomsChatroomHashMessagesHandler: messages.PostChatroomsChatroomHashMessagesHandlerFunc(func(params messages.PostChatroomsChatroomHashMessagesParams) middleware.Responder {
+			return middleware.NotImplemented("operation MessagesPostChatroomsChatroomHashMessages has not yet been implemented")
 		}),
-		AccountPostProfileHandler: account.PostProfileHandlerFunc(func(params account.PostProfileParams, principal interface{}) middleware.Responder {
+		AccountPostProfileHandler: account.PostProfileHandlerFunc(func(params account.PostProfileParams) middleware.Responder {
 			return middleware.NotImplemented("operation AccountPostProfile has not yet been implemented")
 		}),
-
-		// Applies when the "x_chat_access_token" header is set
-		APIKeyAuth: func(token string) (interface{}, error) {
-			return nil, errors.NotImplemented("api key auth (api_key) x_chat_access_token from header param [x_chat_access_token] has not yet been implemented")
-		},
-
-		// default authorizer is authorized meaning no requests are blocked
-		APIAuthorizer: security.Authorized(),
 	}
 }
 
@@ -89,13 +85,13 @@ type ChatAPI struct {
 	Middleware      func(middleware.Builder) http.Handler
 
 	// BasicAuthenticator generates a runtime.Authenticator from the supplied basic auth function.
-	// It has a default implemention in the security package, however you can replace it for your particular usage.
+	// It has a default implementation in the security package, however you can replace it for your particular usage.
 	BasicAuthenticator func(security.UserPassAuthentication) runtime.Authenticator
 	// APIKeyAuthenticator generates a runtime.Authenticator from the supplied token auth function.
-	// It has a default implemention in the security package, however you can replace it for your particular usage.
+	// It has a default implementation in the security package, however you can replace it for your particular usage.
 	APIKeyAuthenticator func(string, string, security.TokenAuthentication) runtime.Authenticator
 	// BearerAuthenticator generates a runtime.Authenticator from the supplied bearer token auth function.
-	// It has a default implemention in the security package, however you can replace it for your particular usage.
+	// It has a default implementation in the security package, however you can replace it for your particular usage.
 	BearerAuthenticator func(string, security.ScopedTokenAuthentication) runtime.Authenticator
 
 	// JSONConsumer registers a consumer for a "application/json" mime type
@@ -104,27 +100,22 @@ type ChatAPI struct {
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
 
-	// APIKeyAuth registers a function that takes a token and returns a principal
-	// it performs authentication based on an api key x_chat_access_token provided in the header
-	APIKeyAuth func(string) (interface{}, error)
-
-	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
-	APIAuthorizer runtime.Authorizer
-
-	// ChatRoomsGetChatroomsIDHandler sets the operation handler for the get chatrooms ID operation
-	ChatRoomsGetChatroomsIDHandler chat_rooms.GetChatroomsIDHandler
-	// ChatRoomsGetChatroomsIDMessagesHandler sets the operation handler for the get chatrooms ID messages operation
-	ChatRoomsGetChatroomsIDMessagesHandler chat_rooms.GetChatroomsIDMessagesHandler
+	// ChatroomsGetAdminSearchChatroomsHandler sets the operation handler for the get admin search chatrooms operation
+	ChatroomsGetAdminSearchChatroomsHandler chatrooms.GetAdminSearchChatroomsHandler
+	// MessagesGetChatroomsChatroomHashMessagesHandler sets the operation handler for the get chatrooms chatroom hash messages operation
+	MessagesGetChatroomsChatroomHashMessagesHandler messages.GetChatroomsChatroomHashMessagesHandler
+	// ChatroomsGetChatroomsIDHandler sets the operation handler for the get chatrooms ID operation
+	ChatroomsGetChatroomsIDHandler chatrooms.GetChatroomsIDHandler
 	// DeployGetHealthHandler sets the operation handler for the get health operation
 	DeployGetHealthHandler deploy.GetHealthHandler
 	// AccountPostAuthHandler sets the operation handler for the post auth operation
 	AccountPostAuthHandler account.PostAuthHandler
-	// ChatRoomsPostChatroomsHandler sets the operation handler for the post chatrooms operation
-	ChatRoomsPostChatroomsHandler chat_rooms.PostChatroomsHandler
-	// ChatRoomsPostChatroomsIDMessagesHandler sets the operation handler for the post chatrooms ID messages operation
-	ChatRoomsPostChatroomsIDMessagesHandler chat_rooms.PostChatroomsIDMessagesHandler
-	// ChatRoomsPostChatroomsIDReadHandler sets the operation handler for the post chatrooms ID read operation
-	ChatRoomsPostChatroomsIDReadHandler chat_rooms.PostChatroomsIDReadHandler
+	// ChatroomsPostChatroomsHandler sets the operation handler for the post chatrooms operation
+	ChatroomsPostChatroomsHandler chatrooms.PostChatroomsHandler
+	// ChatroomsPostChatroomsChannelHashReadHandler sets the operation handler for the post chatrooms channel hash read operation
+	ChatroomsPostChatroomsChannelHashReadHandler chatrooms.PostChatroomsChannelHashReadHandler
+	// MessagesPostChatroomsChatroomHashMessagesHandler sets the operation handler for the post chatrooms chatroom hash messages operation
+	MessagesPostChatroomsChatroomHashMessagesHandler messages.PostChatroomsChatroomHashMessagesHandler
 	// AccountPostProfileHandler sets the operation handler for the post profile operation
 	AccountPostProfileHandler account.PostProfileHandler
 
@@ -190,16 +181,16 @@ func (o *ChatAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
-	if o.APIKeyAuth == nil {
-		unregistered = append(unregistered, "XChatAccessTokenAuth")
+	if o.ChatroomsGetAdminSearchChatroomsHandler == nil {
+		unregistered = append(unregistered, "chatrooms.GetAdminSearchChatroomsHandler")
 	}
 
-	if o.ChatRoomsGetChatroomsIDHandler == nil {
-		unregistered = append(unregistered, "chat_rooms.GetChatroomsIDHandler")
+	if o.MessagesGetChatroomsChatroomHashMessagesHandler == nil {
+		unregistered = append(unregistered, "messages.GetChatroomsChatroomHashMessagesHandler")
 	}
 
-	if o.ChatRoomsGetChatroomsIDMessagesHandler == nil {
-		unregistered = append(unregistered, "chat_rooms.GetChatroomsIDMessagesHandler")
+	if o.ChatroomsGetChatroomsIDHandler == nil {
+		unregistered = append(unregistered, "chatrooms.GetChatroomsIDHandler")
 	}
 
 	if o.DeployGetHealthHandler == nil {
@@ -210,16 +201,16 @@ func (o *ChatAPI) Validate() error {
 		unregistered = append(unregistered, "account.PostAuthHandler")
 	}
 
-	if o.ChatRoomsPostChatroomsHandler == nil {
-		unregistered = append(unregistered, "chat_rooms.PostChatroomsHandler")
+	if o.ChatroomsPostChatroomsHandler == nil {
+		unregistered = append(unregistered, "chatrooms.PostChatroomsHandler")
 	}
 
-	if o.ChatRoomsPostChatroomsIDMessagesHandler == nil {
-		unregistered = append(unregistered, "chat_rooms.PostChatroomsIDMessagesHandler")
+	if o.ChatroomsPostChatroomsChannelHashReadHandler == nil {
+		unregistered = append(unregistered, "chatrooms.PostChatroomsChannelHashReadHandler")
 	}
 
-	if o.ChatRoomsPostChatroomsIDReadHandler == nil {
-		unregistered = append(unregistered, "chat_rooms.PostChatroomsIDReadHandler")
+	if o.MessagesPostChatroomsChatroomHashMessagesHandler == nil {
+		unregistered = append(unregistered, "messages.PostChatroomsChatroomHashMessagesHandler")
 	}
 
 	if o.AccountPostProfileHandler == nil {
@@ -241,24 +232,14 @@ func (o *ChatAPI) ServeErrorFor(operationID string) func(http.ResponseWriter, *h
 // AuthenticatorsFor gets the authenticators for the specified security schemes
 func (o *ChatAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) map[string]runtime.Authenticator {
 
-	result := make(map[string]runtime.Authenticator)
-	for name, scheme := range schemes {
-		switch name {
-
-		case "api_key":
-
-			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, o.APIKeyAuth)
-
-		}
-	}
-	return result
+	return nil
 
 }
 
 // Authorizer returns the registered authorizer
 func (o *ChatAPI) Authorizer() runtime.Authorizer {
 
-	return o.APIAuthorizer
+	return nil
 
 }
 
@@ -337,12 +318,17 @@ func (o *ChatAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/chatrooms/{id}"] = chat_rooms.NewGetChatroomsID(o.context, o.ChatRoomsGetChatroomsIDHandler)
+	o.handlers["GET"]["/admin/search/chatrooms"] = chatrooms.NewGetAdminSearchChatrooms(o.context, o.ChatroomsGetAdminSearchChatroomsHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/chatrooms/{id}/messages"] = chat_rooms.NewGetChatroomsIDMessages(o.context, o.ChatRoomsGetChatroomsIDMessagesHandler)
+	o.handlers["GET"]["/chatrooms/{chatroom_hash}/messages"] = messages.NewGetChatroomsChatroomHashMessages(o.context, o.MessagesGetChatroomsChatroomHashMessagesHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/chatrooms/{id}"] = chatrooms.NewGetChatroomsID(o.context, o.ChatroomsGetChatroomsIDHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
@@ -357,17 +343,17 @@ func (o *ChatAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/chatrooms"] = chat_rooms.NewPostChatrooms(o.context, o.ChatRoomsPostChatroomsHandler)
+	o.handlers["POST"]["/chatrooms"] = chatrooms.NewPostChatrooms(o.context, o.ChatroomsPostChatroomsHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/chatrooms/{id}/messages"] = chat_rooms.NewPostChatroomsIDMessages(o.context, o.ChatRoomsPostChatroomsIDMessagesHandler)
+	o.handlers["POST"]["/chatrooms/{channel_hash}/read"] = chatrooms.NewPostChatroomsChannelHashRead(o.context, o.ChatroomsPostChatroomsChannelHashReadHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/chatrooms/{id}/read"] = chat_rooms.NewPostChatroomsIDRead(o.context, o.ChatRoomsPostChatroomsIDReadHandler)
+	o.handlers["POST"]["/chatrooms/{chatroom_hash}/messages"] = messages.NewPostChatroomsChatroomHashMessages(o.context, o.MessagesPostChatroomsChatroomHashMessagesHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)

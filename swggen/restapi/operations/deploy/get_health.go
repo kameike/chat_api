@@ -31,9 +31,7 @@ func NewGetHealth(ctx *middleware.Context, handler GetHealthHandler) *GetHealth 
 
 /*GetHealth swagger:route GET /health deploy getHealth
 
-メッセージの一覧が取ってこれるよ
-
-一覧が頑張るよ
+GetHealth get health API
 
 */
 type GetHealth struct {

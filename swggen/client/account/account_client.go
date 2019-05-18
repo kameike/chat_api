@@ -59,7 +59,7 @@ PostProfile ユーザープロファイルのアップデートs
 
 nameをアップデートできます。
 */
-func (a *Client) PostProfile(params *PostProfileParams, authInfo runtime.ClientAuthInfoWriter) (*PostProfileOK, error) {
+func (a *Client) PostProfile(params *PostProfileParams) (*PostProfileOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewPostProfileParams()
@@ -74,7 +74,6 @@ func (a *Client) PostProfile(params *PostProfileParams, authInfo runtime.ClientA
 		Schemes:            []string{"http"},
 		Params:             params,
 		Reader:             &PostProfileReader{formats: a.formats},
-		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	})

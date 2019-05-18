@@ -10,6 +10,7 @@ import (
 	"io"
 
 	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/swag"
 
 	strfmt "github.com/go-openapi/strfmt"
 
@@ -32,6 +33,13 @@ func (o *PostProfileReader) ReadResponse(response runtime.ClientResponse, consum
 		}
 		return result, nil
 
+	case 403:
+		result := NewPostProfileForbidden()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
+
 	default:
 		return nil, runtime.NewAPIError("unknown error", response, response.Code())
 	}
@@ -47,7 +55,7 @@ func NewPostProfileOK() *PostProfileOK {
 ok
 */
 type PostProfileOK struct {
-	Payload *apimodel.User
+	Payload *apimodel.Account
 }
 
 func (o *PostProfileOK) Error() string {
@@ -56,12 +64,79 @@ func (o *PostProfileOK) Error() string {
 
 func (o *PostProfileOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(apimodel.User)
+	o.Payload = new(apimodel.Account)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
 		return err
 	}
 
+	return nil
+}
+
+// NewPostProfileForbidden creates a PostProfileForbidden with default headers values
+func NewPostProfileForbidden() *PostProfileForbidden {
+	return &PostProfileForbidden{}
+}
+
+/*PostProfileForbidden handles this case with default header values.
+
+error
+*/
+type PostProfileForbidden struct {
+	Payload *apimodel.Error
+}
+
+func (o *PostProfileForbidden) Error() string {
+	return fmt.Sprintf("[POST /profile][%d] postProfileForbidden  %+v", 403, o.Payload)
+}
+
+func (o *PostProfileForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(apimodel.Error)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
+
+	return nil
+}
+
+/*PostProfileBody post profile body
+swagger:model PostProfileBody
+*/
+type PostProfileBody struct {
+
+	// image URL
+	ImageURL string `json:"imageURL,omitempty"`
+
+	// name
+	Name string `json:"name,omitempty"`
+
+	// push token
+	PushToken string `json:"pushToken,omitempty"`
+}
+
+// Validate validates this post profile body
+func (o *PostProfileBody) Validate(formats strfmt.Registry) error {
+	return nil
+}
+
+// MarshalBinary interface implementation
+func (o *PostProfileBody) MarshalBinary() ([]byte, error) {
+	if o == nil {
+		return nil, nil
+	}
+	return swag.WriteJSON(o)
+}
+
+// UnmarshalBinary interface implementation
+func (o *PostProfileBody) UnmarshalBinary(b []byte) error {
+	var res PostProfileBody
+	if err := swag.ReadJSON(b, &res); err != nil {
+		return err
+	}
+	*o = res
 	return nil
 }

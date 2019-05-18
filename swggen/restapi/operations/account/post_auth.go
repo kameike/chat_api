@@ -9,6 +9,8 @@ import (
 	"net/http"
 
 	middleware "github.com/go-openapi/runtime/middleware"
+	strfmt "github.com/go-openapi/strfmt"
+	swag "github.com/go-openapi/swag"
 )
 
 // PostAuthHandlerFunc turns a function with the right signature into a post auth handler
@@ -57,4 +59,38 @@ func (o *PostAuth) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 	o.Context.Respond(rw, r, route.Produces, route, res)
 
+}
+
+// PostAuthBody post auth body
+// swagger:model PostAuthBody
+type PostAuthBody struct {
+
+	// account hash
+	AccountHash string `json:"accountHash,omitempty"`
+
+	// auth token
+	AuthToken string `json:"authToken,omitempty"`
+}
+
+// Validate validates this post auth body
+func (o *PostAuthBody) Validate(formats strfmt.Registry) error {
+	return nil
+}
+
+// MarshalBinary interface implementation
+func (o *PostAuthBody) MarshalBinary() ([]byte, error) {
+	if o == nil {
+		return nil, nil
+	}
+	return swag.WriteJSON(o)
+}
+
+// UnmarshalBinary interface implementation
+func (o *PostAuthBody) UnmarshalBinary(b []byte) error {
+	var res PostAuthBody
+	if err := swag.ReadJSON(b, &res); err != nil {
+		return err
+	}
+	*o = res
+	return nil
 }

@@ -19,15 +19,15 @@ type AuthInfo struct {
 	// access token
 	AccessToken string `json:"accessToken,omitempty"`
 
-	// user
-	User *User `json:"user,omitempty"`
+	// account
+	Account *Account `json:"account,omitempty"`
 }
 
 // Validate validates this auth info
 func (m *AuthInfo) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateUser(formats); err != nil {
+	if err := m.validateAccount(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -37,16 +37,16 @@ func (m *AuthInfo) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *AuthInfo) validateUser(formats strfmt.Registry) error {
+func (m *AuthInfo) validateAccount(formats strfmt.Registry) error {
 
-	if swag.IsZero(m.User) { // not required
+	if swag.IsZero(m.Account) { // not required
 		return nil
 	}
 
-	if m.User != nil {
-		if err := m.User.Validate(formats); err != nil {
+	if m.Account != nil {
+		if err := m.Account.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("user")
+				return ve.ValidateName("account")
 			}
 			return err
 		}

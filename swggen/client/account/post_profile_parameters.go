@@ -61,16 +61,8 @@ for the post profile operation typically these are written to a http.Request
 */
 type PostProfileParams struct {
 
-	/*ImageURL
-	  画像のURL
-
-	*/
-	ImageURL *string
-	/*Name
-	  名前
-
-	*/
-	Name *string
+	/*Body*/
+	Body PostProfileBody
 
 	timeout    time.Duration
 	Context    context.Context
@@ -110,26 +102,15 @@ func (o *PostProfileParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithImageURL adds the imageURL to the post profile params
-func (o *PostProfileParams) WithImageURL(imageURL *string) *PostProfileParams {
-	o.SetImageURL(imageURL)
+// WithBody adds the body to the post profile params
+func (o *PostProfileParams) WithBody(body PostProfileBody) *PostProfileParams {
+	o.SetBody(body)
 	return o
 }
 
-// SetImageURL adds the imageUrl to the post profile params
-func (o *PostProfileParams) SetImageURL(imageURL *string) {
-	o.ImageURL = imageURL
-}
-
-// WithName adds the name to the post profile params
-func (o *PostProfileParams) WithName(name *string) *PostProfileParams {
-	o.SetName(name)
-	return o
-}
-
-// SetName adds the name to the post profile params
-func (o *PostProfileParams) SetName(name *string) {
-	o.Name = name
+// SetBody adds the body to the post profile params
+func (o *PostProfileParams) SetBody(body PostProfileBody) {
+	o.Body = body
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -140,36 +121,8 @@ func (o *PostProfileParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.R
 	}
 	var res []error
 
-	if o.ImageURL != nil {
-
-		// query param imageUrl
-		var qrImageURL string
-		if o.ImageURL != nil {
-			qrImageURL = *o.ImageURL
-		}
-		qImageURL := qrImageURL
-		if qImageURL != "" {
-			if err := r.SetQueryParam("imageUrl", qImageURL); err != nil {
-				return err
-			}
-		}
-
-	}
-
-	if o.Name != nil {
-
-		// query param name
-		var qrName string
-		if o.Name != nil {
-			qrName = *o.Name
-		}
-		qName := qrName
-		if qName != "" {
-			if err := r.SetQueryParam("name", qName); err != nil {
-				return err
-			}
-		}
-
+	if err := r.SetBodyParam(o.Body); err != nil {
+		return err
 	}
 
 	if len(res) > 0 {

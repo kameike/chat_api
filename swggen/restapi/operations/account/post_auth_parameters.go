@@ -6,14 +6,12 @@ package account
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"io"
 	"net/http"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
-	"github.com/go-openapi/validate"
-
-	strfmt "github.com/go-openapi/strfmt"
 )
 
 // NewPostAuthParams creates a new PostAuthParams object
@@ -32,16 +30,11 @@ type PostAuthParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
-	/*他のユーザーから見えないユーザーを特定するハッシュ値です。パスワードのように扱われます。アクセストークンの取得に使用します。
+	/*
 	  Required: true
-	  In: query
+	  In: body
 	*/
-	AuthToken string
-	/*apiサーバー等から払い出されるハッシュ値です。他のユーザーから見えても大丈夫で、推測が難しいものが望ましいです。これでユーザーは一意に特定されるのでuniqである必要もあります。
-	  Required: true
-	  In: query
-	*/
-	UserHash string
+	Body PostAuthBody
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -53,62 +46,30 @@ func (o *PostAuthParams) BindRequest(r *http.Request, route *middleware.MatchedR
 
 	o.HTTPRequest = r
 
-	qs := runtime.Values(r.URL.Query())
+	if runtime.HasBody(r) {
+		defer r.Body.Close()
+		var body PostAuthBody
+		if err := route.Consumer.Consume(r.Body, &body); err != nil {
+			if err == io.EOF {
+				res = append(res, errors.Required("body", "body"))
+			} else {
+				res = append(res, errors.NewParseError("body", "body", "", err))
+			}
+		} else {
+			// validate body object
+			if err := body.Validate(route.Formats); err != nil {
+				res = append(res, err)
+			}
 
-	qAuthToken, qhkAuthToken, _ := qs.GetOK("authToken")
-	if err := o.bindAuthToken(qAuthToken, qhkAuthToken, route.Formats); err != nil {
-		res = append(res, err)
+			if len(res) == 0 {
+				o.Body = body
+			}
+		}
+	} else {
+		res = append(res, errors.Required("body", "body"))
 	}
-
-	qUserHash, qhkUserHash, _ := qs.GetOK("userHash")
-	if err := o.bindUserHash(qUserHash, qhkUserHash, route.Formats); err != nil {
-		res = append(res, err)
-	}
-
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-// bindAuthToken binds and validates parameter AuthToken from query.
-func (o *PostAuthParams) bindAuthToken(rawData []string, hasKey bool, formats strfmt.Registry) error {
-	if !hasKey {
-		return errors.Required("authToken", "query")
-	}
-	var raw string
-	if len(rawData) > 0 {
-		raw = rawData[len(rawData)-1]
-	}
-
-	// Required: true
-	// AllowEmptyValue: false
-	if err := validate.RequiredString("authToken", "query", raw); err != nil {
-		return err
-	}
-
-	o.AuthToken = raw
-
-	return nil
-}
-
-// bindUserHash binds and validates parameter UserHash from query.
-func (o *PostAuthParams) bindUserHash(rawData []string, hasKey bool, formats strfmt.Registry) error {
-	if !hasKey {
-		return errors.Required("userHash", "query")
-	}
-	var raw string
-	if len(rawData) > 0 {
-		raw = rawData[len(rawData)-1]
-	}
-
-	// Required: true
-	// AllowEmptyValue: false
-	if err := validate.RequiredString("userHash", "query", raw); err != nil {
-		return err
-	}
-
-	o.UserHash = raw
-
 	return nil
 }

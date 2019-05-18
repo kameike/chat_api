@@ -25,7 +25,7 @@ type PostProfileOK struct {
 	/*
 	  In: Body
 	*/
-	Payload *apimodel.User `json:"body,omitempty"`
+	Payload *apimodel.Account `json:"body,omitempty"`
 }
 
 // NewPostProfileOK creates PostProfileOK with default headers values
@@ -35,13 +35,13 @@ func NewPostProfileOK() *PostProfileOK {
 }
 
 // WithPayload adds the payload to the post profile o k response
-func (o *PostProfileOK) WithPayload(payload *apimodel.User) *PostProfileOK {
+func (o *PostProfileOK) WithPayload(payload *apimodel.Account) *PostProfileOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the post profile o k response
-func (o *PostProfileOK) SetPayload(payload *apimodel.User) {
+func (o *PostProfileOK) SetPayload(payload *apimodel.Account) {
 	o.Payload = payload
 }
 
@@ -49,6 +49,50 @@ func (o *PostProfileOK) SetPayload(payload *apimodel.User) {
 func (o *PostProfileOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
+
+// PostProfileForbiddenCode is the HTTP code returned for type PostProfileForbidden
+const PostProfileForbiddenCode int = 403
+
+/*PostProfileForbidden error
+
+swagger:response postProfileForbidden
+*/
+type PostProfileForbidden struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *apimodel.Error `json:"body,omitempty"`
+}
+
+// NewPostProfileForbidden creates PostProfileForbidden with default headers values
+func NewPostProfileForbidden() *PostProfileForbidden {
+
+	return &PostProfileForbidden{}
+}
+
+// WithPayload adds the payload to the post profile forbidden response
+func (o *PostProfileForbidden) WithPayload(payload *apimodel.Error) *PostProfileForbidden {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the post profile forbidden response
+func (o *PostProfileForbidden) SetPayload(payload *apimodel.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *PostProfileForbidden) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(403)
 	if o.Payload != nil {
 		payload := o.Payload
 		if err := producer.Produce(rw, payload); err != nil {

@@ -15,8 +15,8 @@ import (
 // swagger:model chatroomRequest
 type ChatroomRequest struct {
 
-	// request
-	Request []string `json:"request"`
+	// chatrooms
+	Chatrooms []string `json:"chatrooms"`
 }
 
 // Validate validates this chatroom request

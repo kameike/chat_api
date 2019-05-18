@@ -61,16 +61,8 @@ for the post auth operation typically these are written to a http.Request
 */
 type PostAuthParams struct {
 
-	/*AuthToken
-	  他のユーザーから見えないユーザーを特定するハッシュ値です。パスワードのように扱われます。アクセストークンの取得に使用します。
-
-	*/
-	AuthToken string
-	/*UserHash
-	  apiサーバー等から払い出されるハッシュ値です。他のユーザーから見えても大丈夫で、推測が難しいものが望ましいです。これでユーザーは一意に特定されるのでuniqである必要もあります。
-
-	*/
-	UserHash string
+	/*Body*/
+	Body PostAuthBody
 
 	timeout    time.Duration
 	Context    context.Context
@@ -110,26 +102,15 @@ func (o *PostAuthParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithAuthToken adds the authToken to the post auth params
-func (o *PostAuthParams) WithAuthToken(authToken string) *PostAuthParams {
-	o.SetAuthToken(authToken)
+// WithBody adds the body to the post auth params
+func (o *PostAuthParams) WithBody(body PostAuthBody) *PostAuthParams {
+	o.SetBody(body)
 	return o
 }
 
-// SetAuthToken adds the authToken to the post auth params
-func (o *PostAuthParams) SetAuthToken(authToken string) {
-	o.AuthToken = authToken
-}
-
-// WithUserHash adds the userHash to the post auth params
-func (o *PostAuthParams) WithUserHash(userHash string) *PostAuthParams {
-	o.SetUserHash(userHash)
-	return o
-}
-
-// SetUserHash adds the userHash to the post auth params
-func (o *PostAuthParams) SetUserHash(userHash string) {
-	o.UserHash = userHash
+// SetBody adds the body to the post auth params
+func (o *PostAuthParams) SetBody(body PostAuthBody) {
+	o.Body = body
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -140,22 +121,8 @@ func (o *PostAuthParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Regi
 	}
 	var res []error
 
-	// query param authToken
-	qrAuthToken := o.AuthToken
-	qAuthToken := qrAuthToken
-	if qAuthToken != "" {
-		if err := r.SetQueryParam("authToken", qAuthToken); err != nil {
-			return err
-		}
-	}
-
-	// query param userHash
-	qrUserHash := o.UserHash
-	qUserHash := qrUserHash
-	if qUserHash != "" {
-		if err := r.SetQueryParam("userHash", qUserHash); err != nil {
-			return err
-		}
+	if err := r.SetBodyParam(o.Body); err != nil {
+		return err
 	}
 
 	if len(res) > 0 {

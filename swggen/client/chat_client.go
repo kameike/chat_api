@@ -12,8 +12,9 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 
 	"github.com/kameike/chat_api/swggen/client/account"
-	"github.com/kameike/chat_api/swggen/client/chat_rooms"
+	"github.com/kameike/chat_api/swggen/client/chatrooms"
 	"github.com/kameike/chat_api/swggen/client/deploy"
+	"github.com/kameike/chat_api/swggen/client/messages"
 )
 
 // Default chat HTTP client.
@@ -61,9 +62,11 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Chat {
 
 	cli.Account = account.New(transport, formats)
 
-	cli.ChatRooms = chat_rooms.New(transport, formats)
+	cli.Chatrooms = chatrooms.New(transport, formats)
 
 	cli.Deploy = deploy.New(transport, formats)
+
+	cli.Messages = messages.New(transport, formats)
 
 	return cli
 }
@@ -111,9 +114,11 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 type Chat struct {
 	Account *account.Client
 
-	ChatRooms *chat_rooms.Client
+	Chatrooms *chatrooms.Client
 
 	Deploy *deploy.Client
+
+	Messages *messages.Client
 
 	Transport runtime.ClientTransport
 }
@@ -124,8 +129,10 @@ func (c *Chat) SetTransport(transport runtime.ClientTransport) {
 
 	c.Account.SetTransport(transport)
 
-	c.ChatRooms.SetTransport(transport)
+	c.Chatrooms.SetTransport(transport)
 
 	c.Deploy.SetTransport(transport)
+
+	c.Messages.SetTransport(transport)
 
 }
