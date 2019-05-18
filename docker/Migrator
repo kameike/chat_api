@@ -17,11 +17,12 @@ RUN dep ensure -v --vendor-only
 
 ADD . .
 
-RUN CGO_ENABLED=0 go build -a --tags "libsqlite3 linux netgo" -installsuffix netgo -o main cmd/server/main.go
+RUN CGO_ENABLED=0 go build -a --tags "libsqlite3 linux netgo" -installsuffix netgo -o main cmd/migration/main.go
 
 # FROM scratch
 FROM alpine
 COPY --from=0 /go/src/github.com/kameike/chat_api/main .
+COPY --from=0 /go/src/github.com/kameike/chat_api/cmd/migration/ .
 
 ENV PORT 1323
 
