@@ -1,0 +1,357 @@
+consumes:
+- application/json
+info:
+  description: From the todo list tutorial on goswagger.io
+  title: Taimme-Chat
+  version: 1.0.0
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"
+
+paths:
+  /auth:
+    post:
+      tags:
+      - account
+      summary: "ログイン"
+      description: "サインアップもしくはアクセストークンの更新を行います"
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              authToken:
+                type: "string"
+              accountHash:
+                type: "string"
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: "#/definitions/authInfo"
+        403:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
+  /profile:
+    post:
+      tags:
+      - account
+      summary: ユーザープロファイルのアップデート
+      description: nameをアップデートできます。
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: "string"
+                example: "raz"
+              imageURL:
+                type: "string"
+                example: "https://hogehoge.com"
+              pushToken:
+                type: "string"
+                example: "GRTo4JUvDwEzJogb"
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: "#/definitions/account"
+        403:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+  /chatrooms/{id}:
+    get:
+      tags:
+        - "chatrooms"
+      parameters:
+        - in: path
+          name: id
+          type: string
+          required: true
+          description: 長いハッシュ値
+      summary: "メッセージの一覧が取ってこれるよ"
+      description: "一覧が頑張るよ"
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: "#/definitions/chatroom"
+        403:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
+  /chatrooms/{chatroom_hash}/messages:
+    parameters:
+      - in: path
+        name: chatroom_hash
+        type: string
+        required: true
+        description: 長いハッシュ値
+    post:
+      tags:
+        - "messages"
+      summary: "メッセージの投稿"
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/messageRequest'
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: "#/definitions/messagesResponse"
+        403:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
+    get:
+      tags:
+        - "messages"
+      summary: メッセージの取得
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: "#/definitions/messagesResponse"
+        403:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
+  /chatrooms/{channel_hash}/read:
+    parameters:
+      - in: path
+        name: channel_hash
+        type: string
+        required: true
+        description: 長いハッシュ値
+    post:
+      tags:
+        - "chatrooms"
+      summary: "全部既読にするやつ"
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: "#/definitions/messagesResponse"
+        403:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
+  /chatrooms:
+    post:
+      tags:
+        - "chatrooms"
+      summary: "チャットルームの一覧が取ってこれるよ"
+      description: '一覧が出るよ.それぞれの文字列はこの形でお願いします。
+
+              {
+                accounts: ["userId", "userId"],
+                channelName: "name"
+              }
+        '
+
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/chatroomRequest'
+      responses:
+        200:
+          description: ok
+          schema:
+            type: object
+            properties:
+              chatrooms:
+                type: array
+                items:
+                  $ref: '#/definitions/chatroom'
+        403:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
+  /admin/search/chatrooms:
+    get:
+      tags:
+        - "chatrooms"
+      summary: "アドミンがユーザーのhashを使ってチャットルームを取ってくるためのやつ"
+      description: "accountHashとchannelNameが指定されなかった場合、全部のchatroomsを返します。"
+      parameters:
+        - in: query
+          name: "accountHash"
+          type: string
+        - in: query
+          name: "channelName"
+          type: string
+
+      responses:
+        200:
+          description: ok
+          schema:
+            type: object
+            properties:
+              chatrooms:
+                type: array
+                items:
+                  $ref: '#/definitions/chatroom'
+        403:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+
+  /health:
+    get:
+      tags:
+        - "deploy"
+      responses:
+        200:
+          description: ok
+          schema:
+            type: string
+        503:
+          description: notready
+          schema:
+            type: string
+
+securityDefinitions:
+  apiKey:
+    type: "apiKey"
+    name: "X-CHAT-ACCESS-TOKEN"
+    in: "header"
+    description: "/authエンドポイントによって送られるアクセストークン"
+
+definitions:
+  authInfo:
+    type: "object"
+    description: "認証認可用のオブジェクト、x_chat_access_tokenのヘッダに入れて使用します。"
+    properties:
+      accessToken:
+        type: "string"
+        example: "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
+      account:
+        $ref: "#/definitions/account"
+  account:
+    type: "object"
+    description: "汎用的に出てくるユーザーオブジェクト"
+    properties:
+      id:
+        type: integer
+      hash:
+        type: string
+        example: "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
+      name:
+        type: string
+        example: "kameike"
+      imageURL:
+        type: string
+        example: "https://hogehoge.s3.amazon.com"
+
+  messageRequest:
+    type: object
+    properties:
+      content:
+        type: string
+        example: "よろしくお願いします"
+
+  chatroomRequest:
+    type: object
+    properties:
+      chatrooms:
+        type: array
+        items:
+          type: string
+
+  message:
+    type: object
+    properties:
+      id:
+        type: integer
+      createdAt:
+        type: integer
+        format: int64
+      content:
+        type: string
+        example: "よろしくお願いします"
+      account:
+        $ref: "#/definitions/account"
+
+  messagesResponse:
+    type: object
+    description: "メッセージ一覧のオブジェクト。既読情報も返す。"
+    properties:
+      messages:
+        type: array
+        items:
+          $ref: "#/definitions/message"
+      readAts:
+        $ref: "#/definitions/readAts"
+
+  readAts:
+    description: "最後に読んだ時間をユーザーごとに表示するオブジェクト"
+    type: array
+    items:
+      type: object
+      properties:
+        accountHash:
+          type: string
+        readAt:
+          type: integer
+          format: int64
+
+  chatroom:
+    type: object
+    description: "チャットルームを取得するときに出てくるやつ"
+    properties:
+      id:
+        type: string
+      hash:
+        type: string
+      name:
+        type: string
+      accounts:
+        type: array
+        items:
+          $ref: "#/definitions/account"
+      unreadsCount:
+        type: array
+        items:
+          $ref: '#/definitions/unreadCount'
+      readAts:
+        $ref: "#/definitions/readAts"
+      messages:
+        description: "メッセージを全て返します。"
+        type: array
+        items:
+          $ref: '#/definitions/message'
+          
+  unreadCount:
+    type: object
+    properties:
+      accountHash:
+        type: string
+      count:
+        type: integer
+
+  error:
+    type: "object"
+    properties:
+      errorMessage:
+        type: "string"
+        description: "エラーメッセージ、中身をユーザーに見せて差し支えないものです。"
+        example: "権限がありません(code: 3)"
+
