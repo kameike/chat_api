@@ -26,8 +26,12 @@ var rooms = make(map[string]roomInfo)
 var userRooms = make(map[int64][]roomInfo)
 
 var cxt = context.Background()
-var host = "dev-chat.taimee.co.jp"
-var transport = httpclient.New(host, "", []string{"https"})
+
+// var host = "dev-chat.taimee.co.jp"
+// var transport = httpclient.New(host, "", []string{"https"})
+
+var host = "localhost:1323"
+var transport = httpclient.New(host, "", []string{"http"})
 var client = apiclient.New(transport, strfmt.Default)
 
 func main() {
@@ -75,7 +79,6 @@ func main() {
 		}
 	}
 	wg.Wait()
-	return
 
 	for k := 0; k < 1; k++ {
 		for i, u := range users {
@@ -169,8 +172,8 @@ func authFor(a basicAccount) runtime.ClientAuthInfoWriter {
 
 func roomString(r roomInfo) string {
 	data := struct {
-		Accounts []string `json:"accounts"`
-		RoomName string   `json:"accountHash"`
+		Accounts []string `json:"accountHash"`
+		RoomName string   `json:"channelName"`
 	}{
 		Accounts: []string{
 			r.user1.user.Hash,

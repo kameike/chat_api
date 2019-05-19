@@ -9,6 +9,14 @@ import (
 
 // === ERRORS
 func Error(message string, err error) ChatAPIError {
+	if err == nil {
+		err := fmt.Errorf("%s :(%s)", message, generateSigniture())
+		return &chatAPIError{
+			err:          err,
+			errorMessage: message,
+		}
+	}
+
 	return &chatAPIError{
 		err:          err,
 		errorMessage: message,
@@ -16,7 +24,7 @@ func Error(message string, err error) ChatAPIError {
 }
 
 func NewError(message string) ChatAPIError {
-	err := fmt.Errorf("%s", message)
+	err := fmt.Errorf("%s :(%s)", message, generateSigniture())
 	return &chatAPIError{
 		err:          err,
 		errorMessage: message,

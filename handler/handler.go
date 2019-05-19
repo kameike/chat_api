@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/kameike/chat_api/apierror"
@@ -30,6 +31,8 @@ func errorResponseWithCode(code int, message string) middleware.ResponderFunc {
 }
 
 func errorResponse(err apierror.ChatAPIError) middleware.ResponderFunc {
+	println(err.ErrorMessage())
+	fmt.Printf("%+v", err.Err())
 	return errorResponseWithCode(500, err.ErrorMessage())
 }
 

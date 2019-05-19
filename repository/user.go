@@ -20,7 +20,7 @@ type userRepository struct {
 }
 
 type chatRoomData struct {
-	Accounts []string `json:"accounts"`
+	Accounts []string `json:"accountHash"`
 	RoomName string   `json:"channelName"`
 }
 
@@ -169,7 +169,8 @@ func (u *userRepository) preloadUser(hashes []string) map[string]*model.User {
 	db.Where("user_hash in (?)", hashes).Find(&users)
 
 	for _, u := range users {
-		target[u.UserHash] = &u
+		ur := u
+		target[u.UserHash] = &ur
 	}
 
 	return target
@@ -283,14 +284,17 @@ func (u *userRepository) GetChatRoom(req GetChatRoomRequest) (*model.ChatRoom, a
 
 	isContain := false
 
+	debugString := ""
+
 	for _, us := range result.Users {
+		debugString += fmt.Sprintf("user: %d", us.ID)
 		if us.ID == u.user.ID {
 			isContain = true
 		}
 	}
 
 	if !isContain {
-		return nil, apierror.Error(apierror.THINK_LATER, err)
+		return nil, apierror.Error(apierror.THINK_LATER, fmt.Errorf("%d is not contain in %s", u.user.ID, debugString))
 	}
 
 	return &result, nil

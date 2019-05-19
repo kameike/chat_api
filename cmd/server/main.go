@@ -36,11 +36,11 @@ func main() {
 
 	api.APIKeyAuth = handlers.APIKeyAuthHandler()
 
-	api.MessagesPostChatroomsChatroomHashMessagesHandler = handlers.ChatRoomsPostChatroomsIDMessagesHandler()
+	api.MessagesPostChatroomsChatroomHashMessagesHandler = handlers.MessagesPostMessageHandler()
 	api.ChatroomsPostChatroomsHandler = handlers.ChatRoomsPostChatroomsHandler()
 	api.AccountPostProfileHandler = handlers.AccountPostProfileHandler()
-	api.DeployGetHealthHandler = handlers.DeployGetHealthHandler()
 	api.AccountPostAuthHandler = handlers.AccountPostAuthHandler()
+	api.DeployGetHealthHandler = handlers.DeployGetHealthHandler()
 
 	server := restapi.NewServer(api)
 	defer server.Shutdown()

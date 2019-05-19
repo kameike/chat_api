@@ -14,10 +14,13 @@ func beforeUser() {
 	ds.RDB().LogMode(false)
 
 	user, _, _ := provider.AuthRepository().FindOrCreateUser(token, hash)
+	user2, _, _ := provider.AuthRepository().FindOrCreateUser("randomToken", "xxxxxxxxhashxxxxxx")
 	authUser = *user
+	opponentUser = *user2
 }
 
 var authUser model.User
+var opponentUser model.User
 
 func afterUser() {
 	generalAfter()
@@ -50,7 +53,7 @@ func Testチャットルームが存在しなくても作られる(t *testing.T)
 
 	var roomSign []string
 	roomSign = append(roomSign, fmt.Sprintf(`{
-			"accounts": ["%s"],
+			"accountHash": ["%s"],
 			"roomName": "fuga"
 		}
 	`, authUser.UserHash))
@@ -75,6 +78,7 @@ func Testチャットルームの型によってチャットを作ることが�
 		chatRoomData{
 			Accounts: []string{
 				authUser.UserHash,
+				opponentUser.UserHash,
 			},
 			RoomName: "roomid",
 		},
@@ -89,7 +93,9 @@ func Testチャットルームの型によってチャットを作ることが�
 	beforeRelationCount := 0
 	ds.RDB().Model(&model.ChatRoom{}).Count(&beforeCount)
 	ds.RDB().Model(&model.UserChatRoom{}).Count(&beforeRelationCount)
+
 	res, err := app.getChatrooms(data)
+
 	afterCount := 0
 	afterRelationCount := 0
 	ds.RDB().Model(&model.ChatRoom{}).Count(&afterCount)
@@ -107,12 +113,11 @@ func Testチャットルームの型によってチャットを作ることが�
 		t.Fail()
 	}
 
-	if afterRelationCount-beforeRelationCount != 1 {
+	if afterRelationCount-beforeRelationCount != 2 {
 		t.Fatalf("failed to make relation")
 	}
 
 	t.Run("ハッシュからチャットルームを見つけることができる", func(t *testing.T) {
-		ds.RDB().LogMode(true)
 		hash := res[0].RoomHash
 		res, err := app.GetChatRoom(GetChatRoomRequest{hash})
 
@@ -130,18 +135,19 @@ func Testチャットルームの型によってチャットを作ることが�
 			t.Fatalf(err.Error())
 		}
 
+		ds.RDB().LogMode(true)
 		res, err = app.GetChatRoom(GetChatRoomRequest{hash})
+		ds.RDB().LogMode(false)
 
 		if err != nil {
 			t.Fatalf(err.Error())
 		}
 
-		ds.RDB().LogMode(false)
 		if res == nil {
 			t.Fatalf("result must not be nil")
 		}
 
-		if len(res.Users) != 1 {
+		if len(res.Users) != 2 {
 			t.Fatalf("faild to preload user")
 		}
 
@@ -149,10 +155,15 @@ func Testチャットルームの型によってチャットを作ることが�
 			t.Fatalf("faild to preload message %d", len(res.Messages))
 		}
 
+		found := false
 		for _, u := range res.Users {
-			if u.ID != authUser.ID {
-				t.Fatalf("invald user")
+			if u.ID == authUser.ID {
+				found = true
 			}
+		}
+
+		if !found {
+			t.Fatalf("user not preloaded")
 		}
 	})
 

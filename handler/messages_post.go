@@ -10,7 +10,7 @@ import (
 	"github.com/kameike/chat_api/swggen/restapi/operations/messages"
 )
 
-func (a *RequestHandler) ChatRoomsPostChatroomsIDMessagesHandler() messages.PostChatroomsChatroomHashMessagesHandlerFunc {
+func (a *RequestHandler) MessagesPostMessageHandler() messages.PostChatroomsChatroomHashMessagesHandlerFunc {
 	return func(params messages.PostChatroomsChatroomHashMessagesParams, principal interface{}) middleware.Responder {
 		u := principal.(*model.User)
 
