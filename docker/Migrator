@@ -26,4 +26,4 @@ COPY --from=0 /go/src/github.com/kameike/chat_api/cmd/migration/ .
 
 ENV PORT 1323
 
-ENTRYPOINT ["/main"]
+ENTRYPOINT ["/main", "up"]
