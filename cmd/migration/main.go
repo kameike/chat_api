@@ -24,7 +24,6 @@ func main() {
 	env := datasource.GetEnvs()
 
 	log.Println("start mingration")
-	log.Fatalln("try fatal stop")
 	flags.Usage = usage
 	flags.Parse(os.Args[1:])
 
