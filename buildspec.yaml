@@ -13,7 +13,7 @@ phases:
       - echo Build started on `date`
 
       - echo Building the Migration Image
-      - docker build -t $MIGRATION_IMAGE_REPO_NAME -f docker/Migration . 
+      - docker build -t $MIGRATION_IMAGE_REPO_NAME -f docker/Migrator . 
       - docker tag $MIGRATION_IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$MIGRATION_IMAGE_REPO_NAME:$IMAGE_TAG
 
       - echo Building the Server Image
