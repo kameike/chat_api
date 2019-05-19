@@ -26,6 +26,8 @@ func main() {
 	flags.Usage = usage
 	flags.Parse(os.Args[1:])
 
+	log.Println("start mingration")
+
 	args := flags.Args()
 	if len(args) == 0 || args[0] == "-h" || args[0] == "--help" {
 		flags.Usage()
@@ -86,6 +88,8 @@ func main() {
 	if err := goose.Run(command, db, *dir, arguments...); err != nil {
 		log.Fatalf("goose run: %v", err)
 	}
+
+	log.Println("finsh run migration")
 }
 
 func usage() {
