@@ -20,7 +20,7 @@ type userRepository struct {
 }
 
 type chatRoomData struct {
-	Accounts []string `json:"accountHash"`
+	Accounts []string `json:"accountHashList"`
 	RoomName string   `json:"channelName"`
 }
 
@@ -49,7 +49,7 @@ func (u *userRepository) getChatrooms(data []chatRoomData) ([]*model.ChatRoom, a
 		result := u.findChatrooms(result.notFound)
 
 		if len(result.notFound) != 0 {
-			panic("cant find chatrooms even create succeeded")
+			return currentChatrooms, apierror.Error(apierror.CHATROOM_NOT_FOUND, err)
 		}
 		currentChatrooms = append(currentChatrooms, result.found...)
 	}

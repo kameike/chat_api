@@ -172,7 +172,7 @@ func authFor(a basicAccount) runtime.ClientAuthInfoWriter {
 
 func roomString(r roomInfo) string {
 	data := struct {
-		Accounts []string `json:"accountHash"`
+		Accounts []string `json:"accountHashList"`
 		RoomName string   `json:"channelName"`
 	}{
 		Accounts: []string{

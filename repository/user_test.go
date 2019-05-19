@@ -53,7 +53,7 @@ func Testチャットルームが存在しなくても作られる(t *testing.T)
 
 	var roomSign []string
 	roomSign = append(roomSign, fmt.Sprintf(`{
-			"accountHash": ["%s"],
+			"accountHashList": ["%s"],
 			"roomName": "fuga"
 		}
 	`, authUser.UserHash))
