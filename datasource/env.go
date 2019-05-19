@@ -15,9 +15,9 @@ func GetEnvs() EnvValues {
 		return *localEnvCache
 	}
 	target := EnvValues{
-		RedisAddr: getEnv("CHAT_REDIS_ADDR"),
-		RedisPass: getEnv("CHAT_REDIS_PASS"),
-		DbAddr:    getEnv("CHAT_RDS_ADDR"),
+		// RedisAddr: getEnv("CHAT_REDIS_ADDR"),
+		// RedisPass: getEnv("CHAT_REDIS_PASS"),
+		DbAddr: getEnv("CHAT_RDS_ADDR"),
 	}
 	localEnvCache = &target
 	return target
