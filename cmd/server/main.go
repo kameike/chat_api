@@ -45,7 +45,7 @@ func main() {
 	server := restapi.NewServer(api)
 	defer server.Shutdown()
 
-	server.Port = 1323
+	server.Port = 80
 
 	if err := server.Serve(); err != nil {
 		log.Fatalln(err)
