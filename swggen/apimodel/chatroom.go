@@ -34,7 +34,7 @@ type Chatroom struct {
 	Name string `json:"name"`
 
 	// read ats
-	ReadAts ReadAts `json:"readAts,omitempty"`
+	ReadAts ReadAts `json:"readAts"`
 
 	// unreads count
 	UnreadsCount []*UnreadCount `json:"unreadsCount"`

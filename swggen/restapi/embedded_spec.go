@@ -453,6 +453,7 @@ func init() {
           "x-omitempty": false
         },
         "readAts": {
+          "x-omitempty": false,
           "$ref": "#/definitions/readAts"
         },
         "unreadsCount": {
@@ -524,6 +525,7 @@ func init() {
           }
         },
         "readAts": {
+          "x-omitempty": false,
           "$ref": "#/definitions/readAts"
         }
       }
@@ -544,7 +546,8 @@ func init() {
             "x-omitempty": false
           }
         }
-      }
+      },
+      "x-omitempty": false
     },
     "unreadCount": {
       "type": "object",
@@ -1005,6 +1008,7 @@ func init() {
           "x-omitempty": false
         },
         "readAts": {
+          "x-omitempty": false,
           "$ref": "#/definitions/readAts"
         },
         "unreadsCount": {
@@ -1076,6 +1080,7 @@ func init() {
           }
         },
         "readAts": {
+          "x-omitempty": false,
           "$ref": "#/definitions/readAts"
         }
       }
@@ -1096,7 +1101,8 @@ func init() {
             "x-omitempty": false
           }
         }
-      }
+      },
+      "x-omitempty": false
     },
     "unreadCount": {
       "type": "object",

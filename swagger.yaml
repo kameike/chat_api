@@ -316,11 +316,13 @@ definitions:
         items:
           $ref: "#/definitions/message"
       readAts:
+        x-omitempty: false
         $ref: "#/definitions/readAts"
 
   readAts:
     description: "最後に読んだ時間をユーザーごとに表示するオブジェクト"
     type: array
+    x-omitempty: false
     items:
       type: object
       properties:
@@ -353,6 +355,7 @@ definitions:
         items:
           $ref: '#/definitions/unreadCount'
       readAts:
+        x-omitempty: false
         $ref: "#/definitions/readAts"
       messages:
         description: "メッセージを全て返します。"
