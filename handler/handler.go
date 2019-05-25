@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -33,7 +34,20 @@ func errorResponseWithCode(code int, message string) middleware.ResponderFunc {
 func errorResponse(err apierror.ChatAPIError) middleware.ResponderFunc {
 	println(err.ErrorMessage())
 	fmt.Printf("%+v", err.Err())
-	return errorResponseWithCode(500, err.ErrorMessage())
+
+	test := struct {
+		ErrorMessage string `json"errorMessage"`
+	}{
+		ErrorMessage: err.ErrorMessage(),
+	}
+
+	data, e := json.Marshal(test)
+
+	if e != nil {
+		return errorResponseWithCode(500, err.ErrorMessage())
+	}
+
+	return errorResponseWithCode(500, string(data))
 }
 
 func notHealthy(message string) middleware.ResponderFunc {
