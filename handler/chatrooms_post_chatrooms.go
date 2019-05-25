@@ -35,6 +35,7 @@ func (a *RequestHandler) ChatRoomsPostChatroomsHandler() chatrooms.PostChatrooms
 		for i, r := range rooms {
 			data := apimodel.Chatroom{
 				ID:           r.RoomHash,
+				Hash:         r.RoomHash,
 				Accounts:     mapUsers(r.Users),
 				Messages:     []*apimodel.Message{},
 				Name:         r.Name,
