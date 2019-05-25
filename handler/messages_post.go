@@ -23,11 +23,15 @@ func (a *RequestHandler) MessagesPostMessageHandler() messages.PostChatroomsChat
 			return errorResponse(err)
 		}
 
-		cr.CreateMessage(params.Body.Content)
+		err = cr.CreateMessage(params.Body.Content)
+		if err != nil {
+			return errorResponse(err)
+		}
 
 		// TODO: correct message here
 		res := &apimodel.MessagesResponse{
 			Messages: []*apimodel.Message{},
+			ReadAts:  apimodel.ReadAts{},
 		}
 
 		return messages.NewPostChatroomsChatroomHashMessagesOK().WithPayload(res)

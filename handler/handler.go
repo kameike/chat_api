@@ -43,6 +43,8 @@ func errorResponse(err apierror.ChatAPIError) middleware.ResponderFunc {
 
 	data, e := json.Marshal(test)
 
+	println(err.Error())
+
 	if e != nil {
 		return errorResponseWithCode(500, err.ErrorMessage())
 	}

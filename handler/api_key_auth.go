@@ -10,7 +10,8 @@ import (
 
 func (a *RequestHandler) APIKeyAuthHandler() func(string) (interface{}, error) {
 	return func(token string) (interface{}, error) {
-		return a.authUser(token)
+		u, _ := a.authUser(token)
+		return u, nil
 	}
 }
 

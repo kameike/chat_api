@@ -38,9 +38,12 @@ func main() {
 
 	api.MessagesPostChatroomsChatroomHashMessagesHandler = handlers.MessagesPostMessageHandler()
 	api.ChatroomsPostChatroomsHandler = handlers.ChatRoomsPostChatroomsHandler()
+	api.ChatroomsGetChatroomsIDHandler = handlers.ChatroomsGetChatroomHandler()
+	api.ChatroomsPostChatroomsChannelHashReadHandler = handlers.PostChatroomsChannelHashReadHandler()
 	api.AccountPostProfileHandler = handlers.AccountPostProfileHandler()
 	api.AccountPostAuthHandler = handlers.AccountPostAuthHandler()
 	api.DeployGetHealthHandler = handlers.DeployGetHealthHandler()
+	api.MessagesGetChatroomsChatroomHashMessagesHandler = handlers.MessagesGetMessagesHandler()
 
 	server := restapi.NewServer(api)
 	defer server.Shutdown()

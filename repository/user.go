@@ -236,6 +236,8 @@ type CreateMessageRequest struct {
 }
 
 type GetMessageRequest struct {
+	RoomHash string
+	User     model.User
 }
 
 func (u *userRepository) CreateMessage(req CreateMessageRequest) apierror.ChatAPIError {
