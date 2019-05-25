@@ -392,17 +392,21 @@ func init() {
       "properties": {
         "hash": {
           "type": "string",
+          "x-omitempty": false,
           "example": "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
         },
         "id": {
-          "type": "integer"
+          "type": "integer",
+          "x-omitempty": false
         },
         "imageURL": {
           "type": "string",
+          "x-omitempty": false,
           "example": "https://hogehoge.s3.amazon.com"
         },
         "name": {
           "type": "string",
+          "x-omitempty": false,
           "example": "kameike"
         }
       }
@@ -431,7 +435,8 @@ func init() {
           }
         },
         "hash": {
-          "type": "string"
+          "type": "string",
+          "x-omitempty": false
         },
         "id": {
           "type": "string"
@@ -444,7 +449,8 @@ func init() {
           }
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "x-omitempty": false
         },
         "readAts": {
           "$ref": "#/definitions/readAts"
@@ -486,6 +492,7 @@ func init() {
         },
         "content": {
           "type": "string",
+          "x-omitempty": false,
           "example": "よろしくお願いします"
         },
         "createdAt": {
@@ -528,11 +535,13 @@ func init() {
         "type": "object",
         "properties": {
           "accountHash": {
-            "type": "string"
+            "type": "string",
+            "x-omitempty": false
           },
           "readAt": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "x-omitempty": false
           }
         }
       }
@@ -541,10 +550,12 @@ func init() {
       "type": "object",
       "properties": {
         "accountHash": {
-          "type": "string"
+          "type": "string",
+          "x-omitempty": false
         },
         "count": {
-          "type": "integer"
+          "type": "integer",
+          "x-omitempty": false
         }
       }
     }
@@ -933,17 +944,21 @@ func init() {
       "properties": {
         "hash": {
           "type": "string",
+          "x-omitempty": false,
           "example": "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
         },
         "id": {
-          "type": "integer"
+          "type": "integer",
+          "x-omitempty": false
         },
         "imageURL": {
           "type": "string",
+          "x-omitempty": false,
           "example": "https://hogehoge.s3.amazon.com"
         },
         "name": {
           "type": "string",
+          "x-omitempty": false,
           "example": "kameike"
         }
       }
@@ -972,7 +987,8 @@ func init() {
           }
         },
         "hash": {
-          "type": "string"
+          "type": "string",
+          "x-omitempty": false
         },
         "id": {
           "type": "string"
@@ -985,7 +1001,8 @@ func init() {
           }
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "x-omitempty": false
         },
         "readAts": {
           "$ref": "#/definitions/readAts"
@@ -1027,6 +1044,7 @@ func init() {
         },
         "content": {
           "type": "string",
+          "x-omitempty": false,
           "example": "よろしくお願いします"
         },
         "createdAt": {
@@ -1069,11 +1087,13 @@ func init() {
         "type": "object",
         "properties": {
           "accountHash": {
-            "type": "string"
+            "type": "string",
+            "x-omitempty": false
           },
           "readAt": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "x-omitempty": false
           }
         }
       }
@@ -1082,10 +1102,12 @@ func init() {
       "type": "object",
       "properties": {
         "accountHash": {
-          "type": "string"
+          "type": "string",
+          "x-omitempty": false
         },
         "count": {
-          "type": "integer"
+          "type": "integer",
+          "x-omitempty": false
         }
       }
     }

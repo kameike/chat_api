@@ -16,16 +16,16 @@ import (
 type Account struct {
 
 	// hash
-	Hash string `json:"hash,omitempty"`
+	Hash string `json:"hash"`
 
 	// id
-	ID int64 `json:"id,omitempty"`
+	ID int64 `json:"id"`
 
 	// image URL
-	ImageURL string `json:"imageURL,omitempty"`
+	ImageURL string `json:"imageURL"`
 
 	// name
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 }
 
 // Validate validates this account

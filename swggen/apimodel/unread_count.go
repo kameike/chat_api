@@ -16,10 +16,10 @@ import (
 type UnreadCount struct {
 
 	// account hash
-	AccountHash string `json:"accountHash,omitempty"`
+	AccountHash string `json:"accountHash"`
 
 	// count
-	Count int64 `json:"count,omitempty"`
+	Count int64 `json:"count"`
 }
 
 // Validate validates this unread count
