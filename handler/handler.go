@@ -38,7 +38,7 @@ func errorResponse(err apierror.ChatAPIError) middleware.ResponderFunc {
 	test := struct {
 		ErrorMessage string `json"errorMessage"`
 	}{
-		ErrorMessage: err.ErrorMessage(),
+		ErrorMessage: err.ErrorMessage() + err.Error(),
 	}
 
 	data, e := json.Marshal(test)
