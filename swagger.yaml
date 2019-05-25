@@ -263,15 +263,19 @@ definitions:
     properties:
       id:
         type: integer
+        x-omitempty: false
       hash:
         type: string
         example: "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
+        x-omitempty: false
       name:
         type: string
         example: "kameike"
+        x-omitempty: false
       imageURL:
         type: string
         example: "https://hogehoge.s3.amazon.com"
+        x-omitempty: false
 
   messageRequest:
     type: object
@@ -299,6 +303,7 @@ definitions:
       content:
         type: string
         example: "よろしくお願いします"
+        x-omitempty: false
       account:
         $ref: "#/definitions/account"
 
@@ -321,9 +326,11 @@ definitions:
       properties:
         accountHash:
           type: string
+          x-omitempty: false
         readAt:
           type: integer
           format: int64
+          x-omitempty: false
 
   chatroom:
     type: object
@@ -333,8 +340,10 @@ definitions:
         type: string
       hash:
         type: string
+        x-omitempty: false
       name:
         type: string
+        x-omitempty: false
       accounts:
         type: array
         items:
@@ -355,9 +364,11 @@ definitions:
     type: object
     properties:
       accountHash:
+        x-omitempty: false
         type: string
       count:
         type: integer
+        x-omitempty: false
 
   error:
     type: "object"
