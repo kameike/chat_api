@@ -36,7 +36,7 @@ func errorResponse(err apierror.ChatAPIError) middleware.ResponderFunc {
 	fmt.Printf("%+v", err.Err())
 
 	test := struct {
-		ErrorMessage string `json"errorMessage"`
+		ErrorMessage string `json:"errorMessage"`
 	}{
 		ErrorMessage: err.ErrorMessage() + err.Error(),
 	}
