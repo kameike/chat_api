@@ -3,7 +3,20 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: "<TASK_DEFINITION>"
+        TaskDefinition: "arn:aws:ecs:ap-northeast-1:030528413947:task-definition/applicatoin:8"
         LoadBalancerInfo:
-          ContainerName: "chat"
-            ContainerPort: "80"
+          ContainerName: "applicaton"
+          ContainerPort: 80
+# Optional properties
+#        PlatformVersion: "LATEST"
+#        NetworkConfiguration:
+#          AwsvpcConfiguration:
+#            Subnets: ["subnet-0f239596990cb4b7e","subnet-0599480241fa4da18"]
+#            SecurityGroups: ["sg-08140b585f1030ab2"]
+#            AssignPublicIp: "ENABLED"
+#Hooks:
+#  - BeforeInstall: "LambdaFunctionToValidateBeforeInstall"
+#  - AfterInstall: "LambdaFunctionToValidateAfterTraffic"
+#  - AfterAllowTestTraffic: "LambdaFunctionToValidateAfterTestTrafficStarts"
+#  - BeforeAllowTraffic: "LambdaFunctionToValidateBeforeAllowingProductionTraffic"
+#  - AfterAllowTraffic: "LambdaFunctionToValidateAfterAllowingProductionTraffic"
