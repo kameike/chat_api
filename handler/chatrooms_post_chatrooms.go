@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/kameike/chat_api/model"
 	"github.com/kameike/chat_api/repository"
 	"github.com/kameike/chat_api/swggen/apimodel"
@@ -27,7 +28,7 @@ func (a *RequestHandler) ChatRoomsPostChatroomsHandler() chatrooms.PostChatrooms
 
 		for i, r := range rooms {
 			data := apimodel.Chatroom{
-				ID:           "",
+				ID:           fmt.Sprintf("%d", r.ID),
 				Hash:         r.RoomHash,
 				Accounts:     mapUsers(r.Users),
 				Messages:     mapMessages(r.Messages),

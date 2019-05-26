@@ -17,8 +17,8 @@ import (
 	"github.com/kameike/chat_api/swggen/client/messages"
 )
 
-var userCount = 5
-var reqPerSec = 4
+var userCount = 3
+var reqPerSec = 5
 var wtime = time.Duration(1000 / reqPerSec)
 
 var users = make([]basicAccount, userCount, userCount)
@@ -30,14 +30,15 @@ var cxt = context.Background()
 // var host = "dev-chat.taimee.co.jp"
 // var transport = httpclient.New(host, "", []string{"https"})
 
-// var host = "localhost:1323"
-// var transport = httpclient.New(host, "", []string{"http"})
+var host = "localhost"
+var transport = httpclient.New(host, "", []string{"http"})
 
 // var host = "13.231.204.249"
 // var transport = httpclient.New(host, "", []string{"http"})
 
-var host = "chat-stg-aagktp6bnbxvfrw8.stg-taimee.com"
-var transport = httpclient.New(host, "", []string{"http"})
+// var host = "chat-stg-aagktp6bnbxvfrw8.stg-taimee.com"
+// var transport = httpclient.New(host, "", []string{"http"})
+
 var client = apiclient.New(transport, strfmt.Default)
 
 func main() {
@@ -60,7 +61,7 @@ func main() {
 	wg.Wait()
 
 	for _, u := range users {
-		count := 10
+		count := 3
 		room := make([]roomInfo, count, count)
 		for i := 0; i < count; i++ {
 			r := randomRoomInfo(u)
@@ -251,7 +252,7 @@ func postRoomRequest(r []roomInfo, u basicAccount) {
 	} else {
 		for _, v := range res.Payload.Chatrooms {
 			r := rooms[v.Name]
-			r.hash = v.ID
+			r.hash = v.Hash
 			rooms[v.Name] = r
 			println("room ->", rooms[v.Name].hash)
 		}

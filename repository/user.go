@@ -174,7 +174,11 @@ func (u *userRepository) preloadRooms(hashes []string) map[string]*model.ChatRoo
 	target := map[string]*model.ChatRoom{}
 	rooms := make([]*model.ChatRoom, 0, len(hashes))
 
-	db.Preload("UserChatRooms").Preload("Users").Preload("Messages").Preload("Messages.User").Where("room_hash in (?)", hashes).Find(&rooms)
+	err := db.Preload("UserChatRooms").Preload("Users").Preload("Messages").Preload("Messages.User").Where("room_hash in (?)", hashes).Find(&rooms).Error
+
+	if err != nil {
+		panic(err.Error())
+	}
 
 	for _, r := range rooms {
 		target[r.RoomHash] = r
