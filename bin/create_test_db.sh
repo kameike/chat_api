@@ -3,7 +3,7 @@ set -eu
 
 docker ps -q | xargs docker kill
 
-docker run -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=test -d mysql:5.7
+docker run -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=test -d mysql:5.7 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 docker run -p 6379:6379 -d redis redis-server 
 
 export CHAT_REDIS_ADDR=localhost:6379
