@@ -116,7 +116,7 @@ var mysqlDB *gorm.DB
 
 func PrepareDatasource() DataSourceDescriptor {
 	if mysqlDB == nil {
-		db, err := gorm.Open("mysql", GetEnvs().DbAddr+"&charset=utf8mb4,utf8")
+		db, err := gorm.Open("mysql", GetEnvs().DbAddr+"&charset=utf8mb4")
 		if err != nil {
 			panic(err.Error())
 		}

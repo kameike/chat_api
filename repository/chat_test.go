@@ -57,18 +57,20 @@ func Testメッセージを作成できる(t *testing.T) {
 	beforeChat()
 	defer afterChat()
 
+	ds.RDB().LogMode(true)
 	err := chatRepo.CreateMessage("test")
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	err = chatRepo.CreateMessage("こんにちは")
+	err = chatRepo.CreateMessage("eee")
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	// err = chatRepo.CreateMessage("🤗")
-	// if err != nil {
-	// 	t.Fatal(err.Error())
-	// }
+	err = chatRepo.CreateMessage("🤗")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	ds.RDB().LogMode(false)
 }
 
 func Test_hoge(t *testing.T) {
