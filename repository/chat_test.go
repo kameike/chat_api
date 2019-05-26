@@ -66,7 +66,8 @@ func Testメッセージを作成できる(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	err = chatRepo.CreateMessage("eee")
+
+	err = chatRepo.CreateMessage("😄")
 	if err != nil {
 		t.Fatal(err.Error())
 	}

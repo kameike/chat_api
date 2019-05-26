@@ -7,7 +7,7 @@ CREATE TABLE `access_tokens` (
   UNIQUE KEY `access_token` (`access_token`),
   KEY `idx_access_tokens_user_id` (`user_id`),
   KEY `idx_access_tokens_access_token` (`access_token`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 SET character_set_client = utf8mb4;
 CREATE TABLE `chat_rooms` (
@@ -19,7 +19,7 @@ CREATE TABLE `chat_rooms` (
   `name` varchar(255), 
   PRIMARY KEY (`id`),
   KEY `idx_chat_rooms_deleted_at` (`deleted_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `messages`;
  SET character_set_client = utf8mb4 ;
@@ -35,7 +35,7 @@ CREATE TABLE `messages` (
   KEY `idx_messages_deleted_at` (`deleted_at`),
   KEY `idx_messages_user_id` (`user_id`),
   KEY `idx_messages_room_id` (`room_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 DROP TABLE IF EXISTS `user_chat_rooms`;
@@ -52,7 +52,7 @@ CREATE TABLE `user_chat_rooms` (
   KEY `idx_user_chat_rooms_chat_room_id` (`chat_room_id`),
   KEY `idx_user_chat_rooms_deleted_at` (`deleted_at`),
   KEY `idx_user_chat_rooms_user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `users`;
 SET character_set_client = utf8mb4;
@@ -72,7 +72,7 @@ CREATE TABLE `users` (
   KEY `idx_users_auth_token` (`auth_token`),
   KEY `idx_users_user_hash` (`user_hash`),
   KEY `idx_users_deleted_at` (`deleted_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- +goose Down
 DROP TABLE IF EXISTS `access_tokens`;
