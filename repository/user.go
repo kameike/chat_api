@@ -174,7 +174,7 @@ func (u *userRepository) preloadRooms(hashes []string) map[string]*model.ChatRoo
 	target := map[string]*model.ChatRoom{}
 	rooms := make([]*model.ChatRoom, 0, len(hashes))
 
-	db.Preload("UserChatRooms").Preload("Users").Preload("Messages").Where("room_hash in (?)", hashes).Find(&rooms)
+	db.Preload("UserChatRooms").Preload("Users").Preload("Messages").Preload("Messages.User").Where("room_hash in (?)", hashes).Find(&rooms)
 
 	for _, r := range rooms {
 		target[r.RoomHash] = r
@@ -302,7 +302,7 @@ func (u *userRepository) GetChatRoom(req GetChatRoomRequest) (*model.ChatRoom, a
 	db := u.ds.RDB()
 	result := model.ChatRoom{}
 
-	err := db.Preload("Users").Preload("Messages").Model(&model.ChatRoom{}).Where("room_hash = ?", req.Hash).Find(&result).Error
+	err := db.Preload("Users").Preload("Messages").Preload("Messages.User").Model(&model.ChatRoom{}).Where("room_hash = ?", req.Hash).Find(&result).Error
 
 	if err != nil {
 		return nil, apierror.Error(apierror.THINK_LATER, err)

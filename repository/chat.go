@@ -52,7 +52,7 @@ func (c *chatRepository) CreateMessage(t string) apierror.ChatAPIError {
 
 func (r *chatRepository) GetMessageAndReadStatus() (*MessageAndReadState, apierror.ChatAPIError) {
 	db := r.ds.RDB()
-	messages := []*model.Message{}
+	messages := []model.Message{}
 
 	err := db.Preload("User").Where("room_id = ?", r.room.ID).Find(&messages).Error
 

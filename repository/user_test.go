@@ -411,6 +411,10 @@ func Testメッセージのプリロード(t *testing.T) {
 	if len(target.Messages) != 1 {
 		t.Fatalf("%d", len(target.Messages))
 	}
+
+	if target.Messages[0].User.UserHash != authUser.UserHash {
+		t.Fatalf("preload message user is falied, %s", target.Messages[0].User.UserHash)
+	}
 }
 
 func Test条件が一緒であればチャットルームはたとえ同時リクエスであっても作られない(t *testing.T) {

@@ -87,9 +87,7 @@ func Testメッセージを取得できる(t *testing.T) {
 	chatRepo.CreateMessage("hey")
 	chatRepo.CreateMessage("hey")
 
-	ds.RDB().LogMode(true)
 	res, err := chatRepo.GetMessageAndReadStatus()
-	ds.RDB().LogMode(false)
 
 	if err != nil {
 		t.Fatal(err.Error())

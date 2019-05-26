@@ -29,7 +29,7 @@ func (a *RequestHandler) MessagesGetMessagesHandler() messages.GetChatroomsChatr
 			return errorResponse(apierror.Error(apierror.CHATROOM_NOT_FOUND, err))
 		}
 
-		msgs := mapToApiModel(result.Messages)
+		msgs := mapMessages(result.Messages)
 
 		// TODO
 		response := apimodel.MessagesResponse{
@@ -41,7 +41,7 @@ func (a *RequestHandler) MessagesGetMessagesHandler() messages.GetChatroomsChatr
 	})
 }
 
-func mapToApiModel(target []*model.Message) []*apimodel.Message {
+func mapMessages(target []model.Message) []*apimodel.Message {
 	msgs := make([]*apimodel.Message, len(target), len(target))
 
 	for i, m := range target {

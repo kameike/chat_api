@@ -48,7 +48,7 @@ type ReadAt struct {
 
 type MessageAndReadState struct {
 	ReadAt   ReadAt
-	Messages []*model.Message
+	Messages []model.Message
 }
 
 type MessageAndReadAtRequest struct {

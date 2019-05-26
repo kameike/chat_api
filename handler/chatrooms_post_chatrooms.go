@@ -30,7 +30,7 @@ func (a *RequestHandler) ChatRoomsPostChatroomsHandler() chatrooms.PostChatrooms
 				ID:           "",
 				Hash:         r.RoomHash,
 				Accounts:     mapUsers(r.Users),
-				Messages:     []*apimodel.Message{},
+				Messages:     mapMessages(r.Messages),
 				Name:         r.Name,
 				UnreadsCount: []*apimodel.UnreadCount{},
 				ReadAts:      apimodel.ReadAts{},
