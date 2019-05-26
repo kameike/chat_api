@@ -22,7 +22,6 @@ func generalAfter() {
 
 func authBefore() {
 	generalBefore()
-	ds.RDB().LogMode(false)
 	token = generateRandomToken()
 	hash = generateRandomToken()
 }
@@ -69,6 +68,7 @@ func Test_authRepository_FindOrCreateUser_普通にユーザーが作れる(t *t
 		t.Fail()
 	}
 }
+
 func Test_authRepository_FindOrCreateUser_ユーザーが重複して作れない(t *testing.T) {
 	authBefore()
 	defer authAfter()
@@ -79,12 +79,12 @@ func Test_authRepository_FindOrCreateUser_ユーザーが重複して作れな�
 
 	r.FindOrCreateUser(token, hash)
 
-	_, _, err := r.FindOrCreateUser(generateRandomToken(), hash)
-	if err != nil {
-		t.Fail()
+	u, auth, err := r.FindOrCreateUser(generateRandomToken(), hash)
+	if err == nil || auth != nil || u != nil {
+		t.Fatalf("user found %s <-> %s", auth.AccessToken, u.UserHash)
 	}
 	_, _, err = r.FindOrCreateUser(token, generateRandomToken())
-	if err == nil {
+	if err != nil {
 		t.Fail()
 	}
 }

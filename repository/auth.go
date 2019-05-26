@@ -46,6 +46,10 @@ func (r *authRepository) FindOrCreateUser(token string, hash string) (*model.Use
 		})
 	}
 
+	if updatedUser == nil || updatedUser.AuthToken != token {
+		return nil, nil, apierror.NewError(apierror.LOGIN_FAIL)
+	}
+
 	if err != nil {
 		return nil, nil, apierror.Error(apierror.LOGIN_FAIL, err)
 	}
