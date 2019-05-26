@@ -24,8 +24,6 @@ func beforeChat() {
 			"channelName": "room21"
 	}`, user.UserHash, user2.UserHash)
 
-	print(target1, target2)
-
 	roomRequest := ChatRoomsInfoDescriable{
 		RoomHashes: []string{target1, target2},
 	}
@@ -38,8 +36,6 @@ func beforeChat() {
 
 	chatroom = r[0]
 	otherChatroom = r[1]
-
-	print(user2, ur)
 
 	authUser = *user
 	chatRepo, err = provider.ChatRepository(*user, chatroom.RoomHash)
