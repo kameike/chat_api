@@ -41,8 +41,23 @@ type Unread struct {
 	UserUnreads map[string]int
 }
 
+type ReadAt struct {
+	userHash  string
+	timestapm int
+}
+
+type MessageAndReadState struct {
+	ReadAt   ReadAt
+	Messages []*model.Message
+}
+
+type MessageAndReadAtRequest struct {
+	RoomHash string
+}
+
 type ChatRepositable interface {
 	CreateMessage(string) apierror.ChatAPIError
+	GetMessageAndReadStatus() (*MessageAndReadState, apierror.ChatAPIError)
 }
 
 type ReposotryProvidable interface {

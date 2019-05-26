@@ -57,7 +57,11 @@ func Testメッセージを作成できる(t *testing.T) {
 	beforeChat()
 	defer afterChat()
 
-	ds.RDB().LogMode(true)
+	db := ds.RDB()
+
+	beforeCount := 0
+	db.Model(&model.Message{}).Count(&beforeCount)
+
 	err := chatRepo.CreateMessage("test")
 	if err != nil {
 		t.Fatal(err.Error())
@@ -66,14 +70,54 @@ func Testメッセージを作成できる(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	err = chatRepo.CreateMessage("🤗")
+
+	afterCount := 0
+	db.Model(&model.Message{}).Count(&afterCount)
+
+	if afterCount-beforeCount != 2 {
+		t.Fatalf("invalid count before %d after %d", afterCount, beforeCount)
+	}
+}
+
+func Testメッセージを取得できる(t *testing.T) {
+	beforeChat()
+	defer afterChat()
+
+	chatRepo.CreateMessage("hey")
+	chatRepo.CreateMessage("hey")
+	chatRepo.CreateMessage("hey")
+
+	res, err := chatRepo.GetMessageAndReadStatus()
+
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	ds.RDB().LogMode(false)
+
+	if len(res.Messages) != 3 {
+		t.Fatalf("count should be 3 bat %d", len(res.Messages))
+	}
 }
 
-func Test_hoge(t *testing.T) {
+func Test違うチャットルームのメッセージには関与しない(t *testing.T) {
 	beforeChat()
 	defer afterChat()
+
+	chatRepo.CreateMessage("hey1")
+	chatRepo.CreateMessage("hey3")
+	chatRepo.CreateMessage("hey3")
+
+	//違うの作る
+	user, _, _ := provider.AuthRepository().FindOrCreateUser(token, hash)
+	otherRepo, err := provider.ChatRepository(*user, otherChatroom.RoomHash)
+	otherRepo.CreateMessage("hey")
+
+	res, err := chatRepo.GetMessageAndReadStatus()
+
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if len(res.Messages) != 3 {
+		t.Fatalf("count should be 3 bat %d", len(res.Messages))
+	}
 }

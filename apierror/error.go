@@ -48,6 +48,7 @@ const SERVICE_DOWN = "現在メッセージングサービスをご利用でき�
 const FATAL_ERROR = "現在メッセージングサービスをご利用できません。"
 const LOGIN_FAIL = "チャットサービスへのログインに失敗しました。"
 const INVALID_USER = "有効なユーザーが存在しません。"
+const FAILD_GET_MESSAGES = "メッセージの取得に失敗しました"
 
 const POST_MESSAGE_FAILD = "メッセージの送信に失敗しました。"
 const CHATROOM_NOT_FOUND = "チャットルームが見つかりません。"
