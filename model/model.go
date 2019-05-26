@@ -43,6 +43,7 @@ type Message struct {
 	gorm.Model
 	Text   string
 	UserID uint `gorm:"index"`
+	User   User
 	RoomID uint `gorm:"index"`
 }
 

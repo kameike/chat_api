@@ -87,7 +87,9 @@ func Testメッセージを取得できる(t *testing.T) {
 	chatRepo.CreateMessage("hey")
 	chatRepo.CreateMessage("hey")
 
+	ds.RDB().LogMode(true)
 	res, err := chatRepo.GetMessageAndReadStatus()
+	ds.RDB().LogMode(false)
 
 	if err != nil {
 		t.Fatal(err.Error())
@@ -95,6 +97,13 @@ func Testメッセージを取得できる(t *testing.T) {
 
 	if len(res.Messages) != 3 {
 		t.Fatalf("count should be 3 bat %d", len(res.Messages))
+	}
+
+	u := res.Messages[0].User
+
+	//check user preload
+	if u.UserHash != hash {
+		t.Fatalf("user has is %s", u.UserHash)
 	}
 }
 

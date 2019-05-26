@@ -54,7 +54,7 @@ func (r *chatRepository) GetMessageAndReadStatus() (*MessageAndReadState, apierr
 	db := r.ds.RDB()
 	messages := []*model.Message{}
 
-	err := db.Where("room_id = ?", r.room.ID).Find(&messages).Error
+	err := db.Preload("User").Where("room_id = ?", r.room.ID).Find(&messages).Error
 
 	if err != nil {
 		return nil, apierror.Error(apierror.GET_MESSAGE_FAIL, err)

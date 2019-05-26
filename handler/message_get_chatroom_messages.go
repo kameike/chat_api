@@ -29,25 +29,30 @@ func (a *RequestHandler) MessagesGetMessagesHandler() messages.GetChatroomsChatr
 			return errorResponse(apierror.Error(apierror.CHATROOM_NOT_FOUND, err))
 		}
 
-		msgs := make([]*apimodel.Message, len(result.Messages), len(result.Messages))
-
-		for i, m := range result.Messages {
-			apimsg := apimodel.Message{
-				Content:   m.Text,
-				CreatedAt: m.CreatedAt.Unix(),
-				ID:        int64(m.ID),
-				Account:   mapUser(*u),
-			}
-
-			msgs[i] = &apimsg
-		}
+		msgs := mapToApiModel(result.Messages)
 
 		// TODO
 		response := apimodel.MessagesResponse{
-			Messages: []*apimodel.Message{},
+			Messages: msgs,
 			ReadAts:  apimodel.ReadAts{},
 		}
 
 		return messages.NewPostChatroomsChatroomHashMessagesOK().WithPayload(&response)
 	})
+}
+
+func mapToApiModel(target []*model.Message) []*apimodel.Message {
+	msgs := make([]*apimodel.Message, len(target), len(target))
+
+	for i, m := range target {
+		apimsg := apimodel.Message{
+			Content:   m.Text,
+			CreatedAt: m.CreatedAt.Unix(),
+			ID:        int64(m.ID),
+			Account:   mapUser(m.User),
+		}
+		msgs[i] = &apimsg
+	}
+
+	return msgs
 }
