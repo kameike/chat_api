@@ -19,8 +19,8 @@ type UserUpdateInfoDescriable interface {
 }
 
 //ChatRoomsInfoDescriable support signed json strings
-type ChatRoomsInfoDescriable interface {
-	RoomHashes() []string
+type ChatRoomsInfoDescriable struct {
+	RoomHashes []string
 }
 
 // GetChatRoomRequest exprain chat room with long uniqe hashed string

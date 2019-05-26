@@ -58,8 +58,8 @@ func Testチャットルームが存在しなくても作られる(t *testing.T)
 		}
 	`, authUser.UserHash))
 
-	testData := testChatRoomCreateInfo{
-		data: roomSign,
+	testData := ChatRoomsInfoDescriable{
+		RoomHashes: roomSign,
 	}
 
 	result, err := u.GetChatRooms(testData)
@@ -362,14 +362,6 @@ func (p testAuthInfo) Name() *string {
 func (p testAuthInfo) ImageURL() *string {
 	data := "url"
 	return &data
-}
-
-type testChatRoomCreateInfo struct {
-	data []string
-}
-
-func (t testChatRoomCreateInfo) RoomHashes() []string {
-	return t.data
 }
 
 func TestChatRoomからハッシュが作れる(t *testing.T) {

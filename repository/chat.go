@@ -49,3 +49,29 @@ func (c *chatRepository) CreateMessage(t string) apierror.ChatAPIError {
 
 	return nil
 }
+
+type ReadAt struct {
+	userHash  string
+	timestapm int
+}
+
+type MessageAndReadState struct {
+	ReadAt ReadAt
+}
+
+type MessageAndReadAtRequest struct {
+	RoomHash string
+}
+
+func (r *chatRepository) GetMessageAndReadStatus(req MessageAndReadState) (*MessageAndReadState, apierror.ChatAPIError) {
+	db := r.ds.RDB()
+	messages := []*model.Message{}
+
+	err := db.Where("chatroom_id = ?", r.room.ID).Find(&messages).Error
+
+	if err != nil {
+		return nil, apierror.Error(apierror.GET_MESSAGE_FAIL, err)
+	}
+
+	return &MessageAndReadState{}, nil
+}

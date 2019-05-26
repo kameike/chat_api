@@ -2,20 +2,13 @@ package handler
 
 import (
 	"github.com/kameike/chat_api/model"
+	"github.com/kameike/chat_api/repository"
 	"github.com/kameike/chat_api/swggen/apimodel"
 
 	middleware "github.com/go-openapi/runtime/middleware"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/kameike/chat_api/swggen/restapi/operations/chatrooms"
 )
-
-type chatroomData struct {
-	data chatrooms.PostChatroomsParams
-}
-
-func (d chatroomData) RoomHashes() []string {
-	return d.data.Body.Chatrooms
-}
 
 func (a *RequestHandler) ChatRoomsPostChatroomsHandler() chatrooms.PostChatroomsHandlerFunc {
 	return chatrooms.PostChatroomsHandlerFunc(func(params chatrooms.PostChatroomsParams, principal interface{}) middleware.Responder {
@@ -24,7 +17,7 @@ func (a *RequestHandler) ChatRoomsPostChatroomsHandler() chatrooms.PostChatrooms
 		if err != nil {
 		}
 
-		rooms, err := repo.GetChatRooms(chatroomData{params})
+		rooms, err := repo.GetChatRooms(repository.ChatRoomsInfoDescriable{params.Body.Chatrooms})
 
 		if err != nil {
 			return errorResponse(err)

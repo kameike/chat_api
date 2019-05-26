@@ -9,8 +9,8 @@ import (
 
 func (a *RequestHandler) MessagesGetMessagesHandler() messages.GetChatroomsChatroomHashMessagesHandler {
 	return messages.GetChatroomsChatroomHashMessagesHandlerFunc(func(request messages.GetChatroomsChatroomHashMessagesParams, user interface{}) middleware.Responder {
-		// TODO
 
+		// TODO
 		response := apimodel.MessagesResponse{
 			Messages: []*apimodel.Message{},
 			ReadAts:  apimodel.ReadAts{},

@@ -25,14 +25,18 @@ type chatRoomData struct {
 }
 
 func (u *userRepository) GetChatRooms(data ChatRoomsInfoDescriable) ([]*model.ChatRoom, apierror.ChatAPIError) {
-	hashes := data.RoomHashes()
+	hashes := data.RoomHashes
 	roomsInfo := make([]chatRoomData, len(hashes), len(hashes))
 
-	for i, chank := range data.RoomHashes() {
+	for i, chank := range data.RoomHashes {
 		err := json.Unmarshal([]byte(chank), &roomsInfo[i])
 		if err != nil {
 			return nil, apierror.Error(apierror.FATAL_ERROR, err)
 		}
+
+		// 		if roomsInfo[i].RoomName == "" {
+		// 			return nil, apierror.NewError(letterBytes
+		// 		}
 	}
 	return u.getChatrooms(roomsInfo)
 }
@@ -190,7 +194,8 @@ func convertToHash(seed string) string {
 	solt := "n4bQgYhMfWWaL-qgxVrQFaO_TxsrC4Is0V1sFbDwCgg"
 	hasher := sha256.New()
 	hasher.Write([]byte(seed + solt))
-	return base64.RawURLEncoding.EncodeToString(hasher.Sum(nil))
+	res := base64.RawURLEncoding.EncodeToString(hasher.Sum(nil))
+	return res
 }
 
 func concatString(data chatRoomData) string {

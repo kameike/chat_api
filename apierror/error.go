@@ -56,6 +56,7 @@ const FAILD_UPDATE_USER_INFO = "ユーザー情報の更新に失敗しました
 
 const THINK_LATER = "現在メッセージングサービスをご利用できません。"
 const INVALID_POST_MESSAGE = "不正なチャットルームにメッセージを送信しようとしています."
+const GET_MESSAGE_FAIL = "メッセージの取得に失敗しました"
 
 type ChatAPIError interface {
 	Error() string
