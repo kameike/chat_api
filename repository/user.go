@@ -34,15 +34,34 @@ func (u *userRepository) GetChatRooms(data ChatRoomsInfoDescriable) ([]*model.Ch
 			return nil, apierror.Error(apierror.FATAL_ERROR, err)
 		}
 
-		// 		if roomsInfo[i].RoomName == "" {
-		// 			return nil, apierror.NewError(letterBytes
-		// 		}
+		if roomsInfo[i].RoomName == "" {
+			return nil, apierror.NewError(apierror.CHATROOM_NOT_FOUND)
+		}
 	}
 	return u.getChatrooms(roomsInfo)
 }
 
+func filterData(data []chatRoomData) []chatRoomData {
+	newData := make([]chatRoomData, 0, len(data))
+
+	for _, d1 := range data {
+		contain := false
+		for _, d2 := range newData {
+			if d1.hashValue() == d2.hashValue() {
+				contain = true
+				break
+			}
+		}
+		if !contain {
+			newData = append(newData, d1)
+		}
+	}
+
+	return newData
+}
+
 func (u *userRepository) getChatrooms(data []chatRoomData) ([]*model.ChatRoom, apierror.ChatAPIError) {
-	result := u.findChatrooms(data)
+	result := u.findChatrooms(filterData(data))
 	currentChatrooms := result.found
 
 	if len(result.notFound) != 0 {

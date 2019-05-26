@@ -9,7 +9,6 @@ import (
 
 func generalBefore() {
 	ds = datasource.PrepareDatasource()
-	println("===start case===")
 	ds.Begin()
 
 	provider = &applicationRepositoryProvidable{

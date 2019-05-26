@@ -51,7 +51,6 @@ func afterChat() {
 }
 
 func Test_hoge(t *testing.T) {
-	beforeChat()
-	defer afterChat()
-
+	// beforeChat()
+	// defer afterChat()
 }

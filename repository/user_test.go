@@ -54,7 +54,7 @@ func Testチャットルームが存在しなくても作られる(t *testing.T)
 	var roomSign []string
 	roomSign = append(roomSign, fmt.Sprintf(`{
 			"accountHashList": ["%s"],
-			"roomName": "fuga"
+			"channelName": "fuga"
 		}
 	`, authUser.UserHash))
 
@@ -69,6 +69,110 @@ func Testチャットルームが存在しなくても作られる(t *testing.T)
 	}
 
 	if result == nil {
+		t.Fatalf("chat room has not been created")
+	}
+}
+
+func Testルーム名が存在しない場合ダメ(t *testing.T) {
+	beforeUser()
+	defer afterUser()
+	u, _ := provider.UserRepository(authUser)
+
+	var roomSign []string
+	roomSign = append(roomSign, fmt.Sprintf(`{
+			"accountHashList": ["%s"]
+		}
+	`, authUser.UserHash))
+
+	testData := ChatRoomsInfoDescriable{
+		RoomHashes: roomSign,
+	}
+
+	_, err := u.GetChatRooms(testData)
+
+	if err == nil {
+		t.Fatalf("err should be happen")
+	}
+}
+
+func Test同一データをフィルターできる(t *testing.T) {
+
+	target := []chatRoomData{
+		chatRoomData{
+			Accounts: []string{"a", "b"},
+			RoomName: "c",
+		},
+		chatRoomData{
+			Accounts: []string{"a", "b"},
+			RoomName: "c",
+		},
+	}
+
+	if len(filterData(target)) != 1 {
+		t.Fatal("failed to filter chatroom")
+	}
+}
+
+func Test同一のチャットルームのリクエストが来たらよしなにマージされる(t *testing.T) {
+	beforeUser()
+	defer afterUser()
+	u, _ := provider.UserRepository(authUser)
+
+	var roomSign []string
+	roomSign = append(roomSign, fmt.Sprintf(`{
+			"accountHashList": ["%s"],
+			"channelName": "fuga"
+		}
+	`, authUser.UserHash))
+	roomSign = append(roomSign, fmt.Sprintf(`{
+			"accountHashList": ["%s"],
+			"channelName": "fuga"
+		}
+	`, authUser.UserHash))
+
+	testData := ChatRoomsInfoDescriable{
+		RoomHashes: roomSign,
+	}
+
+	result, err := u.GetChatRooms(testData)
+
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	if 1 != len(result) {
+		t.Fatalf("chat room has not been created")
+	}
+}
+
+func Test部屋名が異なると違うチャットルームができる(t *testing.T) {
+	beforeUser()
+	defer afterUser()
+	u, _ := provider.UserRepository(authUser)
+
+	var roomSign []string
+	roomSign = append(roomSign, fmt.Sprintf(`{
+			"accountHashList": ["%s"],
+			"channelName": "fuga"
+		}
+	`, authUser.UserHash))
+	roomSign = append(roomSign, fmt.Sprintf(`{
+			"accountHashList": ["%s"],
+			"channelName": "hoge"
+		}
+	`, authUser.UserHash))
+
+	testData := ChatRoomsInfoDescriable{
+		RoomHashes: roomSign,
+	}
+
+	result, err := u.GetChatRooms(testData)
+
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	if 2 != len(result) {
 		t.Fatalf("chat room has not been created")
 	}
 }
@@ -135,9 +239,7 @@ func Testチャットルームの型によってチャットを作ることが�
 			t.Fatalf(err.Error())
 		}
 
-		ds.RDB().LogMode(true)
 		res, err = app.GetChatRoom(GetChatRoomRequest{hash})
-		ds.RDB().LogMode(false)
 
 		if err != nil {
 			t.Fatalf(err.Error())
@@ -248,7 +350,7 @@ func Test条件が一緒であればチャットルームは複数作られな�
 	}
 
 	if len(res) != 1 {
-		t.Fatalf("count is weard %d", len(res))
+		t.Fatalf("count is weird %d", len(res))
 	}
 
 	if afterCount-beforeCount != 1 {
@@ -343,8 +445,8 @@ func Test条件が一緒であればチャットルームはたとえ同時リ�
 		t.Fatalf(err.Error())
 	}
 
-	if len(res) != 2 {
-		t.Fatalf("count is weard %d", len(res))
+	if len(res) != 1 {
+		t.Fatalf("count is wierd %d", len(res))
 	}
 
 	if afterCount-beforeCount != 1 {
