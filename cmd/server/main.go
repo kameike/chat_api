@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime"
@@ -11,14 +10,16 @@ import (
 	"github.com/kameike/chat_api/repository"
 	"github.com/kameike/chat_api/swggen/restapi"
 	"github.com/kameike/chat_api/swggen/restapi/operations"
+
 	"github.com/rs/cors"
+	"net/http"
 )
 
 var repo repository.ReposotryProvidable
 
-func setupGlobalMiddleware(handler http.Handler) http.Handler {
+func setupMiddlewares(handler http.Handler) http.Handler {
+	println("support cors")
 	handleCORS := cors.Default().Handler
-	print("set up meddle ware")
 	return handleCORS(handler)
 }
 
@@ -53,6 +54,9 @@ func main() {
 
 	server := restapi.NewServer(api)
 	defer server.Shutdown()
+
+	server.ConfigureAPI()
+	server.ConfigureFlags()
 
 	server.Port = 80
 

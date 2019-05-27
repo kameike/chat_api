@@ -30,14 +30,14 @@ var cxt = context.Background()
 // var host = "dev-chat.taimee.co.jp"
 // var transport = httpclient.New(host, "", []string{"https"})
 
-// var host = "localhost"
-// var transport = httpclient.New(host, "", []string{"http"})
+var host = "localhost"
+var transport = httpclient.New(host, "", []string{"http"})
 
 // var host = "13.231.204.249"
 // var transport = httpclient.New(host, "", []string{"http"})
 
-var host = "dev-chat.taimee.co.jp"
-var transport = httpclient.New(host, "", []string{"https"})
+// var host = "dev-chat.taimee.co.jp"
+// var transport = httpclient.New(host, "", []string{"https"})
 
 var client = apiclient.New(transport, strfmt.Default)
 
