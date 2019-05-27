@@ -7,15 +7,11 @@ import (
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
-	middleware "github.com/go-openapi/runtime/middleware"
+
+	"net/http"
 
 	"github.com/kameike/chat_api/swggen/restapi/operations"
-	"github.com/kameike/chat_api/swggen/restapi/operations/account"
-	"github.com/kameike/chat_api/swggen/restapi/operations/chatrooms"
-	"github.com/kameike/chat_api/swggen/restapi/operations/deploy"
-	"github.com/kameike/chat_api/swggen/restapi/operations/messages"
 	"github.com/rs/cors"
-	"net/http"
 )
 
 //go:generate swagger generate server --target ../../swggen --name Chat --spec ../../swagger.yaml --model-package apimodel --exclude-main
@@ -39,60 +35,60 @@ func configureAPI(api *operations.ChatAPI) http.Handler {
 	api.JSONProducer = runtime.JSONProducer()
 
 	// Applies when the "X-CHAT-ACCESS-TOKEN" header is set
-	api.APIKeyAuth = func(token string) (interface{}, error) {
-		return nil, errors.NotImplemented("api key auth (apiKey) X-CHAT-ACCESS-TOKEN from header param [X-CHAT-ACCESS-TOKEN] has not yet been implemented")
-	}
-
+	//	api.APIKeyAuth = func(token string) (interface{}, error) {
+	//		return nil, errors.NotImplemented("api key auth (apiKey) X-CHAT-ACCESS-TOKEN from header param [X-CHAT-ACCESS-TOKEN] has not yet been implemented")
+	//	}
+	//
 	// Set your custom authorizer if needed. Default one is security.Authorized()
 	// Expected interface runtime.Authorizer
 	//
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
-	if api.ChatroomsGetAdminSearchChatroomsHandler == nil {
-		api.ChatroomsGetAdminSearchChatroomsHandler = chatrooms.GetAdminSearchChatroomsHandlerFunc(func(params chatrooms.GetAdminSearchChatroomsParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation chatrooms.GetAdminSearchChatrooms has not yet been implemented")
-		})
-	}
-	if api.MessagesGetChatroomsChatroomHashMessagesHandler == nil {
-		api.MessagesGetChatroomsChatroomHashMessagesHandler = messages.GetChatroomsChatroomHashMessagesHandlerFunc(func(params messages.GetChatroomsChatroomHashMessagesParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation messages.GetChatroomsChatroomHashMessages has not yet been implemented")
-		})
-	}
-	if api.ChatroomsGetChatroomsIDHandler == nil {
-		api.ChatroomsGetChatroomsIDHandler = chatrooms.GetChatroomsIDHandlerFunc(func(params chatrooms.GetChatroomsIDParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation chatrooms.GetChatroomsID has not yet been implemented")
-		})
-	}
-	if api.DeployGetHealthHandler == nil {
-		api.DeployGetHealthHandler = deploy.GetHealthHandlerFunc(func(params deploy.GetHealthParams) middleware.Responder {
-			return middleware.NotImplemented("operation deploy.GetHealth has not yet been implemented")
-		})
-	}
-	if api.AccountPostAuthHandler == nil {
-		api.AccountPostAuthHandler = account.PostAuthHandlerFunc(func(params account.PostAuthParams) middleware.Responder {
-			return middleware.NotImplemented("operation account.PostAuth has not yet been implemented")
-		})
-	}
-	if api.ChatroomsPostChatroomsHandler == nil {
-		api.ChatroomsPostChatroomsHandler = chatrooms.PostChatroomsHandlerFunc(func(params chatrooms.PostChatroomsParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation chatrooms.PostChatrooms has not yet been implemented")
-		})
-	}
-	if api.ChatroomsPostChatroomsChannelHashReadHandler == nil {
-		api.ChatroomsPostChatroomsChannelHashReadHandler = chatrooms.PostChatroomsChannelHashReadHandlerFunc(func(params chatrooms.PostChatroomsChannelHashReadParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation chatrooms.PostChatroomsChannelHashRead has not yet been implemented")
-		})
-	}
-	if api.MessagesPostChatroomsChatroomHashMessagesHandler == nil {
-		api.MessagesPostChatroomsChatroomHashMessagesHandler = messages.PostChatroomsChatroomHashMessagesHandlerFunc(func(params messages.PostChatroomsChatroomHashMessagesParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation messages.PostChatroomsChatroomHashMessages has not yet been implemented")
-		})
-	}
-	if api.AccountPostProfileHandler == nil {
-		api.AccountPostProfileHandler = account.PostProfileHandlerFunc(func(params account.PostProfileParams, principal interface{}) middleware.Responder {
-			return middleware.NotImplemented("operation account.PostProfile has not yet been implemented")
-		})
-	}
+	// if api.ChatroomsGetAdminSearchChatroomsHandler == nil {
+	// 	api.ChatroomsGetAdminSearchChatroomsHandler = chatrooms.GetAdminSearchChatroomsHandlerFunc(func(params chatrooms.GetAdminSearchChatroomsParams, principal interface{}) middleware.Responder {
+	// 		return middleware.NotImplemented("operation chatrooms.GetAdminSearchChatrooms has not yet been implemented")
+	// 	})
+	// }
+	// if api.MessagesGetChatroomsChatroomHashMessagesHandler == nil {
+	// 	api.MessagesGetChatroomsChatroomHashMessagesHandler = messages.GetChatroomsChatroomHashMessagesHandlerFunc(func(params messages.GetChatroomsChatroomHashMessagesParams, principal interface{}) middleware.Responder {
+	// 		return middleware.NotImplemented("operation messages.GetChatroomsChatroomHashMessages has not yet been implemented")
+	// 	})
+	// }
+	// if api.ChatroomsGetChatroomsIDHandler == nil {
+	// 	api.ChatroomsGetChatroomsIDHandler = chatrooms.GetChatroomsIDHandlerFunc(func(params chatrooms.GetChatroomsIDParams, principal interface{}) middleware.Responder {
+	// 		return middleware.NotImplemented("operation chatrooms.GetChatroomsID has not yet been implemented")
+	// 	})
+	// }
+	// if api.DeployGetHealthHandler == nil {
+	// 	api.DeployGetHealthHandler = deploy.GetHealthHandlerFunc(func(params deploy.GetHealthParams) middleware.Responder {
+	// 		return middleware.NotImplemented("operation deploy.GetHealth has not yet been implemented")
+	// 	})
+	// }
+	// if api.AccountPostAuthHandler == nil {
+	// 	api.AccountPostAuthHandler = account.PostAuthHandlerFunc(func(params account.PostAuthParams) middleware.Responder {
+	// 		return middleware.NotImplemented("operation account.PostAuth has not yet been implemented")
+	// 	})
+	// }
+	// if api.ChatroomsPostChatroomsHandler == nil {
+	// 	api.ChatroomsPostChatroomsHandler = chatrooms.PostChatroomsHandlerFunc(func(params chatrooms.PostChatroomsParams, principal interface{}) middleware.Responder {
+	// 		return middleware.NotImplemented("operation chatrooms.PostChatrooms has not yet been implemented")
+	// 	})
+	// }
+	// if api.ChatroomsPostChatroomsChannelHashReadHandler == nil {
+	// 	api.ChatroomsPostChatroomsChannelHashReadHandler = chatrooms.PostChatroomsChannelHashReadHandlerFunc(func(params chatrooms.PostChatroomsChannelHashReadParams, principal interface{}) middleware.Responder {
+	// 		return middleware.NotImplemented("operation chatrooms.PostChatroomsChannelHashRead has not yet been implemented")
+	// 	})
+	// }
+	// if api.MessagesPostChatroomsChatroomHashMessagesHandler == nil {
+	// 	api.MessagesPostChatroomsChatroomHashMessagesHandler = messages.PostChatroomsChatroomHashMessagesHandlerFunc(func(params messages.PostChatroomsChatroomHashMessagesParams, principal interface{}) middleware.Responder {
+	// 		return middleware.NotImplemented("operation messages.PostChatroomsChatroomHashMessages has not yet been implemented")
+	// 	})
+	// }
+	// if api.AccountPostProfileHandler == nil {
+	// 	api.AccountPostProfileHandler = account.PostProfileHandlerFunc(func(params account.PostProfileParams, principal interface{}) middleware.Responder {
+	// 		return middleware.NotImplemented("operation account.PostProfile has not yet been implemented")
+	// 	})
+	// }
 
 	api.ServerShutdown = func() {}
 

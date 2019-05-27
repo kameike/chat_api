@@ -45,7 +45,6 @@ func main() {
 
 	server := restapi.NewServer(api)
 	defer server.Shutdown()
-
 	server.ConfigureAPI()
 	server.ConfigureFlags()
 
