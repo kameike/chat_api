@@ -2,19 +2,25 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime"
-	// "github.com/go-openapi/runtime/middleware"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/kameike/chat_api/handler"
 	"github.com/kameike/chat_api/repository"
 	"github.com/kameike/chat_api/swggen/restapi"
 	"github.com/kameike/chat_api/swggen/restapi/operations"
-	// "github.com/kameike/chat_api/swggen/restapi/operations/deploy"
+	"github.com/rs/cors"
 )
 
 var repo repository.ReposotryProvidable
+
+func setupGlobalMiddleware(handler http.Handler) http.Handler {
+	handleCORS := cors.Default().Handler
+	print("set up meddle ware")
+	return handleCORS(handler)
+}
 
 func main() {
 	handlers := handler.SetUpHandler()

@@ -236,6 +236,14 @@
   version = "v2.6.0"
 
 [[projects]]
+  digest = "1:b0c25f00bad20d783d259af2af8666969e2fc343fa0dc9efe52936bbd67fb758"
+  name = "github.com/rs/cors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "9a47f48565a795472d43519dd49aac781f3034fb"
+  version = "v1.6.0"
+
+[[projects]]
   branch = "master"
   digest = "1:e654f02d20744fab9887e57ff63c7277a124122f3960a351f54bfd7edd04f536"
   name = "golang.org/x/net"
@@ -310,6 +318,7 @@
     "github.com/joho/godotenv/autoload",
     "github.com/pkg/errors",
     "github.com/pressly/goose",
+    "github.com/rs/cors",
     "golang.org/x/net/netutil",
   ]
   solver-name = "gps-cdcl"
