@@ -439,7 +439,7 @@ func init() {
           "x-omitempty": false
         },
         "id": {
-          "type": "string"
+          "type": "integer"
         },
         "messages": {
           "description": "メッセージを全て返します。",
@@ -994,7 +994,7 @@ func init() {
           "x-omitempty": false
         },
         "id": {
-          "type": "string"
+          "type": "integer"
         },
         "messages": {
           "description": "メッセージを全て返します。",

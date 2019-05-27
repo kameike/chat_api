@@ -17,8 +17,8 @@ import (
 	"github.com/kameike/chat_api/swggen/client/messages"
 )
 
-var userCount = 3
-var reqPerSec = 5
+var userCount = 50
+var reqPerSec = 40
 var wtime = time.Duration(1000 / reqPerSec)
 
 var users = make([]basicAccount, userCount, userCount)
@@ -30,14 +30,14 @@ var cxt = context.Background()
 // var host = "dev-chat.taimee.co.jp"
 // var transport = httpclient.New(host, "", []string{"https"})
 
-var host = "localhost"
-var transport = httpclient.New(host, "", []string{"http"})
+// var host = "localhost"
+// var transport = httpclient.New(host, "", []string{"http"})
 
 // var host = "13.231.204.249"
 // var transport = httpclient.New(host, "", []string{"http"})
 
-// var host = "chat-stg-aagktp6bnbxvfrw8.stg-taimee.com"
-// var transport = httpclient.New(host, "", []string{"http"})
+var host = "dev-chat.taimee.co.jp"
+var transport = httpclient.New(host, "", []string{"https"})
 
 var client = apiclient.New(transport, strfmt.Default)
 

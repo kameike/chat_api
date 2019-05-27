@@ -25,7 +25,7 @@ type Chatroom struct {
 	Hash string `json:"hash"`
 
 	// id
-	ID string `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
 
 	// メッセージを全て返します。
 	Messages []*Message `json:"messages"`

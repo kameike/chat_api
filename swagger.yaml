@@ -339,7 +339,7 @@ definitions:
     description: "チャットルームを取得するときに出てくるやつ"
     properties:
       id:
-        type: string
+        type: integer
       hash:
         type: string
         x-omitempty: false

@@ -35,7 +35,7 @@ func (a *RequestHandler) ChatroomsGetChatroomHandler() chatrooms.GetChatroomsIDH
 		})
 
 		data := apimodel.Chatroom{
-			ID:           "",
+			ID:           int64(r.ID),
 			Hash:         r.RoomHash,
 			Accounts:     mapUsers(r.Users),
 			Messages:     mapMessages(r.Messages),
