@@ -10,18 +10,9 @@ import (
 	"github.com/kameike/chat_api/repository"
 	"github.com/kameike/chat_api/swggen/restapi"
 	"github.com/kameike/chat_api/swggen/restapi/operations"
-
-	"github.com/rs/cors"
-	"net/http"
 )
 
 var repo repository.ReposotryProvidable
-
-func setupMiddlewares(handler http.Handler) http.Handler {
-	println("support cors")
-	handleCORS := cors.Default().Handler
-	return handleCORS(handler)
-}
 
 func main() {
 	handlers := handler.SetUpHandler()
