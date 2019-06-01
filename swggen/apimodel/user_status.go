@@ -11,30 +11,21 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// Account 汎用的に出てくるユーザーオブジェクト
-// swagger:model account
-type Account struct {
+// UserStatus ユーザーの状態
+// swagger:model userStatus
+type UserStatus struct {
 
-	// hash
-	Hash string `json:"hash,omitempty"`
-
-	// id
-	ID int64 `json:"id,omitempty"`
-
-	// image URL
-	ImageURL string `json:"imageURL,omitempty"`
-
-	// name
-	Name string `json:"name,omitempty"`
+	// unread counts
+	UnreadCounts int64 `json:"unreadCounts,omitempty"`
 }
 
-// Validate validates this account
-func (m *Account) Validate(formats strfmt.Registry) error {
+// Validate validates this user status
+func (m *UserStatus) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *Account) MarshalBinary() ([]byte, error) {
+func (m *UserStatus) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -42,8 +33,8 @@ func (m *Account) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *Account) UnmarshalBinary(b []byte) error {
-	var res Account
+func (m *UserStatus) UnmarshalBinary(b []byte) error {
+	var res UserStatus
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

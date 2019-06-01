@@ -20,7 +20,7 @@ type Message struct {
 	Account *Account `json:"account,omitempty"`
 
 	// content
-	Content string `json:"content"`
+	Content string `json:"content,omitempty"`
 
 	// created at
 	CreatedAt int64 `json:"createdAt,omitempty"`

@@ -22,7 +22,7 @@ type Chatroom struct {
 	Accounts []*Account `json:"accounts"`
 
 	// hash
-	Hash string `json:"hash"`
+	Hash string `json:"hash,omitempty"`
 
 	// id
 	ID int64 `json:"id,omitempty"`
@@ -31,10 +31,10 @@ type Chatroom struct {
 	Messages []*Message `json:"messages"`
 
 	// name
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 
 	// read ats
-	ReadAts ReadAts `json:"readAts"`
+	ReadAts ReadAts `json:"readAts,omitempty"`
 
 	// unreads count
 	UnreadsCount []*UnreadCount `json:"unreadsCount"`

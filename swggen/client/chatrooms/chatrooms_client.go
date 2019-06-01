@@ -90,7 +90,7 @@ func (a *Client) GetChatroomsID(params *GetChatroomsIDParams, authInfo runtime.C
 PostChatrooms チャットルームの一覧が取ってこれるよs
 
 一覧が出るよ.それぞれの文字列はこの形でお願いします。
-{ accounts: ["userId", "userId"], channelName: "name" }
+{ accountHashList: ["userId", "userId"], channelName: "name" }
 */
 func (a *Client) PostChatrooms(params *PostChatroomsParams, authInfo runtime.ClientAuthInfoWriter) (*PostChatroomsOK, error) {
 	// TODO: Validate the params before sending

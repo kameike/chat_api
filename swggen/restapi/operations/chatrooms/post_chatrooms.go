@@ -40,7 +40,7 @@ func NewPostChatrooms(ctx *middleware.Context, handler PostChatroomsHandler) *Po
 チャットルームの一覧が取ってこれるよ
 
 一覧が出るよ.それぞれの文字列はこの形でお願いします。
-{ accounts: ["userId", "userId"], channelName: "name" }
+{ accountHashList: ["userId", "userId"], channelName: "name" }
 
 */
 type PostChatrooms struct {

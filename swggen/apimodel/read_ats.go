@@ -49,10 +49,10 @@ func (m ReadAts) Validate(formats strfmt.Registry) error {
 type ReadAtsItems0 struct {
 
 	// account hash
-	AccountHash string `json:"accountHash"`
+	AccountHash string `json:"accountHash,omitempty"`
 
 	// read at
-	ReadAt int64 `json:"readAt"`
+	ReadAt int64 `json:"readAt,omitempty"`
 }
 
 // Validate validates this read ats items0

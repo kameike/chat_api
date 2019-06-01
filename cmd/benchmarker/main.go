@@ -17,7 +17,7 @@ import (
 	"github.com/kameike/chat_api/swggen/client/messages"
 )
 
-var userCount = 50
+var userCount = 100
 var reqPerSec = 40
 var wtime = time.Duration(1000 / reqPerSec)
 
@@ -30,14 +30,14 @@ var cxt = context.Background()
 // var host = "dev-chat.taimee.co.jp"
 // var transport = httpclient.New(host, "", []string{"https"})
 
-var host = "localhost"
-var transport = httpclient.New(host, "", []string{"http"})
+// var host = "localhost"
+// var transport = httpclient.New(host, "", []string{"http"})
 
 // var host = "13.231.204.249"
 // var transport = httpclient.New(host, "", []string{"http"})
 
-// var host = "dev-chat.taimee.co.jp"
-// var transport = httpclient.New(host, "", []string{"https"})
+var host = "dev-chat.taimee.co.jp"
+var transport = httpclient.New(host, "", []string{"https"})
 
 var client = apiclient.New(transport, strfmt.Default)
 
@@ -154,6 +154,39 @@ func main() {
 		}()
 	}
 	wg.Wait()
+
+	counter = 0
+	for _, r := range rooms {
+		counter++
+		c := counter
+		wg.Add(1)
+		rm := r
+		if rm.hash == "" {
+			continue
+		}
+		go func() {
+			time.Sleep(1000 * 1000 * wtime * time.Duration(c))
+			println(rm.hash, rm.name)
+			getStatus(rm)
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+}
+
+func getStatus(r roomInfo) {
+	benchmark("get status", func() {
+		res, err := client.Account.GetStatus(&account.GetStatusParams{
+			Context: cxt,
+		}, authFor(r.user1))
+
+		if err != nil {
+			println(err.Error())
+			return
+		}
+
+		println("unread count -> ", res.Payload.UnreadCounts)
+	})
 }
 
 func benchmark(name string, proc func()) {

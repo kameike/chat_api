@@ -25,6 +25,37 @@ type Client struct {
 }
 
 /*
+GetStatus ユーザーに紐づく状態をとってくるものs
+
+未読数をサポートしています
+*/
+func (a *Client) GetStatus(params *GetStatusParams, authInfo runtime.ClientAuthInfoWriter) (*GetStatusOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetStatusParams()
+	}
+
+	result, err := a.transport.Submit(&runtime.ClientOperation{
+		ID:                 "GetStatus",
+		Method:             "GET",
+		PathPattern:        "/status",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &GetStatusReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result.(*GetStatusOK), nil
+
+}
+
+/*
 PostAuth ログインs
 
 サインアップもしくはアクセストークンの更新を行います

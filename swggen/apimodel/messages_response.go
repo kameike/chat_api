@@ -22,7 +22,7 @@ type MessagesResponse struct {
 	Messages []*Message `json:"messages"`
 
 	// read ats
-	ReadAts ReadAts `json:"readAts"`
+	ReadAts ReadAts `json:"readAts,omitempty"`
 }
 
 // Validate validates this messages response

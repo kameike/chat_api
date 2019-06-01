@@ -54,6 +54,9 @@ func NewChatAPI(spec *loads.Document) *ChatAPI {
 		DeployGetHealthHandler: deploy.GetHealthHandlerFunc(func(params deploy.GetHealthParams) middleware.Responder {
 			return middleware.NotImplemented("operation DeployGetHealth has not yet been implemented")
 		}),
+		AccountGetStatusHandler: account.GetStatusHandlerFunc(func(params account.GetStatusParams, principal interface{}) middleware.Responder {
+			return middleware.NotImplemented("operation AccountGetStatus has not yet been implemented")
+		}),
 		AccountPostAuthHandler: account.PostAuthHandlerFunc(func(params account.PostAuthParams) middleware.Responder {
 			return middleware.NotImplemented("operation AccountPostAuth has not yet been implemented")
 		}),
@@ -123,6 +126,8 @@ type ChatAPI struct {
 	ChatroomsGetChatroomsIDHandler chatrooms.GetChatroomsIDHandler
 	// DeployGetHealthHandler sets the operation handler for the get health operation
 	DeployGetHealthHandler deploy.GetHealthHandler
+	// AccountGetStatusHandler sets the operation handler for the get status operation
+	AccountGetStatusHandler account.GetStatusHandler
 	// AccountPostAuthHandler sets the operation handler for the post auth operation
 	AccountPostAuthHandler account.PostAuthHandler
 	// ChatroomsPostChatroomsHandler sets the operation handler for the post chatrooms operation
@@ -214,6 +219,10 @@ func (o *ChatAPI) Validate() error {
 
 	if o.DeployGetHealthHandler == nil {
 		unregistered = append(unregistered, "deploy.GetHealthHandler")
+	}
+
+	if o.AccountGetStatusHandler == nil {
+		unregistered = append(unregistered, "account.GetStatusHandler")
 	}
 
 	if o.AccountPostAuthHandler == nil {
@@ -363,6 +372,11 @@ func (o *ChatAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/health"] = deploy.NewGetHealth(o.context, o.DeployGetHealthHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/status"] = account.NewGetStatus(o.context, o.AccountGetStatusHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)

@@ -37,7 +37,25 @@ paths:
           description: error
           schema:
             $ref: "#/definitions/error"
-
+            
+  /status:
+    get:
+      tags:
+        - account
+      summary: ユーザーに紐づく状態をとってくるもの
+      description: 未読数をサポートしています
+      security: 
+        - apiKey: []
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: "#/definitions/userStatus"
+        403:
+          description: error
+          schema:
+            $ref: "#/definitions/error"    
+            
   /profile:
     post:
       tags:
@@ -170,7 +188,7 @@ paths:
       description: '一覧が出るよ.それぞれの文字列はこの形でお願いします。
 
               {
-                accounts: ["userId", "userId"],
+                accountHashList: ["userId", "userId"],
                 channelName: "name"
               }
         '
@@ -263,19 +281,22 @@ definitions:
     properties:
       id:
         type: integer
-        x-omitempty: false
       hash:
         type: string
         example: "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
-        x-omitempty: false
       name:
         type: string
         example: "kameike"
-        x-omitempty: false
       imageURL:
         type: string
         example: "https://hogehoge.s3.amazon.com"
-        x-omitempty: false
+
+  userStatus:
+    type: "object"
+    description: ユーザーの状態
+    properties:
+      unreadCounts: 
+        type: integer
 
   messageRequest:
     type: object
@@ -303,7 +324,6 @@ definitions:
       content:
         type: string
         example: "よろしくお願いします"
-        x-omitempty: false
       account:
         $ref: "#/definitions/account"
 
@@ -316,23 +336,19 @@ definitions:
         items:
           $ref: "#/definitions/message"
       readAts:
-        x-omitempty: false
         $ref: "#/definitions/readAts"
 
   readAts:
     description: "最後に読んだ時間をユーザーごとに表示するオブジェクト"
     type: array
-    x-omitempty: false
     items:
       type: object
       properties:
         accountHash:
           type: string
-          x-omitempty: false
         readAt:
           type: integer
           format: int64
-          x-omitempty: false
 
   chatroom:
     type: object
@@ -342,10 +358,8 @@ definitions:
         type: integer
       hash:
         type: string
-        x-omitempty: false
       name:
         type: string
-        x-omitempty: false
       accounts:
         type: array
         items:
@@ -355,23 +369,20 @@ definitions:
         items:
           $ref: '#/definitions/unreadCount'
       readAts:
-        x-omitempty: false
         $ref: "#/definitions/readAts"
       messages:
         description: "メッセージを全て返します。"
         type: array
         items:
           $ref: '#/definitions/message'
-          
+
   unreadCount:
     type: object
     properties:
       accountHash:
-        x-omitempty: false
         type: string
       count:
         type: integer
-        x-omitempty: false
 
   error:
     type: "object"
@@ -380,4 +391,3 @@ definitions:
         type: "string"
         description: "エラーメッセージ、中身をユーザーに見せて差し支えないものです。"
         example: "権限がありません(code: 3)"
-

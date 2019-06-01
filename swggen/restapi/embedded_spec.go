@@ -130,7 +130,7 @@ func init() {
             "apiKey": []
           }
         ],
-        "description": "一覧が出るよ.それぞれの文字列はこの形でお願いします。\n{ accounts: [\"userId\", \"userId\"], channelName: \"name\" } ",
+        "description": "一覧が出るよ.それぞれの文字列はこの形でお願いします。\n{ accountHashList: [\"userId\", \"userId\"], channelName: \"name\" } ",
         "tags": [
           "chatrooms"
         ],
@@ -383,6 +383,34 @@ func init() {
           }
         }
       }
+    },
+    "/status": {
+      "get": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "description": "未読数をサポートしています",
+        "tags": [
+          "account"
+        ],
+        "summary": "ユーザーに紐づく状態をとってくるもの",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/userStatus"
+            }
+          },
+          "403": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -392,21 +420,17 @@ func init() {
       "properties": {
         "hash": {
           "type": "string",
-          "x-omitempty": false,
           "example": "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
         },
         "id": {
-          "type": "integer",
-          "x-omitempty": false
+          "type": "integer"
         },
         "imageURL": {
           "type": "string",
-          "x-omitempty": false,
           "example": "https://hogehoge.s3.amazon.com"
         },
         "name": {
           "type": "string",
-          "x-omitempty": false,
           "example": "kameike"
         }
       }
@@ -435,8 +459,7 @@ func init() {
           }
         },
         "hash": {
-          "type": "string",
-          "x-omitempty": false
+          "type": "string"
         },
         "id": {
           "type": "integer"
@@ -449,11 +472,9 @@ func init() {
           }
         },
         "name": {
-          "type": "string",
-          "x-omitempty": false
+          "type": "string"
         },
         "readAts": {
-          "x-omitempty": false,
           "$ref": "#/definitions/readAts"
         },
         "unreadsCount": {
@@ -493,7 +514,6 @@ func init() {
         },
         "content": {
           "type": "string",
-          "x-omitempty": false,
           "example": "よろしくお願いします"
         },
         "createdAt": {
@@ -525,7 +545,6 @@ func init() {
           }
         },
         "readAts": {
-          "x-omitempty": false,
           "$ref": "#/definitions/readAts"
         }
       }
@@ -537,28 +556,32 @@ func init() {
         "type": "object",
         "properties": {
           "accountHash": {
-            "type": "string",
-            "x-omitempty": false
+            "type": "string"
           },
           "readAt": {
             "type": "integer",
-            "format": "int64",
-            "x-omitempty": false
+            "format": "int64"
           }
         }
-      },
-      "x-omitempty": false
+      }
     },
     "unreadCount": {
       "type": "object",
       "properties": {
         "accountHash": {
-          "type": "string",
-          "x-omitempty": false
+          "type": "string"
         },
         "count": {
-          "type": "integer",
-          "x-omitempty": false
+          "type": "integer"
+        }
+      }
+    },
+    "userStatus": {
+      "description": "ユーザーの状態",
+      "type": "object",
+      "properties": {
+        "unreadCounts": {
+          "type": "integer"
         }
       }
     }
@@ -685,7 +708,7 @@ func init() {
             "apiKey": []
           }
         ],
-        "description": "一覧が出るよ.それぞれの文字列はこの形でお願いします。\n{ accounts: [\"userId\", \"userId\"], channelName: \"name\" } ",
+        "description": "一覧が出るよ.それぞれの文字列はこの形でお願いします。\n{ accountHashList: [\"userId\", \"userId\"], channelName: \"name\" } ",
         "tags": [
           "chatrooms"
         ],
@@ -938,6 +961,34 @@ func init() {
           }
         }
       }
+    },
+    "/status": {
+      "get": {
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "description": "未読数をサポートしています",
+        "tags": [
+          "account"
+        ],
+        "summary": "ユーザーに紐づく状態をとってくるもの",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/userStatus"
+            }
+          },
+          "403": {
+            "description": "error",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -947,21 +998,17 @@ func init() {
       "properties": {
         "hash": {
           "type": "string",
-          "x-omitempty": false,
           "example": "HAB4cQxKTQkEj7rMdE6QQW391ffpVbQshya+R66OIhfu5drm"
         },
         "id": {
-          "type": "integer",
-          "x-omitempty": false
+          "type": "integer"
         },
         "imageURL": {
           "type": "string",
-          "x-omitempty": false,
           "example": "https://hogehoge.s3.amazon.com"
         },
         "name": {
           "type": "string",
-          "x-omitempty": false,
           "example": "kameike"
         }
       }
@@ -990,8 +1037,7 @@ func init() {
           }
         },
         "hash": {
-          "type": "string",
-          "x-omitempty": false
+          "type": "string"
         },
         "id": {
           "type": "integer"
@@ -1004,11 +1050,9 @@ func init() {
           }
         },
         "name": {
-          "type": "string",
-          "x-omitempty": false
+          "type": "string"
         },
         "readAts": {
-          "x-omitempty": false,
           "$ref": "#/definitions/readAts"
         },
         "unreadsCount": {
@@ -1048,7 +1092,6 @@ func init() {
         },
         "content": {
           "type": "string",
-          "x-omitempty": false,
           "example": "よろしくお願いします"
         },
         "createdAt": {
@@ -1080,7 +1123,6 @@ func init() {
           }
         },
         "readAts": {
-          "x-omitempty": false,
           "$ref": "#/definitions/readAts"
         }
       }
@@ -1092,28 +1134,32 @@ func init() {
         "type": "object",
         "properties": {
           "accountHash": {
-            "type": "string",
-            "x-omitempty": false
+            "type": "string"
           },
           "readAt": {
             "type": "integer",
-            "format": "int64",
-            "x-omitempty": false
+            "format": "int64"
           }
         }
-      },
-      "x-omitempty": false
+      }
     },
     "unreadCount": {
       "type": "object",
       "properties": {
         "accountHash": {
-          "type": "string",
-          "x-omitempty": false
+          "type": "string"
         },
         "count": {
-          "type": "integer",
-          "x-omitempty": false
+          "type": "integer"
+        }
+      }
+    },
+    "userStatus": {
+      "description": "ユーザーの状態",
+      "type": "object",
+      "properties": {
+        "unreadCounts": {
+          "type": "integer"
         }
       }
     }
